@@ -16,7 +16,7 @@ packages/**/slides/.eq/
 examples/**/slides/.eq/
 packages/**/slides/*.pptx
 examples/**/slides/*.pptx
+.env
 
 # Book pages are copyrighted: annotated copies stay on your machine
 **/annotated.pdf
-.env
