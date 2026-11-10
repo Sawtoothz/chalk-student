@@ -165,10 +165,47 @@ def reader(source: str, unit: int):
     src = pages.load().get(source)
     if not src:
         raise HTTPException(404)
-    f = pages.package_dir(source, src, unit) / "reader.html"
-    if not f.exists():
+    pkg = pages.package_dir(source, src, unit)
+    f = pkg / "reader.html"
+    if not f.exists() and not build_reader(pkg):
         raise HTTPException(404, "no reader yet — run the build stage")
     return HTMLResponse(with_back_bar(f.read_text(encoding="utf-8"), source, unit, src))
+
+
+READER_LOCK = threading.Lock()
+
+
+def build_reader(pkg: Path) -> bool:
+    """reader.html is build output, not in git, so a fresh clone has none: build it from the package's files exactly as
+    `just view` does (deterministic scripts, no AI, a few seconds). Returns whether the Reader exists afterwards."""
+    with READER_LOCK:
+        out = pkg / "reader.html"
+        if out.exists():
+            return True
+        if not (pkg / "map.md").exists():
+            return False
+        if (pkg / "annotated.pdf").exists():
+            subprocess.run([PY, str(ROOT / "scripts" / "render_pages.py"), str(pkg / "annotated.pdf"), str(pkg / ".pages")],
+                           cwd=ROOT, capture_output=True, timeout=600)
+        subprocess.run([PY, str(ROOT / "scripts" / "build_viewer.py"), str(pkg), str(pkg / ".pages"), str(out)],
+                       cwd=ROOT, capture_output=True, timeout=600)
+        return out.exists()
+
+
+def build_missing_readers():
+    """At startup: every package that passed review but has no Reader (a fresh clone) gets one, so the Library shows it
+    finished and Teach does not re-run its build stage."""
+    for sid, src in (pages.load() or {}).items():
+        for unit in pages.units(src):
+            try:
+                pkg = pages.package_dir(sid, src, unit)
+            except Exception:
+                continue
+            if (pkg / "REVIEW.md").exists() and not (pkg / "reader.html").exists():
+                build_reader(pkg)
+
+
+threading.Thread(target=build_missing_readers, daemon=True).start()
 
 
 BACK_CSS = """<style id="chalk-back-css">
