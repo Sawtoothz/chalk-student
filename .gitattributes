@@ -1,0 +1,8 @@
+# Keep LF line endings on Windows checkouts: the container runs these files with bash and Python.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+*.pdf binary
+*.png binary
+*.jpg binary
+*.pptx binary

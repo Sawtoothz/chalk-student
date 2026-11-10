@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Run a Chalk command inside the Docker container: ./chalk test thrun-pr 4, ./chalk clue thrun-pr 4 T3.2 1, ./chalk
+# With no arguments: start the app (docker compose up). Uses the running container if there is one.
+set -euo pipefail
+cd "$(dirname "$0")"
+if [ $# -eq 0 ]; then exec docker compose up; fi
+if [ -n "$(docker compose ps -q --status running chalk 2>/dev/null)" ]; then
+  exec docker compose exec chalk just "$@"
+else
+  exec docker compose run --rm chalk just "$@"
+fi

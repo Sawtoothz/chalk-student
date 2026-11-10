@@ -3,8 +3,10 @@
 set shell := ["bash", "-euo", "pipefail", "-c"]
 
 # Every recipe runs inside the project virtualenv made by `uv sync`, so a bare `python3`,
-# `uvicorn` or `marimo` resolves to .venv/bin and not to the system interpreter.
-export PATH := justfile_directory() + "/.venv/bin:" + env_var("PATH")
+# `uvicorn` or `marimo` resolves to .venv/bin and not to the system interpreter. In Docker the virtualenv is
+# /opt/venv (VIRTUAL_ENV is set in the image), so a host's .venv in the mounted folder is never used there.
+export PATH := env_var_or_default("VIRTUAL_ENV", justfile_directory() + "/.venv") + "/bin:" + env_var("PATH")
+host := env_var_or_default("CHALK_HOST", "127.0.0.1")
 
 default:
     @just --list
@@ -43,7 +45,11 @@ view book ch:
     echo "open $pkg/reader.html"
 
 session book ch:
-    marimo edit "$(python3 scripts/pages.py {{book}} {{ch}} --dir)/session.py"
+    #!/usr/bin/env bash
+    nb="$(python3 scripts/pages.py {{book}} {{ch}} --dir)/session.py"
+    if [ "{{host}}" = "127.0.0.1" ]; then exec marimo edit "$nb"; fi
+    echo "In Docker: open the http://localhost:2718/?access_token=… address printed below (replace 0.0.0.0 with localhost)."
+    exec marimo edit --headless --host {{host}} --port 2718 "$nb"
 
 # Run the oracle tests against exercise.py and record the pass/fail count in learner.yaml
 # (the record is what unlocks `just reveal`). Exit code is pytest's.
@@ -120,7 +126,7 @@ list:
     python3 scripts/pages.py --list
 
 # GUI mode: Library / Run / Reader at http://localhost:8765 (bind to a Tailscale address with --host)
-serve host="127.0.0.1" port="8765":
+serve host=host port="8765":
     uvicorn app.main:app --host {{host}} --port {{port}}
 
 setup:

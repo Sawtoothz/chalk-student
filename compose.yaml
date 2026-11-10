@@ -1,0 +1,21 @@
+# docker compose up   -> Chalk at http://localhost:8765 (only this computer can reach it)
+services:
+  chalk:
+    build:
+      context: .
+      args:
+        AI_CLIS: ${CHALK_AI:-}  # AI agent CLIs to install, from .env, e.g. CHALK_AI=@anthropic-ai/claude-code
+    image: chalk:latest
+    ports:
+      - "127.0.0.1:8765:8765"   # the GUI; never publish it beyond localhost, it has no login
+      - "127.0.0.1:2718:2718"   # marimo sessions (just session)
+    volumes:
+      - .:/app                  # your project folder: packages, exercises, learner.yaml stay on your disk
+      - chalk-home:/home/chalk  # AI tool logins (claude, codex, gemini) survive restarts
+    env_file:
+      - path: .env              # optional: ANTHROPIC_API_KEY, OPENAI_API_KEY, GEMINI_API_KEY (see .env.example)
+        required: false
+    stdin_open: true
+    tty: true
+volumes:
+  chalk-home:

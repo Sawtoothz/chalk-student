@@ -31,6 +31,7 @@ All work goes through `just`. Run `just` to list recipes.
 | `just list` | Every source and unit with its stage status (JSON) |
 | `just refs <repo-url> <out.json> <symbols…>` | Papers: clone the authors' repo at a commit and record verified file:line anchors for the cards |
 | `just serve` | GUI mode: Library / Run / Reader at http://localhost:8765 |
+| `docker compose up`, `./chalk <recipe>` | The same in Docker (Windows, macOS, Linux); `chalk.cmd` on Windows. See SETUP.md "Docker" |
 
 ## Running a `/teach` stage with any agent
 

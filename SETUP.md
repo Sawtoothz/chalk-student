@@ -78,6 +78,26 @@ just reveal <book> <ch> T3  # gated
 ```
 
 
+## Docker (Windows, macOS, Linux)
+
+The same app in a container, for machines without the Linux toolchain, e.g. Windows with Docker Desktop.
+
+```bash
+docker compose up            # first run builds the image (about 2 GB, a few minutes); then http://localhost:8765
+./chalk test thrun-pr 4      # any just recipe, run inside the container (Windows: chalk test thrun-pr 4)
+./chalk                      # same as docker compose up
+```
+
+- The project folder is mounted at `/app`: packages, `exercise.py` and `learner.yaml` stay on your disk and can be
+  edited with any editor. Python lives in `/opt/venv` inside the image.
+- Ports are published on `127.0.0.1` only (8765 GUI, 2718 marimo for `just session`).
+- AI agents are opt-in: copy `.env.example` to `.env`, set `CHALK_AI=@anthropic-ai/claude-code` (and/or
+  `@openai/codex`, `@google/gemini-cli`), then `docker compose build`. Log in once with
+  `docker compose run --rm chalk claude` (or `codex login`, `gemini`), or put an API key in `.env`; logins are
+  kept in the `chalk-home` volume.
+- On Windows, clone with Git for Windows or inside WSL; `.gitattributes` keeps LF line endings so the scripts run
+  in the container. A clone inside WSL (`\\wsl$\...`) is much faster than one under `C:\`.
+
 ## GUI mode
 
 ```bash

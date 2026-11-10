@@ -19,3 +19,4 @@ examples/**/slides/*.pptx
 
 # Book pages are copyrighted: annotated copies stay on your machine
 **/annotated.pdf
+.env

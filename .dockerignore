@@ -1,0 +1,12 @@
+.git
+.venv
+.cache
+.env
+library/*.pdf
+**/__pycache__
+**/.pytest_cache
+packages/**/.runs
+packages/**/.pages
+packages/**/reader.html
+examples/**/.pages
+examples/**/reader.html
