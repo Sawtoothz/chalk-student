@@ -1,0 +1,823 @@
+{
+ "book": "sola-microlie",
+ "chapter": 1,
+ "printed_pages": [
+  1,
+  17
+ ],
+ "page_offset": 0,
+ "colors": {
+  "define": "#9FE1CB",
+  "key": "#FAC775",
+  "derive": "#F09595",
+  "pitfall": "#F5C4B3",
+  "link": "#B5D4F4",
+  "section": "#D3D1C7"
+ },
+ "items": [
+  {
+   "page": 1,
+   "kind": "section",
+   "anchor": "I. INTRODUCTION",
+   "note": "Skim, 5 min. Take the scope: a small subset of Lie theory aimed at uncertainty and Jacobians, everything done in the flat vector space ℝᵐ."
+  },
+  {
+   "page": 1,
+   "kind": "key",
+   "anchor": "Figure 1. Representation of the relation between the Lie group and the Lie algebra",
+   "note": "FIGURE: blue sphere = the group M, red plane = the tangent at the identity. A straight line vt in the plane wraps onto a geodesic exp(vt) on the sphere. This one picture is the whole paper; every later operator is a move between the plane and the sphere."
+  },
+  {
+   "page": 1,
+   "kind": "pitfall",
+   "anchor": "Though the sphere in R3 is not a Lie group",
+   "note": "WHY: the drawing is a cartoon. S² (unit vectors, gravity direction) has no group structure, so the toolkit here does not apply to it as is; FAST-LIO2 handles S² with its own ⊞ (xu-fastlio2, t2.8)."
+  },
+  {
+   "page": 2,
+   "kind": "key",
+   "anchor": "we will effectively relegate the Lie algebra to a second plane in favor of its equivalent vector space Rn, and will not introduce the Lie bracket at all",
+   "note": "WHY: this is the design choice of the paper. You lose the bracket and BCH (Barfoot ch. 8 §8.1.2, §8.1.5, t2.6) and gain formulas that look like vector calculus. For filters and optimizers on robots you rarely need more."
+  },
+  {
+   "page": 2,
+   "kind": "link",
+   "anchor": "header-only library, called manif",
+   "note": "CODE: manif is the authors' C++ implementation and the reference the cards cite through `code_refs.json` (cards stage, `scripts/code_refs.py`). The cards stage maps its operators (right plus and minus, adjoint, the optional Jacobian outputs) to the paper's equations."
+  },
+  {
+   "page": 2,
+   "kind": "section",
+   "anchor": "A. The Lie group",
+   "note": "Must read, 10 min. Section II is the whole theory (II-A to II-I, about 2 h). Take from II-A: a Lie group is a smooth surface whose points compose, so every tangent space has the same shape."
+  },
+  {
+   "page": 2,
+   "kind": "define",
+   "anchor": "a Lie group G is a smooth manifold whose elements satisfy the group axioms",
+   "note": "DEFINE: two properties at once. Smooth: there is a tangent space at every point where calculus works. Group: composition, identity, inverse (1)–(4) keep you on the surface. A rotation matrix, a pose, a unit quaternion all qualify; a unit 3-vector does not."
+  },
+  {
+   "page": 2,
+   "kind": "key",
+   "anchor": "the manifold looks the same at every point",
+   "note": "WHY: because all tangent spaces are alike, one formula for a Jacobian or a covariance works at every state, carried between tangents by the adjoint (II-F). ROBOT: the same ESKF code runs whether the drone points north or south."
+  },
+  {
+   "page": 2,
+   "kind": "key",
+   "anchor": "does not belong to the manifold M but to the tangent space",
+   "note": "FIGURE: Fig. 2. A velocity Ẋ is a tangent vector, not a group element; integrating it means wrapping it back with Exp (II-D, II-I). Adding Ẋδt to X directly leaves the manifold (a rotation matrix stops being orthogonal)."
+  },
+  {
+   "page": 3,
+   "kind": "key",
+   "anchor": "Example 1: The unit complex numbers group S1",
+   "note": "EXERCISE: the boxed examples are the paper's exercises. S¹ is the one to draw: Log is atan2, ⊖ is an angle difference that must be wrapped. The exercises stage builds the SO(2) case in C1 as a warm-up for SE(2)."
+  },
+  {
+   "page": 3,
+   "kind": "key",
+   "anchor": "Figure 3. The S1 manifold is a unit circle",
+   "note": "FIGURE: blue circle = the group, red line = the tangent (iℝ at 1, any line at z). The red segment of length θ wraps onto an arc of the same length. Read z = x exp(iθ) at bottom right as the first appearance of right-⊕ (25)."
+  },
+  {
+   "page": 3,
+   "kind": "section",
+   "anchor": "B. The group actions",
+   "note": "Must read, 5 min. Take the four actions R·x, H·x, z·x, q·x·q* and that measurement models are actions: the beacon model (95) is X⁻¹·b."
+  },
+  {
+   "page": 3,
+   "kind": "define",
+   "anchor": "to be a group action, it must satisfy the axioms",
+   "note": "DEFINE: (6)–(7). Compatibility (X∘Y)·v = X·(Y·v) is what lets you chain frame transforms of a point. TEST: a property test of (7) on random SO(3) and SE(2) elements catches a transposed R in an action function."
+  },
+  {
+   "page": 3,
+   "kind": "key",
+   "anchor": "Example 2: The unit quaternions group S3",
+   "note": "EXERCISE: q = cos(θ/2) + u sin(θ/2); the half angle is the source of the factor 2 in Ex. 5 and App. B. The S³ Exp/Log (132)–(133) is part of C1."
+  },
+  {
+   "page": 3,
+   "kind": "key",
+   "anchor": "The S3 manifold is a unit 3-sphere (blue) in the 4-space of quaternions",
+   "note": "FIGURE: left = Exp/Log between ℍp ≅ ℝ³ and S³; right = the side-cut along a geodesic, which is the S¹ picture again, now with ⊕ and ⊖ labelled. The right panel is the one Section II-E cites as \"Fig. 4-right\"."
+  },
+  {
+   "page": 3,
+   "kind": "section",
+   "anchor": "C. The tangent spaces and the Lie algebra",
+   "note": "Must read, 15 min. Take the three spaces of Fig. 6 (group M, Lie algebra 𝔪, vector ℝᵐ) and the two isomorphisms hat and vee (10)–(11). From here on every quantity you store is in ℝᵐ."
+  },
+  {
+   "page": 4,
+   "kind": "derive",
+   "anchor": "Table I",
+   "note": "SHAPES: \"size\" is the number of stored scalars, \"dim\" the degrees of freedom m. Covariances, Jacobians and increments are m-sized, never size-sized: SO(3) stores 9, perturbs 3; SE(3) stores 16, perturbs 6. CODE: C1, C4, C5 (Exp, Log, composition per group)."
+  },
+  {
+   "page": 4,
+   "kind": "key",
+   "anchor": "this is why the Lie algebra is defined as the tangent space at the identity",
+   "note": "FIGURE: Fig. 5. The same rotation rate ω appears as ż = z·iω in global coordinates and as iω locally at z. The local form is the same at every z, which is why one tangent (at the identity) stands in for all of them."
+  },
+  {
+   "page": 4,
+   "kind": "define",
+   "anchor": "is called the Lie algebra of M, and noted",
+   "note": "DEFINE: (8) 𝔪 = T_ℰM. In this paper 𝔪 is used only as a vector space; the bracket that makes it an algebra is left out on purpose (footnote 1)."
+  },
+  {
+   "page": 4,
+   "kind": "derive",
+   "equation": "9",
+   "note": "WHY: v^ = X⁻¹Ẋ is the velocity seen in the body frame. ROBOT: a gyro measures exactly this ω (body rates), which is why IMU integration composes on the right in (56)."
+  },
+  {
+   "page": 4,
+   "kind": "key",
+   "anchor": "Figure 6. Mappings between the manifold M and the representations of its tangent space",
+   "note": "FIGURE: three boxes, four arrows. Lowercase exp/log go to and from the matrix 𝔪; capital Exp/Log go straight to ℝᵐ. Code only ever needs the capital pair plus hat for checks. CODE: C1, C4, C5."
+  },
+  {
+   "page": 4,
+   "kind": "derive",
+   "equation": "10",
+   "note": "CODE: C1, C4, C5, hat and vee (10)–(11) per group: ℝ³ ↔ [θ]ₓ for SO(3), ℝ³ ↔ 3×3 for SE(2), ℝ⁶ ↔ 4×4 for SE(3). TEST: vee(hat(τ)) = τ on random τ; hat(τ) must be skew in its rotation block."
+  },
+  {
+   "page": 5,
+   "kind": "key",
+   "anchor": "Example 3: The rotation group SO(3), its Lie algebra",
+   "note": "EXERCISE: derive Rᵀ Ṙ skew from RᵀR = I and write the three generators. This is the template for finding 𝔪 of any matrix group; the exercises stage reuses it for SE(2)."
+  },
+  {
+   "page": 5,
+   "kind": "section",
+   "anchor": "D. The exponential map",
+   "note": "Must read, 20 min. Take that exp is the exact solution of Ẋ = X v^ for constant v (12)–(13), and that closed forms come from the power series (16). Properties (17)–(20) are used in every proof of Section III."
+  },
+  {
+   "page": 5,
+   "kind": "key",
+   "anchor": "wraps the tangent element around the manifold following the great arc or geodesic",
+   "note": "WHY: Exp is not an approximation of a step; it is the exact constant-velocity motion over the step. Small-angle forms (I + [θ]ₓ) are the approximation, and they are what drift."
+  },
+  {
+   "page": 5,
+   "kind": "derive",
+   "equation": "13",
+   "note": "WHY: the exponential is the solution of an ODE, so constant velocity over δt is integrated exactly. ROBOT: for a tracked robot with constant (v, ω) over a step, Exp gives the exact arc on SE(2), not the straight-line Euler step."
+  },
+  {
+   "page": 5,
+   "kind": "derive",
+   "anchor": "Example 4: The exponential map of SO(3)",
+   "note": "EXERCISE: derive Rodrigues from the series by hand, using [u]³ₓ = −[u]ₓ. CODE: C1, `Exp` of SO(3) (134). TEST: compare with the matrix exponential of [θ]ₓ (scipy.linalg.expm, a trusted library oracle)."
+  },
+  {
+   "page": 5,
+   "kind": "derive",
+   "equation": "16",
+   "note": "TEST: the Taylor series (16), summed numerically or through scipy.linalg.expm, is the oracle for every closed-form Exp in C1 (SO(3), SE(2), SE(3))."
+  },
+  {
+   "page": 6,
+   "kind": "key",
+   "anchor": "Example 5: The unit quaternions group S3 (cont.)",
+   "note": "EXERCISE: same derivation as Ex. 4 with u² = −1. PITFALL: hat is θ ↦ θ/2 for quaternions, so Exp(θ) = cos(θ/2) + u sin(θ/2). Dropping the 2 gives a quaternion that rotates by twice the angle; a test against R(q) of (138) catches it."
+  },
+  {
+   "page": 6,
+   "kind": "derive",
+   "equation": "20",
+   "note": "WHY: X exp(τ^) X⁻¹ = exp(X τ^ X⁻¹) moves an increment across X. It is the one identity behind the adjoint (29)–(32) and the inverse and composition blocks (62), (65). Derive it from the series."
+  },
+  {
+   "page": 6,
+   "kind": "key",
+   "anchor": "They both compose the element X with increments or",
+   "note": "FIGURE: Fig. 7. Two routes from ℰ to Y: X then a local delta (right), or a global delta then X (left). The tangent vectors differ, and Ad_X maps one to the other. ROBOT: body-frame vs world-frame pose noise."
+  },
+  {
+   "page": 6,
+   "kind": "section",
+   "anchor": "E. Plus and minus operators",
+   "note": "Must read, 10 min. Take right-⊕/⊖ (25)–(26) as the default of the whole paper. They make \"state + increment\" and \"state − state\" read as in a vector space."
+  },
+  {
+   "page": 6,
+   "kind": "derive",
+   "equation": "25",
+   "note": "CODE: C2, `oplus(X, tau) = X @ Exp(tau)`. The increment is in the local frame at X. ROBOT: odometry increments and IMU deltas are body-frame, so they enter on the right."
+  },
+  {
+   "page": 6,
+   "kind": "derive",
+   "equation": "26",
+   "note": "CODE: C2, `ominus(Y, X) = Log(inv(X) @ Y)`, an m-vector in the tangent at X. TEST: ominus(oplus(X, τ), X) = τ for |θ| < π. PITFALL: the order is Y ⊖ X, not X ⊖ Y; swapping it flips the sign and the frame."
+  },
+  {
+   "page": 6,
+   "kind": "derive",
+   "equation": "28",
+   "note": "CODE: C2, left forms (27)–(28): Exp(τ) @ X and Log(Y @ inv(X)), increment in the global frame. Barfoot (t2.6) perturbs on the left; (75) and (147) are the bridge between the two conventions."
+  },
+  {
+   "page": 6,
+   "kind": "key",
+   "anchor": "we express perturbations locally by default",
+   "note": "WHY: one convention for the whole package: right ⊕/⊖, right Jacobians, covariance in the local tangent. Mixing conventions inside one filter is a classic Lie-group bug; the map lists left-vs-right Jacobian as a candidate T4 plant."
+  },
+  {
+   "page": 6,
+   "kind": "pitfall",
+   "anchor": "this convention is not shared by all authors",
+   "note": "PITFALL: footnote 3. Here R maps local to global (ᴳx = R ᴸx). Ref. [9] uses the opposite. Before copying a Jacobian from another source, check which way its R goes, or its signs and transposes will not match."
+  },
+  {
+   "page": 6,
+   "kind": "section",
+   "anchor": "F. The adjoint, and the adjoint matrix",
+   "note": "Must read, 15 min. Take Ad_X: the linear map that takes a tangent vector from the local frame at X to the global frame, ᴱτ = Ad_X ˣτ (30). It appears in half of the Jacobian blocks."
+  },
+  {
+   "page": 7,
+   "kind": "derive",
+   "equation": "31",
+   "note": "CODE: C2. Ad_X τ = (X τ^ X⁻¹)^∨ is the numerical oracle for every closed-form adjoint: build it column by column from the basis vectors and compare with (139), (159), (175)."
+  },
+  {
+   "page": 7,
+   "kind": "derive",
+   "equation": "32",
+   "note": "WHY: X ⊕ τ = (Ad_X τ) ⊕ X, the defining property of Ad as a frame change. TEST: check it on random X, τ for SO(3), SE(2), SE(3); it fails if Ad is transposed or uses −t."
+  },
+  {
+   "page": 7,
+   "kind": "key",
+   "anchor": "that the left parts of the equality are usually cheaper to compute than the right ones",
+   "note": "CODE: compute Ad_X⁻¹ as Ad of X⁻¹ (33), never by inverting a 6×6 matrix. For SE(3) the closed form needs one transpose and one skew; np.linalg.inv is slower and less exact."
+  },
+  {
+   "page": 7,
+   "kind": "derive",
+   "anchor": "Example 6: The adjoint matrix of SE(3)",
+   "note": "EXERCISE: derive Ad_M of SE(3) by hand using [Rθ]ₓ = R[θ]ₓRᵀ and [a]ₓb = −[b]ₓa, then repeat for SE(2) to reach (159). CODE: C2."
+  },
+  {
+   "page": 7,
+   "kind": "section",
+   "anchor": "G. Derivatives on Lie groups",
+   "note": "Must read, 25 min. The longest section and the core of the paper. Take (41a): a Jacobian is the usual limit with + and − replaced by ⊕ and ⊖. Crossed Jacobians (47)–(50) only as a pointer."
+  },
+  {
+   "page": 7,
+   "kind": "key",
+   "anchor": "this form may be used to calculate Jacobians by developing the numerator into a form linear in h",
+   "note": "WHY: the mechanism (39) behind every derivation in Section III and the appendices: expand the numerator until it is linear in the perturbation, then read off the matrix. EXERCISE: the hand derivations of (62), (150), (166) all follow it."
+  },
+  {
+   "page": 8,
+   "kind": "key",
+   "anchor": "Figure 8. Right Jacobian of a function",
+   "note": "FIGURE: left = perturb X along each basis direction with ⊕ (red), map through f, lift back with ⊖ into the tangent at f(X); each lifted path's slope is one column jᵢ. This is the finite-difference check `scripts/fd_check.py` runs when given the group's ⊕ (--in) and ⊖ (--out)."
+  },
+  {
+   "page": 8,
+   "kind": "derive",
+   "equation": "41a",
+   "note": "CODE: C3. The definition of the right Jacobian, mapping T_X M → T_f(X) N. TEST: every analytic Jacobian in the package is checked against (41c) by central finite differences on ⊕/⊖ (`just fd`)."
+  },
+  {
+   "page": 8,
+   "kind": "key",
+   "anchor": "only that we expressed the infinitesimal variations in the tangent spaces",
+   "note": "WHY: the Jacobian is n×m with m and n the dofs of the input and output manifolds, not the sizes of their representations. For a quaternion state the Jacobian is 3×3, not 4×4, and no unit-norm projection is needed."
+  },
+  {
+   "page": 8,
+   "kind": "pitfall",
+   "anchor": "the plus and minus operators in (41a) must be selected appropriately",
+   "note": "PITFALL: ⊕ belongs to the domain, ⊖ to the codomain. For f: SO(3) → ℝ³ the ⊖ is plain subtraction; for f: SE(2) → SE(2) both are group operators. Using the domain's ⊖ on the output is a shape error at best."
+  },
+  {
+   "page": 8,
+   "kind": "derive",
+   "equation": "43",
+   "note": "WHY: first-order linearization on the group, f(X ⊕ τ) ≈ f(X) ⊕ J τ. It is what the ESKF prediction (100) and the GN step (106) rely on, and what makes the chain rule (58) a one-line proof."
+  },
+  {
+   "page": 8,
+   "kind": "derive",
+   "equation": "46",
+   "note": "WHY: left and right Jacobians of the same f differ only by the adjoints of domain and codomain (Fig. 9). Together with (44) this means you only need the right ones; the left follow by (57). TEST: check (46) numerically for one f per group."
+  },
+  {
+   "page": 9,
+   "kind": "key",
+   "anchor": "Though improbable, these are sometimes useful, since they map local to global tangents",
+   "note": "READING: skip (47)–(50) on a first read. Return here only if a sensor model mixes a world-frame perturbation with a body-frame state."
+  },
+  {
+   "page": 9,
+   "kind": "section",
+   "anchor": "H. Uncertainty in manifolds, covariance propagation",
+   "note": "Must read, 10 min. Take that Σ_X is the covariance of the tangent perturbation τ, an m×m matrix (52), and that propagation is the vector-space formula with Lie Jacobians (55)."
+  },
+  {
+   "page": 9,
+   "kind": "derive",
+   "equation": "52",
+   "note": "DEFINE: X ~ N(X̄, Σ) means X = X̄ ⊕ τ with τ ~ N(0, Σ) in the local tangent (51). CODE: C6, sampling a Gaussian on the group = sample τ, then X̄ ⊕ τ. TEST: Monte Carlo of X ⊖ X̄ recovers Σ."
+  },
+  {
+   "page": 9,
+   "kind": "pitfall",
+   "anchor": "which is the case for most non-trivial manifolds",
+   "note": "PITFALL: footnote 5. A 4×4 covariance on quaternion components or a 9×9 on rotation-matrix entries is rank-deficient and meaningless. ROBOT: an EKF with a 4-state quaternion needs ad hoc normalization; the ESKF of Section V-A does not."
+  },
+  {
+   "page": 9,
+   "kind": "derive",
+   "equation": "54",
+   "note": "CODE: C6, global ↔ local covariance, ᴱΣ = Ad_X ˣΣ Ad_Xᵀ. ROBOT: a drone attitude known except for yaw is a global statement (the paper's ᴱΣ = diag(σ²_φ, σ²_θ, ∞)), so it is written in ᴱΣ and converted with (54) before it enters a right-perturbed filter."
+  },
+  {
+   "page": 9,
+   "kind": "derive",
+   "equation": "55",
+   "note": "CODE: C6, Σ_Y ≈ J Σ_X Jᵀ with J from (41a). TEST: Monte Carlo through f on the group (sample with (51), push through f, take ⊖ at f(X̄)) agrees with (55) for small Σ; the gap at large Σ is the first-order error."
+  },
+  {
+   "page": 9,
+   "kind": "key",
+   "anchor": "is properly expressed as a covariance on the vector space tangent at the point",
+   "note": "FIGURE: Fig. 10. A red ellipse in the flat tangent wraps onto a curved blue patch on M. The \"banana\" shape of dead-reckoning uncertainty is this wrapping seen in x-y."
+  },
+  {
+   "page": 9,
+   "kind": "section",
+   "anchor": "I. Discrete integration on manifolds",
+   "note": "Must read, 5 min. Take (56): integration is repeated right-⊕ of small tangent steps."
+  },
+  {
+   "page": 9,
+   "kind": "derive",
+   "equation": "56",
+   "note": "CODE: C6; C8 prediction (94), (99). ROBOT: drone attitude R_k = R_{k−1} Exp(ω_k δt); same for the quaternion. FIGURE: Fig. 11 draws each step in the tangent at X_{k−1}. Print error: in the unnumbered expansion just above (56), the second factor reads Exp(v₁δt₂); it should be Exp(v₂δt₂) (and v₁δt₂ → v₂δt₂ on the next line)."
+  },
+  {
+   "page": 9,
+   "kind": "section",
+   "anchor": "III. DIFFERENTIATION RULES ON MANIFOLDS",
+   "note": "Must read, 40 min for III-A to III-C. Take the claim: four blocks (inverse, composition, Exp, action) plus the chain rule give every Jacobian you will need."
+  },
+  {
+   "page": 10,
+   "kind": "pitfall",
+   "anchor": "see (33, 34) and the comment below them",
+   "note": "CODE: in (57) write Ad of X⁻¹, not the matrix inverse of Ad_X (same as the note at (33)–(34))."
+  },
+  {
+   "page": 10,
+   "kind": "section",
+   "anchor": "A. The chain rule",
+   "note": "Must read, 10 min. Take (58) and its three-line proof from (43). (59)–(60) matter only when frames mix."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "58",
+   "note": "CODE: C3 (blocks), C8 and C9 (products). Every composite Jacobian in the package is a product of blocks, e.g. H in Section V-A = J^{X⁻¹·b}_{X⁻¹} J^{X⁻¹}_X. TEST: the product of blocks agrees with an FD check of the whole function."
+  },
+  {
+   "page": 10,
+   "kind": "section",
+   "anchor": "B. Elementary Jacobian blocks",
+   "note": "Must read, 20 min. Take the five blocks: inverse −Ad_X (62), composition Ad_Y⁻¹ and I (65)–(66), J_r and J_l of Exp (67), (71), and the action blocks (77)–(78) from the appendices."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "62",
+   "note": "EXERCISE: derive it from (41b) with (20) and (31), as printed. CODE: C3, J^{X⁻¹}_X = −Ad_X. TEST: FD on X ↦ X⁻¹ for SO(3), SE(2), SE(3)."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "65",
+   "note": "CODE: C3, J^{X∘Y}_X = Ad_Y⁻¹ (65) and J^{X∘Y}_Y = I (66). PITFALL: the adjoint is of Y, not X; the right perturbation on X has to travel across Y. A classic bug and a candidate T4 plant."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "67",
+   "note": "DEFINE: J_r(τ) is the right Jacobian of Exp itself, mapping a change in τ to a change in the local tangent at Exp(τ). CODE: C3; closed forms in (143)–(144) for SO(3), (163) for SE(2)."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "68",
+   "note": "WHY: (68)–(70) are the working forms: Exp(τ + δτ) ≈ Exp(τ) Exp(J_r δτ) and Log(Exp(τ)Exp(δτ)) ≈ τ + J_r⁻¹δτ. ROBOT: IMU preintegration (Forster et al., ref. [6], t2.11) is built on these and on J_r of SO(3)."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "75",
+   "note": "EXERCISE: derive from (68) and (72). TEST: Ad_{Exp(τ)} = J_l(τ) J_r⁻¹(τ) on random τ; a cheap consistency check that catches a sign error in either closed form."
+  },
+  {
+   "page": 10,
+   "kind": "derive",
+   "equation": "76",
+   "note": "EXERCISE: follow the four-step chain-rule proof. CODE: C3, so only one closed form per group is needed; the other is J(−τ). App. D uses this for SE(3)."
+  },
+  {
+   "page": 11,
+   "kind": "section",
+   "anchor": "C. Useful, but deduced, Jacobian blocks",
+   "note": "Must read, 10 min. Take the four blocks of ⊕ and ⊖ (80)–(83); they are what you call in practice, more than the elementary ones."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "equation": "79",
+   "note": "CODE: C3, J^{Log(X)}_X = J_r⁻¹(τ), straight from (70)."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "equation": "80",
+   "note": "CODE: C3, J^{X⊕τ}_X = Ad_{Exp(τ)}⁻¹ (80) and J^{X⊕τ}_τ = J_r(τ) (81). These are F and G of the ESKF prediction (100). TEST: FD on oplus in both arguments."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "equation": "82",
+   "note": "EXERCISE: follow the proof printed below (83). CODE: C3, J^{Y⊖X}_X = −J_l⁻¹(τ) (82) and J^{Y⊖X}_Y = J_r⁻¹(τ) (83). These are the GN motion-residual blocks in Section V-B. PITFALL: the X block uses J_l⁻¹, not J_r⁻¹; a candidate T4 plant."
+  },
+  {
+   "page": 11,
+   "kind": "section",
+   "anchor": "IV. COMPOSITE MANIFOLDS",
+   "note": "Must read, 15 min. Take that a state of several groups is handled block by block: block-diagonal Exp/Log (85), diamond ⊕/⊖ (86)–(87), block Jacobians (89)."
+  },
+  {
+   "page": 11,
+   "kind": "pitfall",
+   "anchor": "At the price of losing some consistency with the Lie theory",
+   "note": "WHY: ⟨ℝⁿ, SO(n)⟩ is not SE(n). Treating position and rotation as independent blocks changes the tangent (translation is in the world frame, not the body frame), and with it every Jacobian. ROBOT: the quadruped state ⟨p, v, R, biases⟩ is a composite, not a big matrix group."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "equation": "86",
+   "note": "CODE: C7, composite ⊕ (86) and ⊖ (87): apply each block's own ⊕/⊖ and stack. TEST: on ⟨SE(2), ℝ²⟩ the diamond ⊕ equals the per-block ⊕."
+  },
+  {
+   "page": 11,
+   "kind": "key",
+   "anchor": "Example 7: SE(n) vs.",
+   "note": "EXERCISE: compute M ⊕ τ three ways for the same τ and see that only the rotation agrees. PITFALL: the box writes the SE(n) tangent as τ = (θ, ρ), but (153) and (169) order it (ρ, θ); the package uses (ρ, θ). In the SE(n) minus, V₁⁻¹ means V⁻¹(θ) with θ = Log(R₁ᵀR₂), not a function of M₁ alone."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "equation": "89",
+   "note": "CODE: C7, the Jacobian of f on a composite is a grid of per-block right Jacobians (41a). The covariance (91) is defined with the same diamond ⊖ and propagates with (55)."
+  },
+  {
+   "page": 12,
+   "kind": "section",
+   "anchor": "V. LANDMARK-BASED LOCALIZATION AND MAPPING",
+   "note": "Must read, 5 min for the setup. Take the models: SE(2) pose, ℝ² beacons, control u ∈ 𝔰𝔢(2) with a lateral slip slot, measurement X⁻¹·b (92)–(96)."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "equation": "92",
+   "note": "CODE: C8, the control u = (vδt, 0, ωδt) + w is a tangent vector in 𝔰𝔢(2), so the motion model (94) is X ⊕ u. ROBOT: the zero lateral slot with σ_s ≠ 0 is the skid of a tracked or skid-steer robot. PITFALL: in (93) the variances scale with δt, and the third entry is printed σ²_w δt; it is the ω channel, not the noise vector w. Paper's W is this package's R_proc."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "equation": "95",
+   "note": "CODE: C8, y = X⁻¹·b + n = Rᵀ(b − t) + n, the beacon in the robot frame. Paper's N (96) is this package's Q_meas. The innovation in (101) is a plain vector difference because y is in ℝ²."
+  },
+  {
+   "page": 12,
+   "kind": "section",
+   "anchor": "A. Localization with error-state Kalman",
+   "note": "Must read, 15 min. Take the claim at the end: an EKF on SE(2) differs from the textbook EKF only in the two ⊕ of (99) and (101); everything else is Thrun Table 3.3 with Lie Jacobians."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "equation": "97",
+   "note": "DEFINE: the error δx = X ⊖ X̂ (97) and its covariance P (98) live in the local tangent at the estimate, 3×3 for SE(2). CODE: C8."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "equation": "100",
+   "note": "CODE: C8, prediction (99)–(100) with F = Ad_{Exp(u)}⁻¹ and G = J_r(u), both from (80)–(81). EXERCISE: derive F and G by hand. PITFALL: F is not I; setting F = I is the textbook-EKF reflex, and an FD check of X ↦ X ⊕ u catches it."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "equation": "101",
+   "note": "CODE: C8, correction. The only non-textbook line is X̂ ← X̂ ⊕ δx. TEST: with a known pose and noiseless beacons the update keeps X̂ on the group (RᵀR = I to machine precision)."
+  },
+  {
+   "page": 12,
+   "kind": "pitfall",
+   "equation": "102",
+   "note": "PITFALL: P is left in the tangent at the old X̂, but after the ⊕ update it should be expressed at the new one. The paper skips this reset; for small δx the difference is second order. The lecture discusses it; the reset itself is outside this paper (ref. [8], to be checked before citing)."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "anchor": "with the Jacobian computed from the blocks in App. C",
+   "note": "EXERCISE: chain (166) evaluated at X⁻¹ (rotation Rᵀ, point b) with (160) to reach H = −[I  Rᵀ[1]ₓ(b − t)]; multiplying the two printed factors gives the printed result. CODE: C8. TEST: FD on X ↦ X⁻¹·b with right ⊕."
+  },
+  {
+   "page": 12,
+   "kind": "key",
+   "anchor": "Notice that the only changes with respect to a regular EKF",
+   "note": "WHY: the whole payoff of the paper in one sentence. ROBOT: the same five lines run a quadruped or drone ESKF once the state is a composite and the blocks are swapped."
+  },
+  {
+   "page": 12,
+   "kind": "key",
+   "anchor": "SAM factor graph with 3 poses and 3 beacons",
+   "note": "FIGURE: triangles = poses, circles = beacons, black edges = motion factors, gray = beacon factors, ground symbol = prior on X₁. Each edge is one block row of J in (107)."
+  },
+  {
+   "page": 12,
+   "kind": "section",
+   "anchor": "B. Smooting and Mapping with graph-based optimization",
+   "note": "Must read, 15 min. Take the GN loop on a composite state (103): whiten residuals, stack block Jacobians (107), solve (109), update with diamond ⊕ (110). Heading typo \"Smooting\" is the paper's."
+  },
+  {
+   "page": 13,
+   "kind": "derive",
+   "equation": "104",
+   "note": "CODE: C9, motion measurement u_ij = X_j ⊖ X_i + w (104) and beacon measurement (105). The motion residual's Jacobians are (82)–(83); the beacon's are H of Section V-A plus J^{X⁻¹·b}_b = Rᵀ."
+  },
+  {
+   "page": 13,
+   "kind": "pitfall",
+   "anchor": "Each factor comes with an information matrix",
+   "note": "WHY: Ω^{⊤/2} whitens each residual so that rᵀr is the Mahalanobis cost. PITFALL: residuals are written measurement − prediction, so J in (107) is minus the measurement Jacobian times Ω^{⊤/2}; take the sign from r, not from h. The prior residual's X₁ is the prior value and X̂₁ the estimate."
+  },
+  {
+   "page": 13,
+   "kind": "key",
+   "anchor": "can be easily computed following the methods in Section V-A",
+   "note": "WHY: the derivative with respect to δx at δx = 0 is the right Jacobian with respect to X, so the ESKF blocks are reused unchanged in the optimizer. CODE: C9 imports the C8 Jacobians."
+  },
+  {
+   "page": 13,
+   "kind": "derive",
+   "equation": "107",
+   "note": "SHAPES: rows = factors (3 for prior and motion, 2 for beacons), columns = blocks of (103) (3 per pose, 2 per beacon). CODE: C9. TEST: the assembled J matches FD of the stacked residual with diamond ⊕."
+  },
+  {
+   "page": 13,
+   "kind": "derive",
+   "equation": "109",
+   "note": "CODE: C9, δx* = −(JᵀJ)⁻¹Jᵀr, then X ← X ⊕ δx* (110), iterate. Use a solve, not an inverse. Large problems need sparse QR or Cholesky (refs. [12]–[15]; Grisetti tutorial, t2.8)."
+  },
+  {
+   "page": 13,
+   "kind": "section",
+   "anchor": "C. Smoothing and mapping with self-calibration",
+   "note": "Skim, 5 min. Take that a sensor bias is one more block in the composite and one more column in J."
+  },
+  {
+   "page": 13,
+   "kind": "derive",
+   "equation": "111",
+   "note": "CODE: C9 (optional). J^{c(ũ,c)}_c is the constant 3×2 matrix of −1 and 0 entries; the residual column is Ω^{⊤/2} times it. ROBOT: odometry scale and gyro bias calibration on the tracked robot have this shape."
+  },
+  {
+   "page": 13,
+   "kind": "section",
+   "anchor": "D. 3D implementations",
+   "note": "Skim, 2 min. Take the one sentence: from (97) on, nothing changes in 3D except the blocks (App. D) and the sizes."
+  },
+  {
+   "page": 13,
+   "kind": "key",
+   "anchor": "all the math in the algorithms, that is from (97) onwards, is exactly the same for 2D and 3D",
+   "note": "ROBOT: write the ESKF against a group interface (Exp, Log, Ad, J_r, action) and the SE(2) code becomes the SE(3) drone filter by changing the group class."
+  },
+  {
+   "page": 13,
+   "kind": "section",
+   "anchor": "VI. CONCLUSION",
+   "note": "Skip. Restates the seven choices of the paper; nothing new."
+  },
+  {
+   "page": 14,
+   "kind": "link",
+   "anchor": "The applications in Section V are demonstrated in manif as examples",
+   "note": "CODE: the ESKF and SAM examples in manif are the authors' reference implementation of Section V. The cards stage anchors them with `scripts/code_refs.py`, and `implementation.md` compares the package's Python with them."
+  },
+  {
+   "page": 14,
+   "kind": "section",
+   "anchor": "APPENDIX A",
+   "note": "Skim, 10 min. Take that in 2D rotation everything commutes, so every Jacobian is 1 or −1 (123)–(128). Use it to sanity-check the rotation rows of App. C."
+  },
+  {
+   "page": 14,
+   "kind": "derive",
+   "equation": "117",
+   "note": "CODE: C4 (the rotation block of SE(2)), SO(2) Exp (116) and Log = atan2(r21, r11) (117). Log returns an angle in (−π, π]."
+  },
+  {
+   "page": 14,
+   "kind": "pitfall",
+   "equation": "122",
+   "note": "PITFALL: Q ⊖ R = θ_Q − θ_R is true only modulo 2π. Implement it as Log(RᵀQ) or wrap the difference with `wrap()` from `models.py`; an unwrapped difference across ±π gives a 2π innovation."
+  },
+  {
+   "page": 14,
+   "kind": "derive",
+   "equation": "129",
+   "note": "CODE: C4 (the rotation block of SE(2)), SO(2) action Jacobian R[1]ₓv (129), a 2×1 column, and Rv w.r.t. v = R (130). Compare the SO(3) form −R[v]ₓ (150): in 2D the skew acts on the angle, not on v."
+  },
+  {
+   "page": 14,
+   "kind": "section",
+   "anchor": "APPENDIX B",
+   "note": "Must read, 15 min. The formula sheet for 3D rotation: Exp/Log for q and R with their singular points, Ad_R = R, the closed forms of J_r, J_l and inverses, and the action block."
+  },
+  {
+   "page": 14,
+   "kind": "pitfall",
+   "anchor": "may be represented by either of these equivalent forms",
+   "note": "PITFALL: (131) stores q as (w, x, y, z), scalar first. Eigen's coeffs() and scipy's Rotation.as_quat() default to (x, y, z, w) (library conventions, outside the paper). Name the order in every function that takes a quaternion array."
+  },
+  {
+   "page": 15,
+   "kind": "pitfall",
+   "anchor": "corresponds to quaternions with positive real part",
+   "note": "PITFALL: q and −q are the same rotation. Log(q) with w < 0 returns a vector of angle near 2π instead of near 0, so a ⊖ between two near-equal attitudes can return an enormous innovation."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "133",
+   "note": "CODE: C1, S³ Exp (132) and Log (133). Flip q to −q when w < 0 before the Log, as the text below says. Near ‖v‖ = 0 replace atan2(‖v‖, w)/‖v‖ by its Taylor form. TEST: Log(Exp(θ)) = θ for |θ| < π, including θ of order 1e-9."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "134",
+   "note": "CODE: C1, SO(3) Exp = Rodrigues (Ex. 4). Near θ = 0 the axis u = θ/θ is undefined; write it with [θ]ₓ and sin θ/θ, (1 − cos θ)/θ² and switch to Taylor forms below a threshold. TEST: against scipy.linalg.expm of [θ]ₓ."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "135",
+   "note": "CODE: C1, SO(3) Exp (134) and Log (135). PITFALL: (135) divides by sin θ, so it fails at θ → 0 (use a small-angle branch) and loses precision near θ → π (use a dedicated branch or go through the quaternion). TEST: angles 0, 1e-8, π − 1e-6."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "139",
+   "note": "CODE: C2, Ad_R = R for SO(3) (and Ad_q = R(q) of (138)). With (140)–(142): inverse −R, composition Rᵀ and I. TEST: against the generic (31)."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "143",
+   "note": "CODE: C3, SO(3) J_r (143), J_r⁻¹ (144), J_l (145), J_l⁻¹ (146), and J_l = J_rᵀ (147). PITFALL: (144) and (146) divide by θ² and θ sin θ; small θ needs Taylor forms. TEST: FD against (41c) and J_r J_r⁻¹ = I; a J_l used where J_r belongs is a candidate T4 plant."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "148",
+   "note": "CODE: C3, SO(3) ⊕ blocks R(θ)ᵀ and J_r(θ) (148) and ⊖ blocks J_r⁻¹ and −J_l⁻¹ (149). They are (80)–(83) with Ad = R."
+  },
+  {
+   "page": 15,
+   "kind": "derive",
+   "equation": "150",
+   "note": "EXERCISE: re-derive as printed. CODE: C3, J^{R·v}_R = −R[v]ₓ (150) and J^{R·v}_v = R (151). ROBOT: the Jacobian of a body-frame IMU or LiDAR point rotated into the world."
+  },
+  {
+   "page": 16,
+   "kind": "section",
+   "anchor": "APPENDIX C",
+   "note": "Must read, 15 min. The formula sheet for the robot of Section V: SE(2) Exp/Log with V(θ), Ad, inverse and composition blocks, J_r and J_l, and the action block."
+  },
+  {
+   "page": 16,
+   "kind": "define",
+   "equation": "153",
+   "note": "SHAPES: τ = (ρ, θ), translation first, the order the whole package uses. Check the order of any library before comparing numbers (the cards stage does this for manif)."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "156",
+   "note": "CODE: C4, SE(2) Exp (156) and Log (157). PITFALL: the translation of Exp(τ) is V(θ)ρ, not ρ; ρ is the twist's linear part, not the displacement. TEST: Exp of (v, 0, ω) traces the arc of a unicycle moving at constant (v, ω)."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "158",
+   "note": "CODE: C4, V(θ). PITFALL: sin θ/θ and (1 − cos θ)/θ are 0/0 at θ = 0; use their Taylor forms below a threshold. ROBOT: a robot driving straight has θ exactly 0 every step."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "159",
+   "note": "EXERCISE: derive from (31) as printed. CODE: C2, Ad_M = [[R, −[1]ₓt], [0, 1]]. TEST: against the generic (31) and against (32)."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "161",
+   "note": "CODE: C4, SE(2) inverse block −Ad_M (160) and composition blocks Ad_{M_b}⁻¹ (161), I (162). They give F of the ESKF directly."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "163",
+   "note": "CODE: C4, SE(2) J_r (163) and J_l (164) (from ref. [11], p. 36, as the paper says). TEST: FD against (41c) at θ = 0.5 and small θ; check J_l(τ) = J_r(−τ) (76). PITFALL: the ρ column divides by θ², so small θ needs a branch."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "166",
+   "note": "EXERCISE: derive as printed, using Exp(τ) → I + τ^. CODE: C4, J^{M·p}_M = [R  R[1]ₓp] (166), J^{M·p}_p = R (167). Used at X⁻¹ to build H in Section V-A."
+  },
+  {
+   "page": 16,
+   "kind": "section",
+   "anchor": "APPENDIX D",
+   "note": "Skim (reference), 10 min. The SE(3) formula sheet; come back to it when porting Section V to 3D (V-D)."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "174",
+   "note": "CODE: C5, SE(3) Exp/Log (172)–(173) with V(θ) = J_l(θ) of SO(3), as the text notes. TEST: against scipy.linalg.expm of the 4×4 τ^."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "equation": "175",
+   "note": "CODE: C2, SE(3) Ad = [[R, [t]ₓR], [0, R]] (Ex. 6). TEST: against (31). PITFALL: GTSAM's Pose3 orders the tangent (ω, v), so its adjoint has the blocks swapped (library convention, outside the paper)."
+  },
+  {
+   "page": 17,
+   "kind": "derive",
+   "equation": "177",
+   "note": "CODE: C5, SE(3) composition block Ad_{M_b}⁻¹ = [[R_bᵀ, −R_bᵀ[t_b]ₓ], [0, R_bᵀ]] (177); inverse (176), other block I₆ (178)."
+  },
+  {
+   "page": 17,
+   "kind": "derive",
+   "equation": "179a",
+   "note": "CODE: C5, SE(3) J_l (179a) and J_l⁻¹ (179b): block upper-triangular, SO(3) J_l of (145) on the diagonal, Q(ρ, θ) of (180) off the diagonal. TEST: FD against (41c) with the SE(3) left ⊕."
+  },
+  {
+   "page": 17,
+   "kind": "derive",
+   "equation": "180",
+   "note": "CODE: C5, SE(3) J_l (179) with Q(ρ, θ) (180), from Barfoot and Furgale (ref. [10]). PITFALL: the θ⁴ and θ⁵ denominators cancel catastrophically for small θ; use the series or FD-check at θ of order 1e-3. The map flags this for an FD check in the cards stage."
+  },
+  {
+   "page": 17,
+   "kind": "key",
+   "anchor": "The right Jacobian and its inverse are obtained using (76)",
+   "note": "CODE: C5, J_r(ρ, θ) = J_l(−ρ, −θ): implement J_l once and get J_r by negating the argument."
+  },
+  {
+   "page": 17,
+   "kind": "derive",
+   "equation": "182",
+   "note": "CODE: C5, SE(3) action blocks [R  −R[p]ₓ] (182) and R (183); compare SE(2) (166), where the skew is [1]ₓ on p instead."
+  },
+  {
+   "page": 17,
+   "kind": "section",
+   "anchor": "APPENDIX E",
+   "note": "Skim, 3 min. Take that ℝⁿ is a group whose ⊕ is +, so beacons and biases slot into a composite with I and −I blocks (188)–(193)."
+  },
+  {
+   "page": 17,
+   "kind": "derive",
+   "equation": "185",
+   "note": "CODE: C7, the ℝⁿ block: Exp is the identity (185), ⊕/⊖ are + and − (186)–(187), every Jacobian is I or −I (188)–(193). The beacon blocks of (103) use this."
+  }
+ ]
+}

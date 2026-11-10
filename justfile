@@ -113,6 +113,7 @@ slides book ch:
 stage book ch stage="next":
     python3 scripts/run_stage.py {{book}} {{ch}} --stage {{stage}}
 
+
 # AI engines (Claude Code, Codex, Gemini CLI, custom): which are installed and which one runs the stages (set on the GUI's AI page)
 engines:
     python3 scripts/engines.py

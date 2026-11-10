@@ -1,0 +1,776 @@
+{
+  "repos": [
+    {
+      "repo": "https://github.com/artivis/manif",
+      "commit": "65166b3bfd15b1020c29f3eaf6888e1009c79aea",
+      "licence": "MIT License",
+      "symbols": {
+        "static constexpr _Scalar eps      =": [
+          {
+            "path": "include/manif/constants.h",
+            "line": 50,
+            "text": "static constexpr _Scalar eps      = std::numeric_limits<_Scalar>::epsilon()*_Scalar(100);",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/constants.h#L50"
+          }
+        ],
+        "SO3TangentBase<_Derived>::exp(": [
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 119,
+            "text": "SO3TangentBase<_Derived>::exp(OptJacobianRef J_m_t) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L119"
+          }
+        ],
+        "SO3TangentBase<_Derived>::rjac()": [
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 163,
+            "text": "SO3TangentBase<_Derived>::rjac() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L163"
+          }
+        ],
+        "SO3TangentBase<_Derived>::ljac()": [
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 170,
+            "text": "SO3TangentBase<_Derived>::ljac() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L170"
+          }
+        ],
+        "SO3TangentBase<_Derived>::rjacinv()": [
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 193,
+            "text": "SO3TangentBase<_Derived>::rjacinv() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L193"
+          }
+        ],
+        "SO3TangentBase<_Derived>::ljacinv()": [
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 200,
+            "text": "SO3TangentBase<_Derived>::ljacinv() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L200"
+          }
+        ],
+        "if (theta_sq <= Constants<Scalar>::eps)": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 259,
+            "text": "if (theta_sq <= Constants<Scalar>::eps)",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L259"
+          },
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 181,
+            "text": "if (theta_sq <= Constants<Scalar>::eps)",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L181"
+          },
+          {
+            "path": "include/manif/impl/so3/SO3Tangent_base.h",
+            "line": 210,
+            "text": "if (theta_sq <= Constants<Scalar>::eps)",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3Tangent_base.h#L210"
+          }
+        ],
+        "SO3Base<_Derived>::log(": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 185,
+            "text": "SO3Base<_Derived>::log(OptJacobianRef J_t_m) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L185"
+          }
+        ],
+        "if (sin_angle_squared > Constants<Scalar>::eps)": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 194,
+            "text": "if (sin_angle_squared > Constants<Scalar>::eps)",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L194"
+          }
+        ],
+        "atan2(-sin_angle, -cos_angle)": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 210,
+            "text": "Scalar(atan2(-sin_angle, -cos_angle)) :",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L210"
+          }
+        ],
+        "SO3Base<_Derived>::inverse(": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 170,
+            "text": "SO3Base<_Derived>::inverse(OptJacobianRef J_minv_m) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L170"
+          }
+        ],
+        "SO3Base<_Derived>::compose(": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 264,
+            "text": "SO3Base<_Derived>::compose(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L264"
+          }
+        ],
+        "approxSqrtInv(ret_sqnorm)": [
+          {
+            "path": "include/manif/impl/se2/SE2_base.h",
+            "line": 306,
+            "text": "const Scalar scale = approxSqrtInv(ret_sqnorm);",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2_base.h#L306"
+          },
+          {
+            "path": "include/manif/impl/so2/SO2_base.h",
+            "line": 228,
+            "text": "const Scalar scale = approxSqrtInv(ret_sqnorm);",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so2/SO2_base.h#L228"
+          },
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 291,
+            "text": "ret_q.coeffs() *= approxSqrtInv(ret_sqnorm);",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L291"
+          }
+        ],
+        "SO3Base<_Derived>::act(": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 300,
+            "text": "SO3Base<_Derived>::act(const Eigen::MatrixBase<_EigenDerived> &v,",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L300"
+          }
+        ],
+        "SO3Base<_Derived>::adj()": [
+          {
+            "path": "include/manif/impl/so3/SO3_base.h",
+            "line": 322,
+            "text": "SO3Base<_Derived>::adj() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/so3/SO3_base.h#L322"
+          }
+        ],
+        "SE2Base<_Derived>::inverse(": [
+          {
+            "path": "include/manif/impl/se2/SE2_base.h",
+            "line": 199,
+            "text": "SE2Base<_Derived>::inverse(OptJacobianRef J_minv_m) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2_base.h#L199"
+          }
+        ],
+        "SE2Base<_Derived>::log(": [
+          {
+            "path": "include/manif/impl/se2/SE2_base.h",
+            "line": 216,
+            "text": "SE2Base<_Derived>::log(OptJacobianRef J_t_m) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2_base.h#L216"
+          }
+        ],
+        "SE2Base<_Derived>::compose(": [
+          {
+            "path": "include/manif/impl/se2/SE2_base.h",
+            "line": 271,
+            "text": "SE2Base<_Derived>::compose(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2_base.h#L271"
+          }
+        ],
+        "SE2Base<_Derived>::act(": [
+          {
+            "path": "include/manif/impl/se2/SE2_base.h",
+            "line": 319,
+            "text": "SE2Base<_Derived>::act(const Eigen::MatrixBase<_EigenDerived> &v,",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2_base.h#L319"
+          }
+        ],
+        "SE2Base<_Derived>::adj()": [
+          {
+            "path": "include/manif/impl/se2/SE2_base.h",
+            "line": 342,
+            "text": "SE2Base<_Derived>::adj() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2_base.h#L342"
+          }
+        ],
+        "SE2TangentBase<_Derived>::exp(": [
+          {
+            "path": "include/manif/impl/se2/SE2Tangent_base.h",
+            "line": 120,
+            "text": "SE2TangentBase<_Derived>::exp(OptJacobianRef J_m_t) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2Tangent_base.h#L120"
+          }
+        ],
+        "SE2TangentBase<_Derived>::rjac()": [
+          {
+            "path": "include/manif/impl/se2/SE2Tangent_base.h",
+            "line": 182,
+            "text": "SE2TangentBase<_Derived>::rjac() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2Tangent_base.h#L182"
+          }
+        ],
+        "SE2TangentBase<_Derived>::rjacinv()": [
+          {
+            "path": "include/manif/impl/se2/SE2Tangent_base.h",
+            "line": 224,
+            "text": "SE2TangentBase<_Derived>::rjacinv() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2Tangent_base.h#L224"
+          }
+        ],
+        "SE2TangentBase<_Derived>::ljac()": [
+          {
+            "path": "include/manif/impl/se2/SE2Tangent_base.h",
+            "line": 273,
+            "text": "SE2TangentBase<_Derived>::ljac() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2Tangent_base.h#L273"
+          }
+        ],
+        "(-y() + theta*x() + y()*cos_theta - x()*sin_theta)/theta_sq": [
+          {
+            "path": "include/manif/impl/se2/SE2Tangent_base.h",
+            "line": 163,
+            "text": "(*J_m_t)(0,2) = (-y() + theta*x() + y()*cos_theta - x()*sin_theta)/theta_sq;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2Tangent_base.h#L163"
+          },
+          {
+            "path": "include/manif/impl/se2/SE2Tangent_base.h",
+            "line": 211,
+            "text": "//  Jr(0,2) = (-y() + theta*x() + y()*cos_theta - x()*sin_theta)/theta_sq;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se2/SE2Tangent_base.h#L211"
+          }
+        ],
+        "SE3TangentBase<_Derived>::exp(": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 144,
+            "text": "SE3TangentBase<_Derived>::exp(OptJacobianRef J_m_t) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L144"
+          }
+        ],
+        "SE3TangentBase<_Derived>::rjac()": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 182,
+            "text": "SE3TangentBase<_Derived>::rjac() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L182"
+          }
+        ],
+        "SE3TangentBase<_Derived>::ljac()": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 196,
+            "text": "SE3TangentBase<_Derived>::ljac() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L196"
+          }
+        ],
+        "SE3TangentBase<_Derived>::rjacinv()": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 211,
+            "text": "SE3TangentBase<_Derived>::rjacinv() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L211"
+          }
+        ],
+        "void SE3TangentBase<_Derived>::fillQ(": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 246,
+            "text": "void SE3TangentBase<_Derived>::fillQ(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L246"
+          }
+        ],
+        "C = (Scalar(1) - theta_sq/Scalar(2) - cos_theta)": [
+          {
+            "path": "include/manif/impl/se3/SE3Tangent_base.h",
+            "line": 272,
+            "text": "C = (Scalar(1) - theta_sq/Scalar(2) - cos_theta) / (theta_sq*theta_sq);",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3Tangent_base.h#L272"
+          }
+        ],
+        "SE3Base<_Derived>::inverse(": [
+          {
+            "path": "include/manif/impl/se3/SE3_base.h",
+            "line": 276,
+            "text": "SE3Base<_Derived>::inverse(OptJacobianRef J_minv_m) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3_base.h#L276"
+          }
+        ],
+        "SE3Base<_Derived>::log(": [
+          {
+            "path": "include/manif/impl/se3/SE3_base.h",
+            "line": 291,
+            "text": "SE3Base<_Derived>::log(OptJacobianRef J_t_m) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3_base.h#L291"
+          }
+        ],
+        "SE3Base<_Derived>::act(": [
+          {
+            "path": "include/manif/impl/se3/SE3_base.h",
+            "line": 349,
+            "text": "SE3Base<_Derived>::act(const Eigen::MatrixBase<_EigenDerived> &v,",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3_base.h#L349"
+          }
+        ],
+        "SE3Base<_Derived>::adj()": [
+          {
+            "path": "include/manif/impl/se3/SE3_base.h",
+            "line": 373,
+            "text": "SE3Base<_Derived>::adj() const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/se3/SE3_base.h#L373"
+          }
+        ],
+        "LieGroupBase<_Derived>::rplus(": [
+          {
+            "path": "include/manif/impl/lie_group_base.h",
+            "line": 468,
+            "text": "LieGroupBase<_Derived>::rplus(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/lie_group_base.h#L468"
+          }
+        ],
+        "LieGroupBase<_Derived>::lplus(": [
+          {
+            "path": "include/manif/impl/lie_group_base.h",
+            "line": 484,
+            "text": "LieGroupBase<_Derived>::lplus(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/lie_group_base.h#L484"
+          }
+        ],
+        "LieGroupBase<_Derived>::plus(": [
+          {
+            "path": "include/manif/impl/lie_group_base.h",
+            "line": 505,
+            "text": "LieGroupBase<_Derived>::plus(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/lie_group_base.h#L505"
+          }
+        ],
+        "LieGroupBase<_Derived>::rminus(": [
+          {
+            "path": "include/manif/impl/lie_group_base.h",
+            "line": 516,
+            "text": "LieGroupBase<_Derived>::rminus(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/lie_group_base.h#L516"
+          }
+        ],
+        "LieGroupBase<_Derived>::lminus(": [
+          {
+            "path": "include/manif/impl/lie_group_base.h",
+            "line": 538,
+            "text": "LieGroupBase<_Derived>::lminus(",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/lie_group_base.h#L538"
+          }
+        ],
+        "(*J_t_mb) = -(-t).rjacinv();": [
+          {
+            "path": "include/manif/impl/lie_group_base.h",
+            "line": 529,
+            "text": "(*J_t_mb) = -(-t).rjacinv();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/lie_group_base.h#L529"
+          }
+        ],
+        "BundleTangentBase<_Derived>::exp(": [
+          {
+            "path": "include/manif/impl/bundle/BundleTangent_base.h",
+            "line": 171,
+            "text": "BundleTangentBase<_Derived>::exp(OptJacobianRef J_m_t) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/bundle/BundleTangent_base.h#L171"
+          }
+        ],
+        "BundleTangentBase<_Derived>::rjac_impl(": [
+          {
+            "path": "include/manif/impl/bundle/BundleTangent_base.h",
+            "line": 246,
+            "text": "BundleTangentBase<_Derived>::rjac_impl(internal::intseq<_Idx...>) const",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/include/manif/impl/bundle/BundleTangent_base.h#L246"
+          }
+        ],
+        "u_sigmas << 0.1, 0.1, 0.1;": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 144,
+            "text": "u_sigmas << 0.1, 0.1, 0.1;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L144"
+          },
+          {
+            "path": "examples/se2_localization_ukfm.cpp",
+            "line": 198,
+            "text": "u_sigmas << 0.1, 0.1, 0.1;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization_ukfm.cpp#L198"
+          }
+        ],
+        "u_noise = u_sigmas * Array3d::Random();": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 207,
+            "text": "u_noise = u_sigmas * Array3d::Random();             // control noise",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L207"
+          },
+          {
+            "path": "examples/se2_localization_ukfm.cpp",
+            "line": 276,
+            "text": "u_noise = u_sigmas * Array3d::Random();             // control noise",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization_ukfm.cpp#L276"
+          }
+        ],
+        "X = X.plus(u_est, J_x, J_u);": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 237,
+            "text": "X = X.plus(u_est, J_x, J_u);                        // X * exp(u), with Jacobians",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L237"
+          },
+          {
+            "path": "examples/se3_localization.cpp",
+            "line": 243,
+            "text": "X = X.plus(u_est, J_x, J_u);                        // X * exp(u), with Jacobians",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization.cpp#L243"
+          },
+          {
+            "path": "examples/se3_localization_iekf.cpp",
+            "line": 241,
+            "text": "X = X.plus(u_est, J_x, J_u);                        // X * exp(u), with Jacobians",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization_iekf.cpp#L241"
+          }
+        ],
+        "P = J_x * P * J_x.transpose() + J_u * U * J_u.transpose();": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 239,
+            "text": "P = J_x * P * J_x.transpose() + J_u * U * J_u.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L239"
+          },
+          {
+            "path": "examples/se3_localization.cpp",
+            "line": 245,
+            "text": "P = J_x * P * J_x.transpose() + J_u * U * J_u.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization.cpp#L245"
+          },
+          {
+            "path": "examples/se3_localization_iekf.cpp",
+            "line": 243,
+            "text": "P = J_x * P * J_x.transpose() + J_u * U * J_u.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization_iekf.cpp#L243"
+          }
+        ],
+        "e = X.inverse(J_xi_x).act(b, J_e_xi);": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 252,
+            "text": "e = X.inverse(J_xi_x).act(b, J_e_xi);           // note: e = R.tr * ( b - t ), for X = (R,t).",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L252"
+          },
+          {
+            "path": "examples/se3_localization.cpp",
+            "line": 258,
+            "text": "e = X.inverse(J_xi_x).act(b, J_e_xi);           // note: e = R.tr * ( b - t ), for X = (R,t).",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization.cpp#L258"
+          },
+          {
+            "path": "examples/se3_localization_iekf.cpp",
+            "line": 256,
+            "text": "e = X.inverse(J_xi_x).act(b, J_e_xi);           // note: e = R.tr * ( b - t ), for X = (R,t).",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization_iekf.cpp#L256"
+          },
+          {
+            "path": "examples/se_2_3_localization.cpp",
+            "line": 398,
+            "text": "e = X.inverse(J_xi_x).act(b, J_e_xi);           // note: e = R.tr * ( b - t ), for X = (R,t).",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se_2_3_localization.cpp#L398"
+          }
+        ],
+        "K = P * H.transpose() * Z.inverse();": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 261,
+            "text": "K = P * H.transpose() * Z.inverse();            // K = P * H.tr * ( H * P * H.tr + R).inv",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L261"
+          },
+          {
+            "path": "examples/se3_localization.cpp",
+            "line": 267,
+            "text": "K = P * H.transpose() * Z.inverse();            // K = P * H.tr * ( H * P * H.tr + R).inv",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization.cpp#L267"
+          },
+          {
+            "path": "examples/se3_localization_iekf.cpp",
+            "line": 265,
+            "text": "K = P * H.transpose() * Z.inverse();            // K = P * H.tr * ( H * P * H.tr + R).inv",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization_iekf.cpp#L265"
+          },
+          {
+            "path": "examples/se_2_3_localization.cpp",
+            "line": 407,
+            "text": "K = P * H.transpose() * Z.inverse();            // K = P * H.tr * ( H * P * H.tr + R).inv",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se_2_3_localization.cpp#L407"
+          }
+        ],
+        "P = P - K * Z * K.transpose();": [
+          {
+            "path": "examples/se2_localization.cpp",
+            "line": 268,
+            "text": "P = P - K * Z * K.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_localization.cpp#L268"
+          },
+          {
+            "path": "examples/se3_localization.cpp",
+            "line": 274,
+            "text": "P = P - K * Z * K.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization.cpp#L274"
+          },
+          {
+            "path": "examples/se3_localization_iekf.cpp",
+            "line": 272,
+            "text": "P = P - K * Z * K.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_localization_iekf.cpp#L272"
+          },
+          {
+            "path": "examples/se_2_3_localization.cpp",
+            "line": 414,
+            "text": "P = P - K * Z * K.transpose();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se_2_3_localization.cpp#L414"
+          }
+        ],
+        "static const int MAX_ITER       = 20;": [
+          {
+            "path": "examples/bundle_sam.cpp",
+            "line": 60,
+            "text": "static const int MAX_ITER       = 20;           // for the solver",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/bundle_sam.cpp#L60"
+          },
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 228,
+            "text": "static const int MAX_ITER       = 20;           // for the solver",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L228"
+          },
+          {
+            "path": "examples/se3_sam.cpp",
+            "line": 228,
+            "text": "static const int MAX_ITER       = 20;           // for the solver",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.cpp#L228"
+          }
+        ],
+        "poses[0].lminus(SE2d::Identity()": [
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 471,
+            "text": "r.segment<DoF>(row)         = poses[0].lminus(SE2d::Identity(), J.block<DoF, DoF>(row, col)).coeffs();",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L471"
+          }
+        ],
+        "d  = Xj.rminus(Xi, J_d_xj, J_d_xi);": [
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 490,
+            "text": "d  = Xj.rminus(Xi, J_d_xj, J_d_xi); // expected motion = Xj (-) Xi",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L490"
+          },
+          {
+            "path": "examples/se3_sam.cpp",
+            "line": 490,
+            "text": "d  = Xj.rminus(Xi, J_d_xj, J_d_xi); // expected motion = Xj (-) Xi",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.cpp#L490"
+          },
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 506,
+            "text": "d  = Xj.rminus(Xi, J_d_xj, J_d_xi); // expected motion = Xj (-) Xi",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L506"
+          }
+        ],
+        "e       = Xi.inverse(J_ix_x).act(b, J_e_ix, J_e_b);": [
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 516,
+            "text": "e       = Xi.inverse(J_ix_x).act(b, J_e_ix, J_e_b); // expected measurement = Xi.inv * bj",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L516"
+          },
+          {
+            "path": "examples/se3_sam.cpp",
+            "line": 516,
+            "text": "e       = Xi.inverse(J_ix_x).act(b, J_e_ix, J_e_b); // expected measurement = Xi.inv * bj",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.cpp#L516"
+          },
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 537,
+            "text": "e       = Xi.inverse(J_ix_x).act(b, J_e_ix, J_e_b); // expected measurement = Xi.inv * bj",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L537"
+          }
+        ],
+        "dX = - (J.transpose() * J).inverse() * J.transpose() * r;": [
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 541,
+            "text": "dX = - (J.transpose() * J).inverse() * J.transpose() * r;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L541"
+          },
+          {
+            "path": "examples/se3_sam.cpp",
+            "line": 540,
+            "text": "dX = - (J.transpose() * J).inverse() * J.transpose() * r;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.cpp#L540"
+          },
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 563,
+            "text": "dX = - (J.transpose() * J).inverse() * J.transpose() * r;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L563"
+          }
+        ],
+        "if (dX.norm() < 1e-6) break;": [
+          {
+            "path": "examples/bundle_sam.cpp",
+            "line": 353,
+            "text": "if (dX.norm() < 1e-6) break;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/bundle_sam.cpp#L353"
+          },
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 568,
+            "text": "if (dX.norm() < 1e-6) break;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L568"
+          },
+          {
+            "path": "examples/se3_sam.cpp",
+            "line": 567,
+            "text": "if (dX.norm() < 1e-6) break;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.cpp#L567"
+          },
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 594,
+            "text": "if (dX.norm() < 1e-6) break;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L594"
+          }
+        ],
+        "ATTENTION: Use QR factorization": [
+          {
+            "path": "examples/bundle_sam.cpp",
+            "line": 343,
+            "text": "// ATTENTION: Use QR factorization and column reordering for larger problems!!",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/bundle_sam.cpp#L343"
+          },
+          {
+            "path": "examples/se2_sam.cpp",
+            "line": 540,
+            "text": "// ATTENTION: Use QR factorization and column reordering for larger problems!!",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.cpp#L540"
+          },
+          {
+            "path": "examples/se2_sam.py",
+            "line": 486,
+            "text": "# ATTENTION: Use QR factorization and",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se2_sam.py#L486"
+          },
+          {
+            "path": "examples/se3_sam.cpp",
+            "line": 539,
+            "text": "// ATTENTION: Use QR factorization and column reordering for larger problems!!",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.cpp#L539"
+          },
+          {
+            "path": "examples/se3_sam.py",
+            "line": 490,
+            "text": "# ATTENTION: Use QR factorization and",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam.py#L490"
+          },
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 562,
+            "text": "// ATTENTION: Use QR factorization and column reordering for larger problems!!",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L562"
+          },
+          {
+            "path": "examples/se3_sam_selfcalib.py",
+            "line": 511,
+            "text": "# ATTENTION: Use QR factorization and",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.py#L511"
+          }
+        ],
+        "J_u_c(0,0) = 1.0;": [
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 278,
+            "text": "J_u_c(0,0) = 1.0;               // add offset to linear X-velocity",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L278"
+          }
+        ],
+        "SE3Tangentd u_corr          = u + J_u_c * c;": [
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 509,
+            "text": "SE3Tangentd u_corr          = u + J_u_c * c;             // correct control with known offset",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L509"
+          }
+        ],
+        "J.block<DoF, DimC>(row, col) = - W * J_u_c;": [
+          {
+            "path": "examples/se3_sam_selfcalib.cpp",
+            "line": 514,
+            "text": "J.block<DoF, DimC>(row, col) = - W * J_u_c;",
+            "url": "https://github.com/artivis/manif/blob/65166b3bfd15b1020c29f3eaf6888e1009c79aea/examples/se3_sam_selfcalib.cpp#L514"
+          }
+        ]
+      }
+    },
+    {
+      "repo": "https://github.com/borglab/gtsam",
+      "commit": "8806b336af5adefdb0cb6f3859ff074acb07096f",
+      "licence": "BSD",
+      "symbols": {
+        "static constexpr double kNearZeroThresholdSq = 1e-6;": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 57,
+            "text": "static constexpr double kNearZeroThresholdSq = 1e-6;",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L57"
+          }
+        ],
+        "static constexpr double kNearPiThresholdSq = 1e-6;": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 59,
+            "text": "static constexpr double kNearPiThresholdSq = 1e-6;",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L59"
+          }
+        ],
+        "numerically better than [1 - cos(theta)]": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 86,
+            "text": "2.0 * s2 * s2;  // numerically better than [1 - cos(theta)]",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L86"
+          }
+        ],
+        "D_ = !nearZero ? (nearPi ?": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 135,
+            "text": "D_ = !nearZero ? (nearPi ? (k1_Pi2 + (k2_Pi3 - k1_4Pi) * (M_PI - theta))",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L135"
+          }
+        ],
+        "Vector3 SO3::Logmap(const SO3& Q, ChartJacobian H) {": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 337,
+            "text": "Vector3 SO3::Logmap(const SO3& Q, ChartJacobian H) {",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L337"
+          }
+        ],
+        "Convert R to a quaternion (w, v) with Shepperd's method": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 344,
+            "text": "// Convert R to a quaternion (w, v) with Shepperd's method, pivoting on",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L344"
+          }
+        ],
+        "if (w < 0.0) {  // canonicalize": [
+          {
+            "path": "gtsam/geometry/SO3.cpp",
+            "line": 384,
+            "text": "if (w < 0.0) {  // canonicalize so that theta lands in [0, pi]",
+            "url": "https://github.com/borglab/gtsam/blob/8806b336af5adefdb0cb6f3859ff074acb07096f/gtsam/geometry/SO3.cpp#L384"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,171 @@
+title: "Micro Lie theory, review"
+footer: "Solà et al. · A micro Lie theory"
+slides:
+  - layout: title
+    title: "A micro Lie theory: the review deck"
+    subtitle: "Solà, Deray and Atchuthan, arXiv:1812.01537v9"
+    meta: "Lesson t2.6 · equation to code, with the traps"
+    source: map.md
+
+  - layout: agenda
+    title: "What the deck covers"
+    items: ["Exp and Log on SO(3), S³, SE(2)", "Jacobian blocks and the chain rule", "ESKF and Gauss-Newton SAM", "Measured numbers", "Mistakes already made", "Implementation plan"]
+    source: map.md
+
+  - layout: equation
+    title: "SO(3) Exp and Log (App. B, pp. 14–15)"
+    equations:
+      - {tex: '\mathbf{R} = \mathbf{I} + \sin\theta\,[\mathbf{u}]_\times + (1-\cos\theta)[\mathbf{u}]_\times^2', label: "(134)"}
+      - {tex: '\theta\mathbf{u} = \frac{\theta(\mathbf{R}-\mathbf{R}^\top)^\vee}{2\sin\theta}', label: "(135)"}
+    takeaway: "Trap: (135) is 0/0 at θ → 0 and at θ → π"
+    notes: "Rodrigues comes from the power series because the powers of the skew matrix cycle with period two. Log needs a different route near π, where R minus R transpose vanishes with sin θ. Go through the quaternion."
+    source: lecture.md §L17
+
+  - layout: code
+    title: "Robust coefficients and quaternion Log (C1)"
+    code: |
+      def coef_a(th):   # (1 - cos th)/th^2, half-angle form
+          s = np.sinc(th / (2 * np.pi))     # sin(th/2)/(th/2)
+          return 0.5 * s * s
+
+      def coef_b(th):   # (th - sin th)/th^3, series below 0.3
+          th = abs(th)
+          if th < 0.3:
+              return sum((-1) ** k * th ** (2 * k) / math.factorial(2 * k + 3)
+                         for k in range(5))
+          return (th - np.sin(th)) / th ** 3
+
+      def quat_log(q):  # (133), w > 0 rule
+          w, v = (q[0], q[1:]) if q[0] >= 0 else (-q[0], -q[1:])
+          n = np.linalg.norm(v)
+          return np.zeros(3) if n == 0.0 else 2 * np.arctan2(n, w) / n * v
+    bullets: ["Half-angle form: no subtraction, no branch at θ = 0", "Flip q to w ≥ 0 before Log: the short rotation"]
+    source: translate.md C1
+
+  - layout: stats
+    title: "Why the robust Log: Log(Exp(θ)) error"
+    stats: [{value: "NaN", label: "naive Log at θ = 10⁻⁹"}, {value: "0.16 rad", label: "naive Log at θ = π − 10⁻⁷"}, {value: "6.4 × 10⁻¹⁶", label: "robust Log at both ends, rad"}]
+    bullets: ["Coefficient errors for θ from 10⁻¹² to π: 3.3 × 10⁻¹⁶ for a and 4.0 × 10⁻¹⁵ for b"]
+    source: translate.md C1
+
+  - layout: equation
+    title: "Elementary blocks (III-B, p. 10)"
+    equations:
+      - {tex: '\mathbf{J}^{\mathcal{X}^{-1}}_{\mathcal{X}} = -\mathbf{Ad}_{\mathcal{X}}\ (62)\qquad \mathbf{J}^{\mathcal{X}\circ\mathcal{Y}}_{\mathcal{X}} = \mathbf{Ad}_{\mathcal{Y}}^{-1}\ (65)\qquad \mathbf{J}^{\mathcal{X}\circ\mathcal{Y}}_{\mathcal{Y}} = \mathbf{I}\ (66)', label: ""}
+      - {tex: '\mathbf{Ad}_{\mathrm{Exp}(\boldsymbol{\tau})} = \mathbf{J}_l(\boldsymbol{\tau})\,\mathbf{J}_r^{-1}(\boldsymbol{\tau})\ (75)\qquad \mathbf{J}_r(-\boldsymbol{\tau}) = \mathbf{J}_l(\boldsymbol{\tau})\ (76)', label: ""}
+    takeaway: "Trap: mixing right and left ⊖ leaves the Jacobian off by an Ad"
+    notes: "Derive (62) and (65) from (41b), then move the inner Exp past X with (20). A finite-difference check catches the wrong side at once."
+    source: lecture.md §L11
+
+  - layout: table
+    title: "Log, ⊕ and ⊖ blocks (III-C, p. 11)"
+    table:
+      header: [Block, Result, Eq.]
+      rows:
+        - ["J of Log 𝒳 w.r.t. 𝒳", "J_r⁻¹(τ)", "(79)"]
+        - ["J of 𝒳 ⊕ τ w.r.t. 𝒳", "Ad_Exp(τ)⁻¹", "(80)"]
+        - ["J of 𝒳 ⊕ τ w.r.t. τ", "J_r(τ)", "(81)"]
+        - ["J of 𝒴 ⊖ 𝒳 w.r.t. 𝒳", "−J_l⁻¹(τ)", "(82)"]
+        - ["J of 𝒴 ⊖ 𝒳 w.r.t. 𝒴", "J_r⁻¹(τ)", "(83)"]
+      widths: [4, 3, 1]
+    takeaway: "Near τ = 0 all of them tend to ±I; assuming that slows Gauss-Newton"
+    source: lecture.md §L12
+
+  - layout: code
+    title: "SE(2) Exp and Log with V(θ) (C4)"
+    code: |
+      def se2_V(th):                      # (158)
+          return np.sinc(th/np.pi)*np.eye(2) + th*coef_a(th)*J1
+
+      def se2_exp(tau):                   # (156)
+          M = np.eye(3); M[:2, :2] = so2(tau[2])
+          M[:2, 2] = se2_V(tau[2]) @ tau[:2]
+          return M
+
+      def se2_log(M):                     # (157)
+          th = np.arctan2(M[1, 0], M[0, 0])
+          A, B = np.sinc(th/np.pi), th*coef_a(th)
+          rho = (A*np.eye(2) - B*J1) @ M[:2, 2] / (A*A + B*B)
+          return np.r_[rho, th]
+    bullets: ["V⁻¹ = (A·I − B·[1]ₓ)/(A² + B²): no 2×2 inverse call", "τ = (ρ, θ), translation first"]
+    source: translate.md C4
+
+  - layout: compare
+    title: "SE(2) J_r third column: printed vs rewritten"
+    columns:
+      - heading: "Printed (163)"
+        bullets: ["Terms with θ² in the denominator", "Off by 2.7 × 10⁻³ at θ = 2 × 10⁻⁷", "Off by 1.4 × 10⁻⁴ at θ = 10⁻⁶", "Lands in range when driving straight"]
+      - heading: "Rewritten with a(θ), b(θ)"
+        bullets: ["Same coefficients as SO(3): a, b", "Series below the switch", "Full precision at every θ", "manif's switch: θ = 1.5 × 10⁻⁷"]
+    takeaway: "On a robot, either live with manif's error or patch those two lines"
+    source: translate.md C4
+
+  - layout: code
+    title: "ESKF correction, robust form (C8)"
+    code: |
+      def eskf_update(X, P, y, b, Q_meas):          # (101)-(102)
+          R, t = X[:2, :2], X[:2, 2]
+          z = y - R.T @ (b - t)
+          H = -np.hstack([np.eye(2), (R.T @ J1 @ (b - t))[:, None]])
+          Z = H @ P @ H.T + Q_meas
+          K = cho_solve(cho_factor(Z), H @ P).T     # no Z^-1
+          dx = K @ z
+          IKH = np.eye(3) - K @ H
+          P = IKH @ P @ IKH.T + K @ Q_meas @ K.T    # Joseph form
+          Jr = se2_Jr(dx)                           # reset, not in (102)
+          P = Jr @ P @ Jr.T
+          return X @ se2_exp(dx), 0.5 * (P + P.T)
+    bullets: ["Gate on zᵀZ⁻¹z above 9.21 (χ², 2 dof, 99 %)"]
+    source: translate.md C8
+
+  - layout: stats
+    title: "ESKF consistency on manif's example"
+    stats: [{value: "3.03", label: "ANEES, Gaussian noise (3 is consistent)"}, {value: "1.00", label: "ANEES, uniform noise"}, {value: "6.8", label: "ANEES at the example's σ, with reset"}, {value: "8.3", label: "same, without the reset"}]
+    bullets: ["manif's example draws uniform noise in [−σ, σ] but tells the filter σ²: use Gaussian in every consistency test"]
+    source: implementation.md pitfalls
+
+  - layout: stats
+    title: "Gauss-Newton SAM on Fig. 12"
+    stats: [{value: "19×15", label: "stacked Jacobian J"}, {value: "4", label: "iterations to converge"}, {value: "481.4", label: "initial cost"}, {value: "1.07", label: "final cost"}]
+    bullets: ["Solve (109) by Cholesky or QR on whitened residuals, never (JᵀJ)⁻¹; J is 33 % filled, JᵀJ 60 %"]
+    source: translate.md C9
+
+  - layout: table
+    title: "Symptom to fix"
+    table:
+      header: [Symptom, Cause, Fix]
+      rows:
+        - ["FD slope 1, not 2", "Wrong block or ⊖ side", "Test each block alone"]
+        - ["Right at X = I only", "Missing Ad", "(46), (57); generic Ad (31)"]
+        - ["NaN at rest", "Divide by θ", "Taylor branch; test θ = 10⁻¹⁰"]
+        - ["Error jumps by 2π", "Branch cut, w < 0", "Flip q; wrap angles"]
+        - ["Slow Gauss-Newton", "J_r⁻¹ ≈ I assumed", "Use (82)–(83) in full"]
+        - ["Overconfident after update", "P not reset", "J_r(δx) reset, ref. [8]"]
+      widths: [3, 3, 3]
+    source: lecture.md §L19
+
+  - layout: table
+    title: "Mistakes already made"
+    table:
+      header: [Where, Error, Fix]
+      rows:
+        - ["Lecture L13", "Composite said not to be a Lie group", "It is a direct product"]
+        - ["Lecture L15", "Gain lines labelled (101)", "Unnumbered, above (101)"]
+        - ["T1 Q5", "J_r⁻¹ grows like θ² past π", "θ/(2 sin(θ/2)); π/2 at π"]
+        - ["Fig. 12 citation", "Given on p. 13", "It is p. 12"]
+        - ["Session 2.6d tile", "floor(log₁₀) hid errors up to 10×", "One-digit mantissa"]
+        - ["Card C9", "Stale iteration count", "4 iterations, 481.4 → 1.07"]
+      widths: [2, 4, 3]
+    notes: "Eight confirmed errors and five doubtful items from the reviewer, all fixed. Most were stale numbers or a wrong label, not wrong maths."
+    source: REVIEW.md
+
+  - layout: steps
+    title: "Implementation plan: library first, then estimators"
+    steps:
+      - {title: "SO(3), ops", text: "Exp/Log, J_r, J_l, ⊕, ⊖, Ad; check vs expm and just fd"}
+      - {title: "SE(2), SE(3)", text: "Rewritten a, b and series Q; check vs mpmath at small θ"}
+      - {title: "Composite", text: "Diamond ⊕/⊖ over a (group, dim, offset) table"}
+      - {title: "ESKF, SAM", text: "(99)–(102), then (103)–(111); F, G, H and J by FD"}
+      - {title: "Real data", text: "UTIAS planar dataset, then the tracked robot; manif on the robot"}
+    takeaway: "Correctness first: each step has an oracle that must pass before the next"
+    source: implementation.md

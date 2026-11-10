@@ -1,0 +1,159 @@
+<!-- Interactive session for Sola et al., a micro Lie theory (t2.6). Built by figures/make_session_data.py from interactive_src.html + session_core.js. Needs Plotly global. -->
+<style>
+.ix{display:flex;flex-direction:column;gap:26px;max-width:960px}
+.ix .intro{font-family:var(--serif);font-size:16px;max-width:72ch;color:var(--ink)}
+.fig-card{border:0.5px solid var(--rule);border-radius:12px;background:var(--sheet);padding:14px 14px 12px;font-family:var(--sans)}
+.fig-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fig-num{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink3)}
+.fig-title{font-size:16px;font-weight:600;margin-top:2px}
+.fig-hint{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+.fig-predict{margin:10px 0 4px;padding:8px 12px;border-left:3px solid var(--key);background:var(--code-bg);border-radius:0 6px 6px 0;font-size:13.5px}
+.fig-predict b{font-weight:600}
+.fig-chip{margin-top:2px;padding:3px 8px;border-radius:8px;font-size:11px;white-space:nowrap;background:var(--define);color:var(--accent-ink)}
+.fig-chip[data-state="warn"]{background:var(--key);color:#4a2f06}
+.fig-chip[data-state="bad"]{background:var(--derive);color:#501313}
+:root[data-theme="dark"] .fig-chip[data-state="warn"],:root[data-theme="dark"] .fig-chip[data-state="bad"]{color:#f5f4ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fig-chip[data-state="warn"],:root:not([data-theme="light"]) .fig-chip[data-state="bad"]{color:#f5f4ef}}
+.fig-plot{margin-top:8px;min-height:300px}
+.fig-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.fig-row label{min-width:150px;font-size:13px;color:var(--ink2)}
+.fig-row input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.fig-row output{min-width:64px;text-align:right;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.fig-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px;font-family:var(--mono)}
+.fig-tile{padding:8px 10px;border-radius:8px;background:var(--code-bg);min-width:0}
+.fig-tile .k{font-size:11px;color:var(--ink3)}
+.fig-tile .v{font-size:13px;font-weight:500;line-height:1.6;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fig-tile.wide{grid-column:1 / -1}
+.fig-after{margin-top:10px;font-size:13.5px;color:var(--ink2);font-family:var(--serif);font-size:15px}
+.fig-after summary{cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--accent-ink);font-weight:500}
+@media (max-width:600px){.fig-row label{min-width:110px}}
+</style>
+<div class="ix">
+<p class="intro">Four figures, one idea: do the calculus in the tangent space and move between tangent and group only through Exp and Log. Each has a <b>Predict first</b> prompt: write your guess down before you move a slider. Colours: blue = estimate / reference, coral = measurement / the other convention, teal = the quantity being taught, gray = structure. The numbers come from the reference solution's formulas (<code>exercises/solutions/T3_solution.py</code>), re-implemented here in plain JS.</p>
+
+<figure class="fig-card" id="figA">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.6a · eq. (25), (32), (31)</div><div class="fig-title">The same τ on the right and on the left of X</div></div><div class="fig-chip" id="chipA">left ≠ right</div></div>
+  <div class="fig-hint">Pose X = (x, 1, θ_X) on SE(2). τ = (ρ₁, 0.2, θ_τ), translation first (153). Teal = X ⊕ τ = X Exp(τ), coral = Exp(τ) X, dashed ring = Exp(Ad_X τ) X.</div>
+  <div class="fig-predict"><b>Predict first.</b> You apply the same twist τ once on the right of X (in the body frame) and once on the left (in the world frame). Do they land on the same pose? If not, what single matrix turns one into the other, and does it change θ?</div>
+  <div class="fig-row"><label for="a_x">X position x [m]</label><input type="range" id="a_x" min="-4" max="4" step="0.1" value="1.5"><output id="a_x_o"></output></div>
+  <div class="fig-row"><label for="a_thx">X heading θ_X [deg]</label><input type="range" id="a_thx" min="-180" max="180" step="5" value="40"><output id="a_thx_o"></output></div>
+  <div class="fig-row"><label for="a_rho">τ translation ρ₁ [m]</label><input type="range" id="a_rho" min="-2" max="2" step="0.1" value="0.8"><output id="a_rho_o"></output></div>
+  <div class="fig-row"><label for="a_th">τ rotation θ_τ [deg]</label><input type="range" id="a_th" min="-170" max="170" step="5" value="50"><output id="a_th_o"></output></div>
+  <div class="fig-plot" id="plotA"></div>
+  <div class="fig-tiles" id="tilesA"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>They land on different positions but with the same heading, because rotations about one axis commute and only the translation sees the lever arm. Moving τ through Ad_X turns the right perturbation into a left one: X ⊕ τ = (Ad_X τ) ⊕ X, and the first tile is zero to machine precision for every X and τ (eq. 32, p. 6–7). The two conventions coincide only when X commutes with Exp(τ) (for instance τ = 0): the chip turns amber there.</details>
+</figure>
+
+<figure class="fig-card" id="figB">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.6b · eq. (52), (55)</div><div class="fig-title">A Gaussian on the tangent, drawn on the plane</div></div><div class="fig-chip" id="chipB">ellipse honest</div></div>
+  <div class="fig-hint">Mean X̄ = (2, 1, θ̄). ε ~ N(0, diag(0.5², (0.5·r)², σ_θ²)) in the tangent at X̄ (52) with r the lateral-to-along ratio, 1500 samples X̄ Exp(ε). Blue ellipse = 95 % contour of the position block R̄ P_ρρ R̄ᵀ.</div>
+  <div class="fig-predict"><b>Predict first.</b> Raise σ_θ from 5° to 40° with r = 0.35 (tracks barely slip sideways). The ellipse does not change. Does the cloud of positions? Which of its two axes (along-track or lateral) grows, and what does a tracked robot with a tight lateral σ_ρ do to that growth?</div>
+  <div class="fig-row"><label for="b_sr">lateral / along-track σ_ρ, r</label><input type="range" id="b_sr" min="0.1" max="1" step="0.05" value="0.35"><output id="b_sr_o"></output></div>
+  <div class="fig-row"><label for="b_sth">σ_θ [deg]</label><input type="range" id="b_sth" min="1" max="60" step="1" value="20"><output id="b_sth_o"></output></div>
+  <div class="fig-row"><label for="b_th">mean heading θ̄ [deg]</label><input type="range" id="b_th" min="-180" max="180" step="5" value="30"><output id="b_th_o"></output></div>
+  <div class="fig-plot" id="plotB"></div>
+  <div class="fig-tiles" id="tilesB"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>The tangent Gaussian is exact in ε; what you see on the plane is Exp of it. The position is X̄'s translation plus R̄ V(θ_ε) ρ, so a random heading rotates the random translation by about θ_ε/2: the lateral spread of the cloud grows with σ_θ·σ_ρ,₁ (the tile reads 1.26 at σ_θ = 40° and r = 0.35, against 1.00 at 5°; at r = 0.15 it reads 2.22, at r = 1 it reads 0.97) while the along-track spread shrinks slightly, and the coverage of the linear ellipse falls from about 95 % towards 90 %. The smaller r is (the less a tracked robot slips), the larger the relative lateral growth, because the heading error leaks along-track uncertainty into the lateral axis. Small σ_θ: the ellipse is honest, which is why the filters of §V can carry P on the tangent (p. 9, eq. 52 and 55). Large σ_θ: relinearize or reset the covariance more often.</details>
+</figure>
+
+<figure class="fig-card" id="figC">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.6c · eq. (99)–(102) · T5</div><div class="fig-title">Tuning the tag ESKF on the tracked robot</div></div><div class="fig-chip" id="chipC">overconfident</div></div>
+  <div class="fig-hint">ESKF on SE(2) with the covariance reset, one of the shipped T5 runs (600 steps, 12 tags). Defaults are the task-1 guess: σ_y = 0.10 m, slip σ = 1 mm per step.</div>
+  <div class="fig-predict"><b>Predict first.</b> Lower σ_y until the NIS average (ANIS) reads about 2. Will ANEES then be near 3? Write your guess, then raise the slip σ with the second slider and watch which statistic moves and which one does not.</div>
+  <div class="fig-row"><label for="c_run">T5 run</label><input type="range" id="c_run" min="0" max="2" step="1" value="0"><output id="c_run_o"></output></div>
+  <div class="fig-row"><label for="c_sy">tag noise σ_y [m]</label><input type="range" id="c_sy" min="0.01" max="0.2" step="0.01" value="0.1"><output id="c_sy_o"></output></div>
+  <div class="fig-row"><label for="c_slip">slip σ per step [mm]</label><input type="range" id="c_slip" min="0.5" max="15" step="0.5" value="1"><output id="c_slip_o"></output></div>
+  <div class="fig-plot" id="plotC1" style="min-height:300px"></div>
+  <div class="fig-plot" id="plotC2" style="min-height:260px"></div>
+  <div class="fig-tiles" id="tilesC"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>NIS needs no ground truth, so it is the knob you can turn on the robot: σ_y drives ANIS to 2 and the position error barely changes. ANEES stays far above 3 anyway (above 25 on run 0 when ANIS is 2), because the filter's slip term says "tracks do not slip sideways" and a smaller measurement noise cannot absorb the real slip; only the lateral component of R_proc brings NEES home (card C8, task T5.3; the ten-run numbers are in <code>exercises/solutions/T5.md</code>). The gap between NIS and NEES is the lesson: a filter can be consistent in what it sees and dishonest in what it knows (p. 12).</details>
+</figure>
+
+<figure class="fig-card" id="figD">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.6d · eq. (144)</div><div class="fig-title">The printed J_r⁻¹ coefficient near θ = 0</div></div><div class="fig-chip" id="chipD">ok</div></div>
+  <div class="fig-hint">d(θ) = 1/θ² − (1 + cos θ)/(2θ sin θ), the W² coefficient of J_r⁻¹ (144). Coral = as printed, blue = series below 0.3 and cot(θ/2) above, teal = your θ. Oracle: ten-term series of d.</div>
+  <div class="fig-predict"><b>Predict first.</b> The printed formula subtracts two numbers of size 1/θ². At θ = 10⁻³, how many of the 16 digits of d are left? And does the rotation Jacobian J_r⁻¹ itself come out wrong by that much?</div>
+  <div class="fig-row"><label for="d_t">log₁₀ θ [rad]</label><input type="range" id="d_t" min="-6" max="0" step="0.1" value="-3"><output id="d_t_o"></output></div>
+  <div class="fig-plot" id="plotD" style="min-height:340px"></div>
+  <div class="fig-tiles" id="tilesD"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>The coefficient loses about two digits for every decade of θ below 10⁻¹ (relative error ∝ ε/θ², eq. 144): about nine digits are left at θ = 10⁻³ and three at 10⁻⁶. The matrix it multiplies is O(θ²), so the error in J_r⁻¹ itself stays under the float64 floor at every θ here: the printed formula "works" as a Jacobian, which is why libraries ship it, and fails only where the coefficient is used on its own. Below θ ≈ 10⁻⁴ the exact digits of the printed error differ between libm builds (one ulp of <code>cos</code> changes them), only the order of magnitude is stable. The series below 0.3 removes the cancellation (App. B, pp. 14–15).</details>
+</figure>
+</div>
+
+<script>
+/*__CORE__*/
+(function () {
+const DATA = /*__DATA__*/null;
+const css = k => getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const COL = { blue: '#378ADD', coral: '#D85A30', teal: '#1D9E75', gray: '#888780' };
+function layout(extra) { const ink = css('--ink'), mut = css('--ink2'), grid = css('--rule'), bg = css('--sheet');
+  return Object.assign({ paper_bgcolor: bg, plot_bgcolor: bg, font: { family: 'IBM Plex Sans, system-ui, sans-serif', color: ink, size: 12 }, margin: { l: 56, r: 12, t: 36, b: 44 },
+    legend: { font: { color: mut, size: 11 }, bgcolor: 'rgba(0,0,0,0)' },
+    xaxis: { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: mut } }, yaxis: { gridcolor: grid, zerolinecolor: grid, linecolor: grid, tickfont: { color: mut } },
+    title: { x: 0, font: { size: 13, color: ink } } }, extra); }
+const cfg = { displayModeBar: false, responsive: true };
+const tiles = (id, obj) => { document.getElementById(id).innerHTML = Object.entries(obj).map(([k, v]) => `<div class="fig-tile"><div class="k">${k}</div><div class="v">${String(v).replace(/-(?=\d)/g, '−')}</div></div>`).join(''); };
+const chip = (id, text, state) => { const c = document.getElementById(id); c.textContent = text; c.dataset.state = state; };
+function bind(ids, fn) { ids.forEach(id => { const el = document.getElementById(id), o = document.getElementById(id + '_o'); el.addEventListener('input', () => { o.textContent = el.value; fn(); }); o.textContent = el.value; }); fn(); }
+const val = id => +document.getElementById(id).value;
+const frameArrow = (M, len, color, name, show) => ({ x: [M[0][2], M[0][2] + len * M[0][0]], y: [M[1][2], M[1][2] + len * M[1][0]], mode: 'lines', line: { color, width: 3 }, name, showlegend: !!show, hoverinfo: 'skip' });
+
+// ---------- Fig A
+function figA() {
+  const r = SC.figA({ xX: val('a_x'), thX_deg: val('a_thx'), rho1: val('a_rho'), th_deg: val('a_th') });
+  const pt = (M, color, symbol, name, size, open) => ({ x: [M[0][2]], y: [M[1][2]], mode: 'markers', marker: { color: open ? 'rgba(0,0,0,0)' : color, size, symbol, line: { color, width: 2 } }, name });
+  const tr = [
+    { x: r.p_right.map(p => p[0]), y: r.p_right.map(p => p[1]), mode: 'lines', line: { color: COL.teal, width: 2 }, name: 'X Exp(sτ), s: 0 → 1' },
+    { x: r.p_wrong.map(p => p[0]), y: r.p_wrong.map(p => p[1]), mode: 'lines', line: { color: COL.coral, width: 2, dash: 'dot' }, name: 'Exp(sτ) X' },
+    pt(r.X, COL.blue, 'square', 'X', 10), pt(r.right, COL.teal, 'diamond', 'X ⊕ τ', 11), pt(r.wrong, COL.coral, 'circle', 'Exp(τ) X', 10), pt(r.left, COL.teal, 'circle', 'Exp(Ad_X τ) X', 18, true),
+    frameArrow(r.X, 0.4, COL.blue, '', false), frameArrow(r.right, 0.4, COL.teal, '', false), frameArrow(r.wrong, 0.4, COL.coral, '', false),
+    { x: [0], y: [0], mode: 'markers', marker: { color: COL.gray, size: 9, symbol: 'cross' }, name: 'world origin' }];
+  Plotly.react('plotA', tr, layout({ title: { text: 'poses on the plane (short bars show the heading)' }, xaxis: { title: 'x [m]', range: [-6, 6] }, yaxis: { title: 'y [m]', scaleanchor: 'x', range: [-5, 5] }, height: 440 }), cfg);
+  chip('chipA', r.special ? 'left = right (X commutes with Exp τ)' : 'left ≠ right, Ad_X reconciles them', r.special ? 'warn' : 'ok');
+  tiles('tilesA', r.tiles);
+}
+
+// ---------- Fig B
+function figB() {
+  const r = SC.figB({ ratio: val('b_sr'), sig_th_deg: val('b_sth'), th_mean_deg: val('b_th') });
+  const Xb = r.Xb, k = Math.sqrt(SC.CHI2_2_95), el = { x: [], y: [] };
+  for (let i = 0; i <= 72; i++) { const t = i / 72 * 2 * Math.PI, a = k * r.sd[0] * Math.cos(t), b = k * r.sd[1] * Math.sin(t); el.x.push(Xb[0][2] + Xb[0][0] * a + Xb[0][1] * b); el.y.push(Xb[1][2] + Xb[1][0] * a + Xb[1][1] * b); }
+  const tr = [{ x: r.pos.filter((_, i) => i % 2 === 0).map(p => p[0]), y: r.pos.filter((_, i) => i % 2 === 0).map(p => p[1]), mode: 'markers', marker: { size: 3, color: COL.gray, opacity: 0.4 }, name: 'X̄ Exp(ε) samples' },
+    { x: el.x, y: el.y, mode: 'lines', line: { color: COL.blue, width: 2 }, name: 'linear 95 % ellipse R̄ P_ρρ R̄ᵀ' },
+    frameArrow(Xb, 0.3, COL.teal, 'mean heading', true), { x: [Xb[0][2]], y: [Xb[1][2]], mode: 'markers', marker: { color: COL.teal, size: 9, symbol: 'diamond' }, name: 'X̄' }];
+  Plotly.react('plotB', tr, layout({ title: { text: 'positions of X̄ Exp(ε)' }, xaxis: { title: 'x [m]', range: [-0.5, 4.5] }, yaxis: { title: 'y [m]', scaleanchor: 'x', range: [-1.5, 3.5] }, height: 440 }), cfg);
+  const ok = r.inside > 0.925; chip('chipB', ok ? 'ellipse honest' : 'cloud outgrows the ellipse', ok ? 'ok' : 'warn');
+  tiles('tilesB', r.tiles);
+}
+
+// ---------- Fig C
+function figC() {
+  const r = SC.figC(DATA.runs[val('c_run')], { sig_y: val('c_sy'), sig_slip_mm: val('c_slip') });
+  const t = r.nees.map((_, i) => i * 0.1), n = r.nis.map((_, i) => i);
+  const band = (x1, y, c) => ({ type: 'line', x0: 0, x1, y0: y, y1: y, line: { color: c, dash: 'dash', width: 1 } });
+  Plotly.react('plotC1', [{ x: t, y: r.nees, mode: 'lines', line: { color: COL.blue, width: 1.2 }, name: 'NEES = eᵀP⁻¹e, e = X_true ⊖ X̂' }],
+    layout({ title: { text: 'NEES per step, 95 % bound of χ²(3)' }, xaxis: { title: 'time [s]' }, yaxis: { title: 'NEES', range: [0, Math.max(15, Math.min(Math.max(...r.nees), 80))] }, height: 300, shapes: [band(60, SC.CHI2_3_95, COL.blue)] }), cfg);
+  Plotly.react('plotC2', [{ x: n, y: r.nis, mode: 'lines', line: { color: COL.coral, width: 1 }, name: 'NIS = zᵀZ⁻¹z per detection' }],
+    layout({ title: { text: 'NIS per tag detection, 95 % bound of χ²(2)' }, xaxis: { title: 'detection index' }, yaxis: { title: 'NIS', range: [0, 15] }, height: 260, shapes: [band(n.length, SC.CHI2_2_95, COL.coral)] }), cfg);
+  chip('chipC', r.verdict, { consistent: 'ok', overconfident: 'bad', conservative: 'warn' }[r.verdict]);
+  tiles('tilesC', r.tiles);
+}
+
+// ---------- Fig D
+function figD() {
+  const lt = val('d_t'), r = SC.figD(lt, DATA.d_series), floor = v => Math.max(v, 1e-17);
+  Plotly.react('plotD', [{ x: r.sweep, y: r.ps.map(floor), mode: 'lines', line: { color: COL.coral, width: 2 }, name: 'printed (144)' },
+    { x: r.sweep, y: r.rs.map(floor), mode: 'lines', line: { color: COL.blue, width: 2 }, name: 'series below 0.3, cot above (values at 1e-17 are exact zeros)' },
+    { x: [r.th, r.th], y: [1e-17, 10], mode: 'lines', line: { color: COL.teal, width: 2 }, name: 'your θ' }],
+    layout({ title: { text: 'relative error of the coefficient d(θ)' }, xaxis: { title: 'θ [rad]', type: 'log' }, yaxis: { title: 'relative error', type: 'log', range: [-17, 1] }, height: 340 }), cfg);
+  const bad = r.ep > 1e-3, warn = r.ep > 1e-8;
+  chip('chipD', bad ? 'printed formula: fewer than 3 digits left' : (warn ? 'printed formula degrading' : 'ok'), bad ? 'bad' : (warn ? 'warn' : 'ok'));
+  tiles('tilesD', r.tiles);
+}
+let inited = false;
+function init() { if (inited) return; if (!window.Plotly) { setTimeout(init, 300); return; } inited = true;
+  bind(['a_x', 'a_thx', 'a_rho', 'a_th'], figA); bind(['b_sr', 'b_sth', 'b_th'], figB); bind(['c_run', 'c_sy', 'c_slip'], figC); bind(['d_t'], figD); }
+window.__ixRedraw = () => { if (!inited) { init(); return; } figA(); figB(); figC(); figD(); };
+if (!document.getElementById('panel-session').hidden) init();
+})();
+</script>

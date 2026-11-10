@@ -1,0 +1,159 @@
+title: "A micro Lie theory for state estimation"
+footer: "Solà et al. · A micro Lie theory"
+slides:
+  - layout: title
+    title: "A micro Lie theory for state estimation in robotics"
+    subtitle: "Solà, Deray and Atchuthan, arXiv:1812.01537v9, pp. 1–17"
+    meta: "Lesson t2.6 · Exp, Log, ⊕, ⊖, Ad and the Jacobians a robot needs"
+    source: map.md
+
+  - layout: bullets
+    title: "Why robots need this"
+    bullets:
+      - "A rotation, a pose and a unit quaternion all live on a **curved** space, not in ℝⁿ"
+      - "Adding an increment to a quaternion leaves the unit sphere, so it gets renormalized by hand"
+      - "A covariance on a 9-number rotation matrix is singular: the state has 3 degrees of freedom"
+      - "Every Jacobian in an EKF or a graph solver needs a definition that respects the curvature"
+      - "**One idea**: do all calculus in the flat tangent space ℝᵐ, and move only through Exp and Log"
+    notes: "A quadruped, a drone and a tracked robot all carry an attitude or a pose. The textbook filter treats that state as a vector, which is fine for a few degrees and wrong for a large turn. This paper keeps a small set of tools: the group, Exp and Log, the plus and minus operators, the adjoint and the Jacobians. It drops the Lie bracket on purpose. Everything is written on a coordinate vector of exactly dof numbers. Ask the room: how many numbers does a covariance of an SE(3) pose need, and why is it not 16 by 16?"
+    source: lecture.md §I
+
+  - layout: agenda
+    title: "Roadmap"
+    items: ["The group, Exp and Log", "Plus, minus and the adjoint", "Jacobians and the chain rule", "Covariance and integration", "The ESKF on SE(2)", "Traps and what comes next"]
+    notes: "Six parts, in the order of the paper. First the group and its Exp and Log, then the plus and minus operators and the adjoint. Next the Jacobians and the chain rule, then covariance and integration. We finish with the error-state filter on SE(2) and the traps that cost time in practice. Come back to this slide before each part. Ask the room: which of these six do you already use in a filter without calling it by name?"
+    source: map.md
+
+  - layout: key
+    title: "The one idea"
+    statement: "Work in the tangent space ℝᵐ; Exp and Log are the only way on and off the group"
+    detail: "Plus and minus then make a curved state read like a vector: state ⊕ increment, state ⊖ state"
+    notes: "A Lie group is a smooth surface where every point is also an operation. Composing two elements never leaves the surface, so a rotation times a rotation is still a rotation. The surface looks the same from every point, so one tangent space, at the identity, describes them all. The examples to hold in mind are the unit circle S¹ for planar heading and the unit quaternions S³ for attitude. Ask the room: why does a quaternion composition not need renormalizing the way a quaternion addition does?"
+    source: lecture.md §L1
+
+  - layout: figure
+    title: "Exp wraps the tangent line onto the group"
+    figure: figures/L4-exp-log.png
+    caption: "Left: the Exp series for SO(3) against expm. Right: Log wraps at ±π"
+    takeaway: "Log(Exp(θ)) returns θ only on (−π, π]; outside it wraps"
+    notes: "Exp takes a constant velocity applied for unit time and returns where it ends up, along a geodesic, like string wound around a ball. Log unwraps, giving the shortest tangent vector to an element. On the left, the series needs powers up to 11, 17 and 23 at three angles to reach 10⁻¹², which is why nobody sums it in code. On the right, the wrap at ±π is why a yaw controller written as the difference of two angles spins the robot the long way round. Ask the room: what is the right-hand picture for SO(3), where there is no single number to wrap?"
+    source: lecture.md §L4
+
+  - layout: equation
+    title: "Plus and minus: the increment lives in the local frame"
+    equations:
+      - {tex: '\mathcal{Y} = \mathcal{X} \oplus \boldsymbol{\tau} \triangleq \mathcal{X} \circ \mathrm{Exp}(\boldsymbol{\tau})', label: "(25)"}
+      - {tex: '\boldsymbol{\tau} = \mathcal{Y} \ominus \mathcal{X} \triangleq \mathrm{Log}(\mathcal{X}^{-1} \circ \mathcal{Y})', label: "(26)"}
+    where: [["𝒳, 𝒴", "elements of the group"], ["τ", "tangent vector, m numbers"], ["Exp, Log", "ℝᵐ ⇄ group (21)–(24)"]]
+    takeaway: "Right ⊕ and ⊖ are used throughout; the left ones (27)–(28) are in the global frame"
+    notes: "The right plus puts the increment on the right of the state, so τ is expressed in the body frame at 𝒳. A gyro reading is exactly such a vector. The left versions, (27) and (28), express the increment in the world frame. Both are valid, but a covariance from one convention cannot be combined with a Jacobian from the other. The minus symbol is ambiguous in the paper between (26) and (28); it means (26) unless it says otherwise. Ask the room: which convention does a world-frame GNSS attitude error follow?"
+    source: lecture.md §L5
+
+  - layout: predict
+    title: "Predict: right or left ⊕?"
+    bullets: ["Same pose 𝒳 and same τ = (1.2 m, 0 m, 0.9 rad)", "One robot applies τ with right-⊕, another with left-⊕"]
+    question: "Do the two end positions coincide?"
+    choices: ["Yes, ⊕ is commutative", "Only if the heading is zero", "No, they differ by tens of centimetres", "No, they differ by a full turn"]
+    notes: "The answer is that they do not coincide: in the lecture run the two end positions are 0.42 m apart. Right-⊕ drives the robot forward in its own frame. Left-⊕ moves it in the world frame about the world origin, so the same numbers mean a different motion unless the pose is the identity. The group does not commute, so the side matters. Choice two is nearly right: at zero heading and zero translation the two agree, but the pose here is general. Ask the room: how would you convert one increment into the other?"
+    source: lecture.md §L5
+
+  - layout: equation
+    title: "The adjoint converts local increments to global ones"
+    equations:
+      - {tex: '{}^{\mathcal{E}}\boldsymbol{\tau} = \mathbf{Ad}_{\mathcal{X}}\,{}^{\mathcal{X}}\boldsymbol{\tau}', label: "(30)"}
+      - {tex: '\mathcal{X} \oplus \boldsymbol{\tau} = (\mathbf{Ad}_{\mathcal{X}}\boldsymbol{\tau}) \oplus \mathcal{X}', label: "(32)"}
+    where: [["Ad_𝒳", "m×m matrix"], ["ˣτ", "increment in the frame at 𝒳"], ["ᴱτ", "increment in the global frame"]]
+    takeaway: "For rotations Ad_R = R; for poses it also mixes in the lever arm"
+    notes: "Start from (20): conjugating an exponential by a group element moves it through, X exp(τ) X inverse equals exp of X τ X inverse. Reading that with vee gives the adjoint matrix (31). It is a plain matrix, so increments, velocities and covariances all convert by one product. In the lecture run the global increment (1.50, −0.31, 0.90) traces the same path as the local (1.20, 0.00, 0.90). Applying the local one on the left without Ad misses. Ask the room: why is Ad of a pure rotation just the rotation?"
+    source: lecture.md §L6
+
+  - layout: figure
+    title: "A Jacobian on a group passes the slope test"
+    figure: figures/L7-right-jacobian.png
+    caption: "‖f(𝒳 ⊕ τ) − f(𝒳) − Jτ‖ against ‖τ‖ in six random directions"
+    takeaway: "A correct J has slope 2 here; a wrong one leaves slope 1"
+    notes: "The vector-space derivative carries over once plus becomes ⊕ on the input and minus becomes ⊖ on the output. The result is an ordinary n by m matrix, so every EKF and Gauss-Newton formula applies to it unchanged. The figure takes the beacon measurement function and its finite-difference Jacobian. The residual falls with slope 2.00 in all six directions, as a correct first-order model must. A wrong Jacobian leaves a first-order error. This slope test is the check run on every Jacobian in the package. Ask the room: why does a missing Ad show up as slope 1?"
+    source: lecture.md §L7
+
+  - layout: steps
+    title: "Every Jacobian is a product of four blocks"
+    steps:
+      - {title: "Inverse", text: "J of X⁻¹ with respect to X is −Ad_X (62)"}
+      - {title: "Composition", text: "J of X∘Y is Ad_Y⁻¹ in X and I in Y (65), (66)"}
+      - {title: "Exp", text: "J_r(τ) in (67); Ad_Exp(τ) = J_l J_r⁻¹ (75)"}
+      - {title: "Action", text: "Per group, App. A–E; for SO(3) it is −R[v]ₓ (150)"}
+      - {title: "Chain rule", text: "J of Z with respect to X is the product of the factors (58)"}
+    takeaway: "Test the whole Jacobian once, then each block on its own"
+    notes: "These four blocks plus the chain rule build every Jacobian a robot needs. Log, ⊕ and ⊖ are compositions of them, which is where J_r inverse and J_l inverse come from in a residual. The measurement Jacobian of the beacon model is a two by three action block times a three by three inverse block. The lecture checks that product against finite differences. A failing full Jacobian then points to the block that broke. Ask the room: which block would you test first for a between-factor residual, and why?"
+    source: lecture.md §L10–L12
+
+  - layout: stats
+    title: "Covariance on the tangent is first order only"
+    stats: [{value: "73.9 %", label: "of the cloud inside the 2σ ellipse"}, {value: "86.5 %", label: "expected for a true Gaussian"}, {value: "2.91 m", label: "cloud mean, against 3.00 m"}]
+    bullets: ["Σ is m×m on the tangent: 3×3 for SE(2), 6×6 for SE(3)", "Propagation is J Σ Jᵀ (55); the banana appears once angle and lever arm grow together"]
+    notes: "A covariance needs a vector, and on a group that vector is the tangent perturbation, not the element. So an SE(2) covariance is three by three and an SE(3) one six by six. Propagation through a function is J Σ J transpose, exactly as in a vector space, but only to first order. In the lecture run a Gaussian on the tangent is pushed to a point 3 m ahead, and the Monte Carlo cloud bends into a banana. Only 73.9 percent of it falls inside the 2σ ellipse, against 86.5 percent for a true Gaussian. Ask the room: what would you change to shrink the banana?"
+    source: lecture.md §L8
+
+  - layout: stats
+    title: "Integrate with Exp, not Euler"
+    stats: [{value: "4.4 × 10⁻¹⁶ m", label: "Exp integration, δt = 1.5 s, 9 s"}, {value: "1.18 m", label: "Euler on (x, y, θ), same run"}, {value: "0.078 m", label: "Euler at δt = 0.1 s"}]
+    bullets: ["X_k = X_{k−1} Exp(v_k δt_k) (56), exact for a piecewise-constant twist"]
+    notes: "A constant twist of 1 m/s and 0.5 rad/s is integrated for 9 s. Exp lands on the true circle to round-off. Euler on x, y and heading assumes the heading stays fixed during the step, so it cuts outside the circle and ends 1.18 m off at the coarse step, and still 0.078 m off at a tenth of a second. The drone's gyro step R_k = R_{k−1} Exp(ω δt) is the same formula. The real velocity is not constant inside a step, so a short step is still needed. Ask the room: on a tracked robot, when is this error worst?"
+    source: lecture.md §L9
+
+  - layout: steps
+    title: "The ESKF on SE(2): two lines change"
+    steps:
+      - {title: "Predict mean", text: "X̂ ← X̂ ⊕ u (99)"}
+      - {title: "Predict P", text: "P ← F P Fᵀ + G W Gᵀ, F = Ad_Exp(u)⁻¹, G = J_r(u) (100)"}
+      - {title: "Innovate", text: "z = y − X̂⁻¹·b; Z = H P Hᵀ + N; K = P Hᵀ Z⁻¹"}
+      - {title: "Update mean", text: "X̂ ← X̂ ⊕ Kz (101)"}
+      - {title: "Update P", text: "P ← P − K Z Kᵀ (102)"}
+    takeaway: "Compared with the textbook EKF, only + became ⊕ and the Jacobians come from the blocks"
+    notes: "The filter keeps a nominal pose on the group and a small error in the tangent at that pose. The gain, innovation and covariance all act on that error, an ordinary three-vector. H is the product of the action block and the inverse block, a two by three matrix. Here W is the process noise and N the measurement noise of the paper; in code they are R_proc and Q_meas. After the state update P is still in the old tangent; a full filter moves it with J_r of the correction, which the paper leaves out. Ask the room: when is skipping that reset harmless?"
+    source: lecture.md §L15
+
+  - layout: predict
+    title: "Predict: a robot standing still"
+    bullets: ["Printed J_r of SO(3) in (143)", "Gyro samples at the IMU rate, θ ≈ 0 on every one"]
+    question: "What does the coefficient (1 − cos θ)/θ² return in float64 for tiny θ?"
+    choices: ["The exact value 0.5", "A slightly noisy 0.5", "0, losing every digit", "Infinity"]
+    notes: "The answer is zero below roughly 10⁻⁸ rad: the numerator rounds to zero while the denominator is tiny, so the coefficient is 0 instead of 0.5, and accuracy degrades well before that point. The cure is a half-angle form, 2 sin squared of θ over 2, or a Taylor series below a switch angle. The paper does not say where to switch; libraries use thresholds such as 10⁻³ or about 1.5 × 10⁻⁷. A hovering drone or a standing quadruped sits at this branch continuously. Ask the room: which test input would you add to catch this?"
+    source: lecture.md §L17
+
+  - layout: table
+    title: "Symptom to fix"
+    table:
+      header: [Symptom, Cause, Fix]
+      rows:
+        - ["FD slope 1, not 2", "Wrong block or wrong ⊖ side", "Test each block alone"]
+        - ["NaN when standing still", "Divide by θ in Exp, Log, J_r", "Taylor branch near 0"]
+        - ["Turns the long way", "Log branch cut at π", "Flip q to w > 0; wrap"]
+        - ["Log(R) wrong near 180°", "(135) is 0/0 at π", "Use symmetric part"]
+        - ["Overconfident when turning", "Euler step, or F from (x, y, θ)", "Exp step; F = Ad⁻¹"]
+        - ["Wrong in world frame", "Frame mismatch", "ᴱΣ = Ad Σ Adᵀ (54)"]
+        - ["Codebases disagree", "Tangent order or side", "Permute blocks; (75)"]
+      widths: [2, 3, 3]
+    notes: "These are the faults that cost the most time in practice, taken from the lecture's symptom table. The first one is the most useful: when a Jacobian check fails, test each block of the chain separately. The tangent-order row matters when mixing libraries: this paper and manif put translation first, while GTSAM's Pose3 puts rotation first. Ask the room: which of these would show up first on a robot that spends most of its time driving straight?"
+    source: lecture.md §L19
+
+  - layout: bullets
+    title: "What to be able to defend"
+    bullets:
+      - "State ⊕ increment and state ⊖ state give exactly dof numbers, so covariances have the right size"
+      - "Right ⊕ puts the increment in the body frame; Ad_X moves it to the world frame"
+      - "Every Jacobian is a chain of inverse, composition, Exp and action blocks, checked by finite differences"
+      - "Integrate with X Exp(v δt); Euler on (x, y, θ) drifts in every turn"
+      - "Every closed form divides by θ, θ² or θ³: write the small-angle branch first"
+    notes: "Each line is a claim a student should be able to defend with the picture or the formula behind it. The exercises ask you to implement the SE(2) appendix and check it against matrix exponentials and finite differences, and to derive the blocks by hand. Ask the room to pick one line and explain it to the person next to them in thirty seconds."
+    source: lecture.md §L1–L19
+
+  - layout: bullets
+    title: "What comes next"
+    bullets:
+      - "EKF localization (Thrun ch. 7): §V-A with the Jacobians written once in Lie form"
+      - "Graph SLAM (Grisetti, t2.8): ⊕◇ and ⊖◇ on a composite state; FAST-LIO2 is such a composite"
+      - "IMU preintegration (Forster et al., t2.11): built on (56), (68)–(70) and J_r"
+      - "Barfoot ch. 8: the left-perturbation view; (75) and (147) are the bridge"
+    notes: "This toolkit is the base for the filtering and mapping lessons that follow. A quadruped state of position, velocity, attitude, biases and feet is a composite manifold of the kind in section IV. Graph SLAM adds the sparse Gauss-Newton step on that state. Preintegration repeats the gyro step many times and needs the right Jacobian to correct for bias. Ask the room: which of the three would you meet first on a drone?"
+    source: map.md feeds

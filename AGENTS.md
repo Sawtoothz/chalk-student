@@ -28,6 +28,7 @@ All work goes through `just`. Run `just` to list recipes.
 | `just ingest <pdf> <id> [book\|paper]` | Add a PDF: copy to `library/`, read the outline, guess the offset, write `books.yaml` |
 | `just slides <book> <chapter>` | Render the class and review decks (`slides/*.yaml` → watermarked study-copy `.pdf`, no `.pptx`), check them, rebuild the Reader |
 | `just stage <book> <chapter> [stage]` | Run one `/teach` stage headlessly with the AI engine chosen in the GUI (Claude Code, Codex, Gemini CLI or a custom command), log to `.runs/` — what the GUI calls |
+| `just export-student [--push]` | Rebuild the public student repo (chalk-student) from the `student` branch: strips solutions, notes and book pages, checks, shows the diff; `--push` publishes |
 | `just list` | Every source and unit with its stage status (JSON) |
 | `just refs <repo-url> <out.json> <symbols…>` | Papers: clone the authors' repo at a commit and record verified file:line anchors for the cards |
 | `just serve` | GUI mode: Library / Run / Reader at http://localhost:8765 |

@@ -1,0 +1,190 @@
+title: "One Dimensional Kalman Filters, review"
+footer: "Labbe · ch. 4 · review"
+slides:
+  - layout: title
+    title: "One-dimensional Kalman filters: review"
+    subtitle: "Labbe, Kalman and Bayesian Filters in Python, ch. 4, pp. 131–170"
+    meta: "Lesson t2.2 · R_proc is Labbe's Q, Q_meas is Labbe's R"
+    source: map.md
+  - layout: agenda
+    title: "Review order"
+    items: ["Predict (C1)", "Update, Bayes form (C2)", "Update, gain form and loop (C3)", "Steady state and fixed gain (C4)", "Design traps", "Mistakes already made"]
+    source: map.md
+  - layout: table
+    title: "Names: Labbe versus this package"
+    table:
+      header: [Labbe, Package, Meaning]
+      rows:
+        - ["Q, process_var", "R_proc", "variance added per predict"]
+        - ["R, sensor_var", "Q_meas", "measurement variance"]
+        - ["P, x.var", "P (P̄ prior)", "belief variance"]
+        - ["dx, u, μ_fx", "u", "known displacement per step"]
+      widths: [2, 2, 3]
+    takeaway: "Labbe's Q and R are the opposite of Thrun's; the package never writes a bare R or Q"
+    notes: "p. 151, p. 168."
+    source: map.md Notation
+  - layout: equation
+    title: "Predict, pp. 135–136 and 153"
+    equations:
+      - {tex: '\bar{x} = x + u, \qquad \bar{P} = P + R_{proc}', label: "p. 153"}
+    where: [["x, x̄", "mean, m"], ["P, P̄", "variance, m²"], ["u", "m/step"], ["R_proc", "m²/step"]]
+    takeaway: "Trap: R_proc = 0 because u is exact; the filter stops listening"
+    source: translate.md C1
+  - layout: code
+    title: "C1 robust predict"
+    code: |
+      def predict(x, P, u, R_proc, dt=1.0):
+          assert P >= 0.0 and R_proc >= 0.0
+          return x + u * dt, P + R_proc * dt
+    bullets:
+      - "Separate floats, named for what they are: FilterPy's signature with Q renamed"
+      - "Scale R_proc with Δt; a dropped measurement is just another predict"
+    source: translate.md C1
+  - layout: equation
+    title: "Update, Bayes form, p. 138"
+    equations:
+      - {tex: '\mu = \frac{\bar\sigma^2\mu_z+\sigma_z^2\bar\mu}{\bar\sigma^2+\sigma_z^2}, \qquad \sigma^2 = \frac{\bar\sigma^2\sigma_z^2}{\bar\sigma^2+\sigma_z^2}', label: "p. 138"}
+    where: [["μ̄, σ̄²", "prior"], ["μ_z, σ_z²", "z and Q_meas"], ["μ, σ²", "posterior"]]
+    takeaway: "Trap: σ_z from a datasheet where σ_z² is wanted"
+    source: translate.md C2
+  - layout: code
+    title: "C2 naive update, p. 138"
+    code: |
+      def gaussian_multiply(g1, g2):
+          mean = (g1.var*g2.mean + g2.var*g1.mean) / (g1.var + g2.var)
+          variance = (g1.var * g2.var) / (g1.var + g2.var)
+          return gaussian(mean, variance)
+    bullets:
+      - "Robust form: precisions add, and total ignorance is P̄ = ∞, not 10⁶"
+      - "The product's constant N(z; x̄, P̄ + Q_meas) is the measurement likelihood"
+    source: translate.md C2
+  - layout: equation
+    title: "Update, gain form, p. 153"
+    equations:
+      - {tex: 'y = z - \bar{x}, \quad K = \frac{\bar{P}}{\bar{P}+Q_{meas}}, \quad x = \bar{x} + Ky, \quad P = (1-K)\bar{P}', label: "p. 153"}
+    where: [["y", "residual, m"], ["K", "gain"], ["S", "P̄ + Q_meas"]]
+    takeaway: "Trap: the book's chart label reads y = z − −x̄; it means z − x̄"
+    source: translate.md C3
+  - layout: code
+    title: "C3 gain-form update, p. 151"
+    code: |
+      def update(prior, measurement):
+          x, P = prior
+          z, R = measurement      # Labbe's R is Q_meas
+          y = z - x
+          K = P / (P + R)
+          x = x + K*y
+          P = (1 - K) * P
+          return gaussian(x, P)
+    bullets:
+      - "Robust form: S = P̄ + Q_meas must be positive; P = P̄ Q_meas / S avoids 1 − K"
+      - "Gate on y²/S against the chi-square bound 6.635"
+    source: translate.md C3
+  - layout: code
+    title: "C3 the loop, p. 147"
+    code: |
+      for z in zs:
+          dx = velocity*dt
+          pos = pos + dx
+          var = var + process_var
+          pos = (var*z + sensor_var*pos) / (var + sensor_var)
+          var = (var * sensor_var) / (var + sensor_var)
+    bullets:
+      - "process_var is R_proc; sensor_var is Q_meas"
+      - "The two update lines are the Bayes form; the gain form is the same filter"
+    source: translate.md C3
+  - layout: compare
+    title: "Bayes form or gain form"
+    columns:
+      - {heading: "Bayes form (loop, p. 147)", bullets: ["Weights prior and z by variances", "Shows the product directly"]}
+      - {heading: "Gain form (p. 151)", bullets: ["Prior plus K times residual", "Generalizes to Thrun's Table 3.1"]}
+    takeaway: "Same filter; the gap between them is float cancellation in the variance"
+    notes: "Agree to 3.2 × 10⁻¹⁴ in the mean, 7.7 × 10⁻¹¹ in the variance."
+    source: translate.md C3
+  - layout: table
+    title: "What breaks first, card by card"
+    table:
+      header: [Card, Breaks first, Then]
+      rows:
+        - ["C1 predict", "R_proc too small (p. 160)", "Biased u, irregular Δt"]
+        - ["C2 Bayes update", "P̄ = 0 and Q_meas = 0: 0/0", "float32 with huge P̄; σ for σ²"]
+        - ["C3 gain form", "R_proc too small; NIS ≫ 1", "Datasheet Q_meas; no gate"]
+        - ["C4 fixed gain", "Noise changes, K does not", "Transient; biased u"]
+      widths: [2, 3, 3]
+    source: translate.md what breaks first
+  - layout: stats
+    title: "First step and steady state, measured"
+    stats:
+      - {value: "401", label: "first prior variance"}
+      - {value: "1.9901", label: "first posterior variance"}
+      - {value: "2.1623", label: "P∞ for (2, 4.5)"}
+      - {value: "0.4805", label: "K∞ for (2, 4.5)"}
+    source: lecture.md L4
+  - layout: equation
+    title: "Steady state"
+    equations:
+      - {tex: 'P_\infty^2 + R_{proc}P_\infty - R_{proc}Q_{meas} = 0, \qquad K_\infty = \frac{P_\infty}{Q_{meas}}', label: "not in the chapter"}
+    where: [["P∞", "fixed point of the posterior variance"], ["K∞", "steady-state gain"]]
+    takeaway: "Trap: the book's 0.13232 matches none of the chapter's filters"
+    source: lecture.md L10
+  - layout: table
+    title: "Steady state of each filter in the chapter"
+    table:
+      header: [Filter, Page, P∞, K∞]
+      rows:
+        - ["Dog, 10 steps", "143", "1.00000", "0.50000"]
+        - ["Dog, 25 steps", "147", "2.16228", "0.48051"]
+        - ["Thermometer", "156", "0.00537", "0.31770"]
+        - ["Extreme noise", "159", "423.26525", "0.00470"]
+        - ["Bad process variance", "160", "0.14092", "0.00705"]
+        - ["Bad initial estimate", "161", "6.14143", "0.24566"]
+        - ["Large noise, bad init", "162", "243.95102", "0.00813"]
+      widths: [3, 1, 2, 2]
+    takeaway: "The book's 1.0, 2.1623 and 0.005 agree; 0.13232 on p. 168 does not"
+    source: map.md Checked against a run
+  - layout: code
+    title: "C4 fixed-gain update, p. 168"
+    code: |
+      K = .13232          # the book's experimentally derived gain
+      y = z - x
+      x = x + K * y
+    bullets:
+      - "The book's K is not any chapter filter's K∞; recompute K∞ from R_proc and Q_meas"
+      - "Recompute when the loop rate changes: R_proc is per step"
+    source: lecture.md L10
+  - layout: compare
+    title: "Process variance: right model, wrong model"
+    columns:
+      - {heading: "Right model (p. 159)", bullets: ["σ_z = 300 m, R_proc = 2 m²", "RMS 15.06 m against 292.8 m raw"]}
+      - {heading: "Wrong model (p. 160)", bullets: ["R_proc = 0.001 on an accelerating dog", "Mean NIS 342.1 against 1.82"]}
+    takeaway: "P and K never see the data; NIS does"
+    source: lecture.md L8
+  - layout: table
+    title: "Symptom to fix"
+    table:
+      header: [Symptom, Cause, Try]
+      rows:
+        - ["Drifts off data; NIS ≫ 1", "R_proc too small", "Raise R_proc until NIS ≈ 1"]
+        - ["K decays toward 0", "R_proc = 0", "Small nonzero R_proc"]
+        - ["As noisy as z; NIS ≪ 1", "R_proc large or Q_meas small", "Measure Q_meas at rest"]
+        - ["Constant offset", "Biased u", "Fix u or add a bias state"]
+        - ["Lags, flattens peaks", "No dynamics", "Larger R_proc or velocity"]
+        - ["Long transient", "Bad x₀", "x₀ = z₀, P₀ = Q_meas"]
+        - ["Off by a square", "σ for σ²", "Square σ; name vars *_var"]
+      widths: [3, 3, 3]
+    source: lecture.md L11
+  - layout: bullets
+    title: "Mistakes already made (REVIEW.md)"
+    bullets:
+      - "The book does name the source of K = 0.13232: the dog tracking filter, p. 167"
+      - "The book uses `sensor_noise` as a variance on p. 165; only the name misleads"
+      - "P̄ = 401 is on pp. 144 and 146, not p. 143, which holds only code"
+      - "The exact quote is the filter does not 'notice' that it is diverging, p. 161"
+      - "The nonlinear exercise has three effects: wrong u, lag, sensor variance 30 against 1.44"
+    notes: "Reviewer catches from REVIEW.md."
+    source: REVIEW.md
+  - layout: key
+    title: "The one thing to keep"
+    statement: "R_proc is trust in the model, Q_meas is trust in the sensor; only their ratio sets K∞"
+    detail: "Log K and NIS on every scalar filter"
+    source: lecture.md L11

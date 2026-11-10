@@ -1,0 +1,217 @@
+title: "One Dimensional Kalman Filters"
+footer: "Labbe · Kalman and Bayesian Filters in Python · ch. 4"
+slides:
+  - layout: title
+    title: "One-dimensional Kalman filters"
+    subtitle: "Kalman and Bayesian Filters in Python, chapter 4"
+    meta: "Lesson t2.2 · R. Labbe"
+    source: map.md
+  - layout: bullets
+    title: "Why one number is worth a filter"
+    bullets:
+      - "A drone's **barometer altitude** is one number with one peak of uncertainty"
+      - "A wheel's **encoder distance** drifts by a little every step"
+      - "A gyro **bias** is a slowly wandering scalar"
+      - "Each is a scalar Kalman filter in practice, and the matrix filters reuse every line"
+    notes: "Start from the robots, not the algebra. A quadrotor reads a barometer, a tracked robot reads wheel encoders, a quadruped integrates a gyro. In each case the state we care about is one number with a spread. This chapter builds the filter for exactly that case, with a dog in a hallway as the running example. Everything we learn carries over to vectors and matrices later, line for line. Question for the room: which sensor on your own robot gives you a single number with noise?"
+    source: lecture.md L1
+  - layout: agenda
+    title: "Roadmap"
+    items: ["Beliefs as Gaussians", "Predict: sum of Gaussians", "Update: product of Gaussians", "The loop and the Kalman gain", "Designing the filter: process variance", "Steady state and fixed gain"]
+    source: map.md
+    notes: "Six steps, in the order the chapter builds them. First we decide the belief is a single Gaussian. Predict then adds two Gaussians and update multiplies two. Rewriting the product gives the Kalman gain. The longest part is design: how R_proc and Q_meas change what the filter does. We finish with the steady state, where the filter becomes a constant gain. Question: which of the six do you expect to go wrong first on a real robot?"
+  - layout: section
+    title: "Beliefs as Gaussians"
+    subtitle: "Replace the histogram by a mean and a variance"
+    source: lecture.md L1
+  - layout: figure
+    title: "A histogram belief and its Gaussian"
+    figure: figures/L1-histogram-vs-gaussian.png
+    caption: "One peak: faithful. Two peaks: misleading"
+    takeaway: "One peak needs two numbers; two peaks need a histogram or particles"
+    notes: "Left panel: the belief has one peak, and a mean and variance describe it well. Right panel: the dog could be in one of two places, and the fitted Gaussian centers at 9.1 m, where the dog almost never is. The chapter bets that predict and update keep the belief Gaussian. If they did not, the next step would have nothing to work on. Question: what kind of robot situation produces a two-peak belief?"
+    source: lecture.md L1
+  - layout: equation
+    title: "Predict: means add, variances add"
+    equations:
+      - {tex: '\bar{x} = x + u, \qquad \bar{P} = P + R_{proc}', label: "(p. 153)"}
+    where: [["x̄, x", "prior and posterior mean, m"], ["P̄, P", "variance, m²"], ["u", "known displacement, m/step"], ["R_proc", "variance added per step, m²"]]
+    takeaway: "Predict shifts the belief and widens it; it never narrows"
+    notes: "The book writes the same thing as mu-bar equals mu plus mu of f_x, and sigma-bar squared equals sigma squared plus sigma of f_x squared. We use the repo names: R_proc is the process variance, which Labbe calls Q. The rule assumes the state and the motion error are independent. The added variance is per step, so two predicts with no measurement add it twice. Question: what happens to P if the sensor drops out for ten steps?"
+    source: lecture.md L2
+  - layout: figure
+    title: "N(10, 0.04) + N(15, 0.49) = N(25, 0.53)"
+    figure: figures/L2-predict-sum.png
+    takeaway: "Means add and variances add: the result is wider than either input"
+    notes: "This is the book's cell on page 137. The prior is a dog near 10 m with a small variance; the motion is 15 m with a larger one. The sum lands at 25 m with variance 0.53, wider than both. Note the book's text switches between a 2 second epoch and a 1 second epoch between paragraphs; the code uses 1 second. Question: why can the variance only grow in predict?"
+    source: lecture.md L2
+  - layout: predict
+    title: "Predict: two predicts, no measurement"
+    bullets: ["Prior variance P", "Each predict adds R_proc"]
+    question: "After two predicts and no update, what is the variance?"
+    choices: ["P + R_proc", "P + 2·R_proc", "P + R_proc²", "P"]
+    notes: "Answer: P + 2·R_proc. Each predict adds R_proc by the sum rule, because the per-step increments are independent, so variance grows linearly in elapsed steps. Not R_proc squared: that would mix units, since R_proc is already a variance in m². This is why a dropped measurement is legal: call predict again, and the next update weights the new measurement more because the prior is now wider. Ask the room what this means for irregular sensor callbacks."
+    source: lecture.md L2
+  - layout: equation
+    title: "Update: the product of two Gaussians"
+    equations:
+      - {tex: '\mu = \frac{\bar\sigma^2\mu_z+\sigma_z^2\bar\mu}{\bar\sigma^2+\sigma_z^2}, \qquad \sigma^2 = \frac{\bar\sigma^2\sigma_z^2}{\bar\sigma^2+\sigma_z^2}', label: "(p. 138)"}
+    where: [["μ̄, σ̄²", "prior mean and variance"], ["μ_z", "the measurement z"], ["σ_z²", "Q_meas, sensor variance"], ["μ, σ²", "posterior mean and variance"]]
+    takeaway: "The variance ignores where the means are"
+    notes: "Prior times likelihood keeps the x values both find plausible. The mean is weighted by the other input's variance, so the sharper input pulls harder. The variance does not contain either mean at all, which is why P can be computed before any data arrives. The derivation: add the two exponents and complete the square. The leftover constant is the probability of the measurement under the prior, which the chapter normalizes away. Question: where would you use that constant?"
+    source: lecture.md L3
+  - layout: figure
+    title: "The product is narrower than both inputs"
+    figure: figures/L3-update-product.png
+    takeaway: "The posterior is 0.375 in both panels and sits near the sharper input"
+    notes: "Two examples from pages 141 and 142 of the book. In both, the posterior variance is 0.375, narrower than either input, whatever the means are. The posterior mean sits closer to the lower-variance input. The legends in the book print the literal text g2.mean, ge.var; that is a typo in the cell's label string, and the orange curve is the second argument. Question: if both inputs have equal variance, where is the posterior mean?"
+    source: lecture.md L3
+  - layout: key
+    title: "The one idea of the update"
+    statement: "A measurement always reduces the variance, by an amount set by the two variances alone"
+    detail: "Same code, a different outcome: decided by two variances, not by the data"
+    notes: "A barometer update after a second of IMU-only integration moves the estimate almost to the barometer. The same reading right after a lidar fix barely moves it. The code is identical; only the two variances differ. This is the sentence to remember from the update section. Question: what number would you log to see which case you are in?"
+    source: lecture.md L3
+  - layout: section
+    title: "The loop and the Kalman gain"
+    subtitle: "Predict, update, repeat"
+    source: lecture.md L4
+  - layout: steps
+    title: "The five-line filter of page 147"
+    steps:
+      - {title: "Predict mean", text: "x̄ = x + u: move the belief by what we commanded"}
+      - {title: "Predict variance", text: "P̄ = P + R_proc: widen it by the model's doubt"}
+      - {title: "Update mean", text: "x = (P̄z + Q_meas x̄)/(P̄ + Q_meas)"}
+      - {title: "Update variance", text: "P = P̄ Q_meas/(P̄ + Q_meas)"}
+    takeaway: "Two lines predict, two lines update; the loop repeats per measurement"
+    notes: "This is the whole filter. The book's variable names are pos, var, process_var and sensor_var; we map them to x, P, R_proc and Q_meas. Notice that the two variance lines never touch the data. Run it by hand once with x0 = N(0, 400), R_proc = 1 and Q_meas = 2. Question: what is the first posterior close to, and why?"
+    source: lecture.md L4
+  - layout: figure
+    title: "The 25-step dog and its variance"
+    figure: figures/L4-kf-loop.png
+    takeaway: "P is identical for two different measurement sets and settles at 2.1623 m²"
+    notes: "The top panel is the dog with R_proc = 2 and Q_meas = 4.5 on our own noise. The bottom panel is the variance for two runs with different measurements: the maximum difference is 0.0. Plot trap from pages 147 and 148: the book's yellow band is drawn from the prior variance, so it is wider than the uncertainty of the line it surrounds. Here the band is the posterior. Question: why is a confident but wrong filter possible?"
+    source: lecture.md L4
+  - layout: stats
+    title: "The first step, measured"
+    stats:
+      - {value: "401", label: "first prior variance, m²"}
+      - {value: "1.9901", label: "first posterior variance, m²"}
+      - {value: "1.0000", label: "P at step 10, R_proc = 1, Q_meas = 2"}
+      - {value: "2.1623", label: "P at step 9 for (2, 4.5), m²"}
+    notes: "With x0 = N(0, 400) the first prior is 401 because predict adds R_proc = 1. After one measurement with Q_meas = 2 the variance collapses to 1.9901: the first posterior is essentially the measurement. The book prints 1.990 and 1.000, which these match. For the 25-step dog, P reaches 2.1623 by step 9, as page 148 says. Question: what would the first posterior be if x0 were N(0, 4)?"
+    source: lecture.md L4
+  - layout: equation
+    title: "Kalman gain form of the update"
+    equations:
+      - {tex: 'y = z - \bar{x}, \quad K = \frac{\bar{P}}{\bar{P}+Q_{meas}}, \quad x = \bar{x} + Ky, \quad P = (1-K)\bar{P}', label: "(p. 153)"}
+    where: [["y", "residual, m"], ["K", "gain, between 0 and 1"], ["P̄", "prior variance, m²"], ["Q_meas", "sensor variance, m²"]]
+    takeaway: "Prior plus a fraction of the surprise: the g-h filter with a computed gain"
+    notes: "Weights W1 and W2 sum to 1, and K is W1. Substituting gives the Bayes-form mean as x-bar plus K times the residual. The three variance forms are equal: sigma-bar squared times sigma_z squared over their sum, K times sigma_z squared, and one minus K times sigma-bar squared. K near 1 copies the sensor, K near 0 ignores it. Only the variance ratio matters. Question: what does a K stuck near 0.01 tell you?"
+    source: lecture.md L5
+  - layout: figure
+    title: "Residual and gain"
+    figure: figures/L5-gain-residual.png
+    takeaway: "K depends only on the ratio of the prior variance to the sensor variance"
+    notes: "Left: the residual chart from page 150, redrawn; the book's label reads y = z minus minus x-bar, which is just y = z − x̄. Right: K as a function of the ratio, with two worked cases. If the prior variance is nine times the sensor variance then K = 9/10; if they are equal, K = 1/2. Question: what ratio gives a gain of one half, and what does the filter do there?"
+    source: lecture.md L5
+  - layout: predict
+    title: "Predict: the gain for a wide prior"
+    bullets: ["Prior variance is 9 times the sensor variance"]
+    question: "What is the Kalman gain K?"
+    choices: ["1/10", "1/2", "9/10", "9"]
+    notes: "Answer: 9/10. K = P̄/(P̄ + Q_meas) with P̄ = 9 Q_meas gives 9/(9+1). The posterior therefore sits nine tenths of the way to the measurement. 1/2 is the equal-variance case. K can never exceed 1 when both variances are non-negative, which rules out 9. Ask: which way does the posterior variance move, and by how much relative to the sensor variance?"
+    source: lecture.md L5
+  - layout: compare
+    title: "Three ways to model a sensor's error"
+    columns:
+      - {heading: "g-h filter", bullets: ["Gain picked by hand", "Uniform error bars"]}
+      - {heading: "Discrete Bayes", bullets: ["Any histogram", "Models anything, resists analysis"]}
+      - {heading: "Kalman filter", bullets: ["Gaussian, closed under sum and product", "The variances compute the gain"]}
+    takeaway: "Every filter in the book is this recipe with different math in the boxes"
+    notes: "The recipe on page 152 is initialize, predict, update, repeat. The g-h filter picks the gain by hand, the discrete Bayes filter keeps a histogram, and the Kalman filter keeps a Gaussian. The histogram can model any error but is hard to analyze. The Gaussian is closed under sum and product, which is the only reason this chapter has formulas. Question: when would you still prefer the histogram?"
+    source: lecture.md L6
+  - layout: section
+    title: "Designing the filter"
+    subtitle: "What R_proc and Q_meas do"
+    source: lecture.md L7
+  - layout: figure
+    title: "The smug filter: R_proc = 0"
+    figure: figures/L7-smug-filter.png
+    takeaway: "No movement means u = 0, not R_proc = 0"
+    notes: "A voltage steps from 16.3 V to 16.6 V at step 60; this is our change, the book keeps it constant. With R_proc = 0 the gain falls to 0.0083 by step 120 and the estimate is still 0.136 V low. With a small R_proc the gain holds at 0.3177 and the estimate follows. With R_proc = 0 the n-th measurement gets weight about 1/n. Question: what does a small nonzero R_proc represent physically?"
+    source: lecture.md L7
+  - layout: stats
+    title: "Right model, wrong model"
+    stats:
+      - {value: "15.06", label: "RMS error in m, σ_z = 300 m, right model"}
+      - {value: "292.8", label: "RMS error in m of the raw measurement"}
+      - {value: "342.1", label: "mean NIS, R_proc = 0.001, wrong model"}
+      - {value: "1.82", label: "mean NIS, R_proc = 10"}
+    bullets: ["NIS = y²/S, S = P̄ + Q_meas, mean 1 for a consistent scalar filter"]
+    notes: "Left pair: with a huge sensor variance but a correct process model, the filter is a line on the truth, 15.06 m RMS against 292.8 m for the raw data. Right pair: a dog accelerating, filtered with the book's R_proc of 0.001. P and K never see the data, so the filter cannot tell it is diverging; the normalized innovation squared can. 342.1 against 1.82 is the data seeing the lie that P hides. Question: how would you alarm on it?"
+    source: lecture.md L8
+  - layout: predict
+    title: "Predict: a bad starting estimate"
+    bullets: ["x₀ is 1000 m off, P₀ = 500", "Q_meas = 25 m², R_proc = 2 m²"]
+    question: "After the first update, roughly how large is the error?"
+    choices: ["About 0 m", "About 47 m", "About 500 m", "About 1000 m"]
+    notes: "Answer: about 47 m, which the book rounds to roughly 50 m. P̄ = 502 m², so K = 502/527 = 0.95256 and the prior keeps weight 0.047; 1000 times 0.047 is about 47 m. A wide P₀ makes the first gain large, so the initial error mostly vanishes in one step if the sensor is decent. With a poor sensor, K is small and the error decays by roughly 1 − K per step. Question: what does the filter do if P₀ is small but x₀ is wrong?"
+    source: lecture.md L9
+  - layout: figure
+    title: "Initial error washes out at a rate set by Q_meas"
+    figure: figures/L9-bad-init.png
+    takeaway: "Initialize from the first measurement, with P₀ equal to that sensor's variance"
+    notes: "RMS error over 300 runs. Blue: x₀ = 1000 m with Q_meas = 25, gone in about 6 steps. Amber: the same error with Q_meas = 30000, taking 387 steps. Teal: start at the first measurement with 30000, taking 171 steps. The book eyeballs 400 to 600 and 200 or so. Practical rule: first barometer altitude, first GNSS fix, the dock pose. Question: why does the teal curve still need 171 steps?"
+    source: lecture.md L9
+  - layout: section
+    title: "Steady state and fixed gain"
+    subtitle: "When the filter stops changing"
+    source: lecture.md L10
+  - layout: equation
+    title: "The fixed point of the variance"
+    equations:
+      - {tex: 'P_\infty^2 + R_{proc}P_\infty - R_{proc}Q_{meas} = 0, \qquad K_\infty = \frac{P_\infty}{Q_{meas}}', label: "(not in the chapter)"}
+    where: [["P∞", "steady-state posterior variance, m²"], ["K∞", "steady-state gain"], ["R_proc", "process variance per step"], ["Q_meas", "sensor variance"]]
+    takeaway: "Constant R_proc and Q_meas: P and K converge, from any P₀ above 0"
+    notes: "Require that the update of P∞ plus R_proc returns P∞. Clearing denominators gives the quadratic above, and K∞ = P∞/Q_meas is the identity from page 150. For the 25-step dog this gives P∞ = 2.1623 and K∞ = 0.4805. Only the ratio of R_proc to Q_meas sets K∞. If R_proc = 0 the fixed point is P = 0, the smug filter. Question: which of the two settings, R_proc = 40 or Q_meas = 40, gives the smaller steady variance?"
+    source: lecture.md L10
+  - layout: figure
+    title: "A hard-coded gain loses only the transient"
+    figure: figures/L10-fixed-gain.png
+    takeaway: "Starting at z₀, the Kalman and the fixed-gain filter are at 1.455 m RMS"
+    notes: "Left: K(t) from three different P₀ converging to K∞ = 0.4805. Right: RMS error over 2000 runs for the Kalman filter and the fixed gain, both started at z₀. Mean RMS over steps 20 to 39 is 1.455 m for both, against the square root of P∞, 1.470 m. On a small microcontroller, store K∞ as a constant, and recompute it when the loop rate changes, because R_proc is per step. Question: what changes K∞ when firmware changes Δt?"
+    source: lecture.md L10
+  - layout: table
+    title: "Symptoms and fixes"
+    table:
+      header: [Symptom, Likely cause, Try]
+      rows:
+        - ["Estimate drifts off the data; NIS mean ≫ 1", "R_proc too small", "Raise R_proc until NIS ≈ 1"]
+        - ["K decays toward 0", "R_proc = 0 (smug)", "Small nonzero R_proc"]
+        - ["As noisy as z; NIS mean ≪ 1", "R_proc large or Q_meas small", "Measure Q_meas at rest"]
+        - ["Constant offset that never decays", "Biased u", "Fix u or add a bias state"]
+        - ["Lags a moving signal", "No dynamics for the motion", "Larger R_proc or velocity state"]
+        - ["Long transient after start", "Bad x₀, large Q_meas", "x₀ = z₀, P₀ = Q_meas"]
+        - ["Off by about a square", "σ used as a variance", "Square σ; name vars *_var"]
+      widths: [3, 2, 3]
+    notes: "Walk the table from the top: each row is a symptom we met in the examples. The first two come from the process variance being too small or zero. The offset row is the book's nonlinear exercise: a wrong input u, lag, and a sensor variance of 30 against noise of variance 1.44. Only the ratio of R_proc to Q_meas sets the steady gain. Question: which symptom would you see first on a robot pushed by hand?"
+    source: lecture.md L11
+  - layout: bullets
+    title: "Claims you should be able to defend"
+    bullets:
+      - "Means add and variances add in predict, so predict never narrows"
+      - "The posterior variance is smaller than both inputs and ignores the means"
+      - "K = P̄/(P̄ + Q_meas) turns the update into prior plus a fraction of the residual"
+      - "R_proc = 0 makes the filter smug; the right R_proc is the model's honest doubt"
+      - "P converges, so a fixed gain K∞ is a valid hard-coded filter"
+    notes: "These five are the summary. For each, ask a student to defend it with one line of algebra or one figure from today. The smug filter and the constant gain are the two most useful in practice, because they explain why a clean-looking estimate can be wrong and why a tiny microcontroller can still run a Kalman filter. Question: which claim fails if the noise is not Gaussian?"
+    source: lecture.md L10
+  - layout: bullets
+    title: "What comes next"
+    bullets:
+      - "Labbe ch. 6: x and P become a vector and a matrix"
+      - "Thrun ch. 3, Table 3.1: this chapter with scalars replaced by matrices"
+      - "Labbe ch. 8: choosing the process noise, which today only showed going wrong"
+    notes: "Every line today has a matrix twin. Chapter 6 gives the multivariate filter with hidden velocity. Thrun's Table 3.1 is the same predict and update with matrices. Chapter 8 is about designing R_proc properly, the question we only saw failing. Homework suggestion: run the five-line loop on your own sensor log and plot P next to the error. Question: what would you add to the state to remove the constant offset?"
+    source: map.md feeds

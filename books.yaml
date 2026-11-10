@@ -248,3 +248,76 @@ xu-fastlio2:
   sections: [Introduction, Related Work, System Overview, State Estimation, Mapping, Experiments, Conclusion]
   lesson: t2.8
   code: [https://github.com/hku-mars/FAST_LIO, https://github.com/hku-mars/ikd-Tree, https://github.com/hku-mars/IKFoM]
+
+labbe-kbf:
+  title: Kalman and Bayesian Filters in Python
+  authors: Roger R. Labbe Jr.
+  year: null
+  pdf: library/open/labbe-kbf.pdf
+  kind: book
+  offset: 0
+  track: t2
+  chapters:
+    1:
+      title: The g-h Filter
+      pages: [17, 55]
+    2:
+      title: Discrete Bayes Filter
+      pages: [56, 89]
+    3:
+      title: Probabilities, Gaussians, and Bayes' Theorem
+      pages: [90, 130]
+    4:
+      title: One Dimensional Kalman Filters
+      pages: [131, 170]
+      lesson: t2.2
+    5:
+      title: Multivariate Gaussians
+      pages: [171, 205]
+    6:
+      title: Multivariate Kalman Filters
+      pages: [206, 265]
+    7:
+      title: Kalman Filter Math
+      pages: [266, 297]
+    8:
+      title: Designing Kalman Filters
+      pages: [298, 376]
+    9:
+      title: Nonlinear Filtering
+      pages: [377, 391]
+    10:
+      title: The Unscented Kalman Filter
+      pages: [392, 452]
+    11:
+      title: The Extended Kalman Filter
+      pages: [453, 479]
+    12:
+      title: Particle Filters
+      pages: [480, 508]
+    13:
+      title: Smoothing
+      pages: [509, 520]
+    14:
+      title: Adaptive Filtering
+      pages: [521, 562]
+
+sola-microlie:
+  title: A micro Lie theory for state estimation in robotics
+  authors: Solà, Deray, Atchuthan
+  year: 2018
+  pdf: library/open/sola-microlie.pdf
+  kind: paper
+  track: t2
+  lesson: t2.6
+  pages: 17
+  offset: 0
+  sections: [I Introduction, II A micro Lie Theory, II-A The Lie group, II-B The group actions, II-C The tangent spaces and
+      the Lie algebra, II-D The exponential map, II-E Plus and minus operators, 'II-F Adjoint, and adjoint matrix', II-G Derivatives
+      on Lie groups, 'II-H Uncertainty, covariances', II-I Discrete integration on manifolds, III Differentiation rules on
+      manifolds, III-A The chain rule, III-B Elementary Jacobian blocks, 'III-C Useful, but deduced, Jacobian blocks', IV
+      Composite manifolds, V Landmark-based localization and mapping, V-A Localization with error-state Kalman filter on manifold,
+    V-B Smooting and Mapping with graph-based optimization, V-C Smoothing and mapping with self-calibration, V-D 3D implementations,
+    VI Conclusion, 'Appendix A: The 2D rotation groups S1 and SO(2)', A-A Exp and Log maps, 'A-B Inverse, composition, exponential
+      map', A-C Jacobian blocks, 'Appendix B: The 3D rotation groups S3 and SO(3)', B-A Exp and Log maps, B-B Rotation action,
+    B-C Elementary Jacobian blocks]

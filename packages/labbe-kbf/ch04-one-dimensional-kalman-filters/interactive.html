@@ -1,0 +1,183 @@
+<!-- Interactive session for Labbe ch. 4, browser version of session.py. Included by build_viewer.py. Needs Plotly global. -->
+<style>
+.ix{display:flex;flex-direction:column;gap:26px;max-width:960px}
+.ix .intro{font-family:var(--serif);font-size:16px;max-width:72ch;color:var(--ink)}
+.fig-card{border:0.5px solid var(--rule);border-radius:12px;background:var(--sheet);padding:14px 14px 12px;font-family:var(--sans)}
+.fig-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fig-num{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink3)}
+.fig-title{font-size:16px;font-weight:600;margin-top:2px}
+.fig-hint{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+.fig-predict{margin:10px 0 4px;padding:8px 12px;border-left:3px solid var(--key);background:var(--code-bg);border-radius:0 6px 6px 0;font-size:13.5px}
+.fig-predict b{font-weight:600}
+.fig-chip{margin-top:2px;padding:3px 8px;border-radius:8px;font-size:11px;white-space:nowrap;background:var(--define);color:var(--accent-ink)}
+.fig-chip[data-state="warn"]{background:var(--key);color:#4a2f06}
+.fig-chip[data-state="bad"]{background:var(--derive);color:#501313}
+:root[data-theme="dark"] .fig-chip[data-state="warn"],:root[data-theme="dark"] .fig-chip[data-state="bad"]{color:#f5f4ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fig-chip[data-state="warn"],:root:not([data-theme="light"]) .fig-chip[data-state="bad"]{color:#f5f4ef}}
+.fig-plot{margin-top:8px;min-height:300px}
+.fig-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.fig-row label{min-width:150px;font-size:13px;color:var(--ink2)}
+.fig-row input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.fig-row output{min-width:64px;text-align:right;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.fig-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px;font-family:var(--mono)}
+.fig-tile{padding:8px 10px;border-radius:8px;background:var(--code-bg);min-width:0}
+.fig-tile .k{font-size:11px;color:var(--ink3)}
+.fig-tile .v{font-size:13px;font-weight:500;line-height:1.6;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fig-tile.wide{grid-column:1 / -1}
+.fig-after{margin-top:10px;font-size:13.5px;color:var(--ink2);font-family:var(--serif);font-size:15px}
+.fig-after summary{cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--accent-ink);font-weight:500}
+@media (max-width:600px){.fig-row label{min-width:110px}}
+</style>
+<div class="ix">
+<p class="intro">Four figures, one five-line filter. Each has a <b>Predict first</b> prompt: write your guess down before you move the slider. The gap between your guess and the plot is where the learning is. Colours: blue = estimate, coral = measurement, teal = the quantity being taught, gray = truth and structure. R_proc is Labbe's Q, Q_meas is Labbe's R.</p>
+
+<figure class="fig-card" id="figA">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2a · p. 138, p. 150</div><div class="fig-title">The posterior is narrower than both inputs and sits near the narrower one</div></div><div class="fig-chip" id="chipA"></div></div>
+  <div class="fig-hint">Prior x̄ = 10 m with variance P̄; one measurement z with variance Q_meas. K moves the mean the fraction K of the way from x̄ to z.</div>
+  <div class="fig-predict"><b>Predict first.</b> Set P̄ = 4 m² and Q_meas = 1 m². Does the posterior mean sit closer to the prior or to z, and by what fraction of z − x̄? Then make Q_meas = 25 m². Is the posterior variance ever larger than the smaller of the two inputs?</div>
+  <div class="fig-row"><label for="a_P">prior variance P̄ [m²]</label><input type="range" id="a_P" min="0.1" max="25" step="0.1" value="4"><output id="a_P_o"></output></div>
+  <div class="fig-row"><label for="a_Q">measurement variance Q_meas [m²]</label><input type="range" id="a_Q" min="0.1" max="25" step="0.1" value="1"><output id="a_Q_o"></output></div>
+  <div class="fig-row"><label for="a_z">measurement z [m]</label><input type="range" id="a_z" min="6" max="16" step="0.5" value="12"><output id="a_z_o"></output></div>
+  <div class="fig-plot" id="plotA" style="min-height:360px"></div>
+  <div class="fig-tiles" id="tilesA"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>With P̄ = 4 and Q_meas = 1 the gain is K = 0.8, so the mean moves 80 % of the way to z (p. 150: μ = μ̄ + K(z − μ̄)). The variance is P̄Q_meas/(P̄ + Q_meas), always below both inputs: an update never loses information, a predict always does (pp. 136, 146). The two "should be 0" tiles are the point of p. 149–150: the Bayes-form product and the gain form are the same formula.</details>
+</figure>
+
+<figure class="fig-card" id="figB">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2b · pp. 143–148, 164</div><div class="fig-title">P and K forget x₀ at a rate set by the variances, not by the data</div></div><div class="fig-chip" id="chipB"></div></div>
+  <div class="fig-hint">True dog: u = 1 m/step, R_proc = 2 m², RFID Q_meas = 4.5 m² (p. 147, the same draws every time). The filter starts at x₀ with variance P₀.</div>
+  <div class="fig-predict"><b>Predict first.</b> The dog starts at 0 m. Put x₀ = 20 m with P₀ = 400 m². Is the estimate at step 5 still wrong by 20 m? Now set P₀ = 1 m². How many steps until the filter is back on the dog, and what number sets that rate?</div>
+  <div class="fig-row"><label for="b_x0">initial guess x₀ [m]</label><input type="range" id="b_x0" min="-30" max="30" step="1" value="0"><output id="b_x0_o"></output></div>
+  <div class="fig-row"><label for="b_P0">initial variance P₀ [m²]</label><input type="range" id="b_P0" min="1" max="500" step="1" value="400"><output id="b_P0_o"></output></div>
+  <div class="fig-row"><label for="b_R">filter R_proc [m²/step]</label><input type="range" id="b_R" min="0.1" max="10" step="0.1" value="2"><output id="b_R_o"></output></div>
+  <div class="fig-row"><label for="b_Q">filter Q_meas [m²]</label><input type="range" id="b_Q" min="0.5" max="25" step="0.5" value="4.5"><output id="b_Q_o"></output></div>
+  <div class="fig-plot" id="plotB" style="min-height:380px"></div>
+  <div class="fig-tiles" id="tilesB"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>With x₀ = 20 and P₀ = 400 the first gain is 0.989 and the step-1 error is already −3.6 m: the first measurement replaces x₀ (pp. 144, 146: P̄ = 401 for the book's R_proc = 1). With P₀ = 1 the first gain is 0.4, the step-1 error is still 11.0 m, and it is −0.5 m by step 5 (p. 161–162: the initial error washes out at a rate set by the variances). The posterior variance never looks at z: P₂₅ − P∞ is 0 for any x₀, and for the book's settings P∞ = 2.1623 m² (p. 148).</details>
+</figure>
+
+<figure class="fig-card" id="figC">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2c · pp. 148, 167–168</div><div class="fig-title">Only the ratio R_proc/Q_meas sets K∞; the scale sets P∞</div></div><div class="fig-chip" id="chipC"></div></div>
+  <div class="fig-hint">No data enters: P_k and K_k depend only on P₀ = 400 m², R_proc and Q_meas. The coral lines are the gain, and the posterior variance, of a fixed hard-coded K on the same random walk.</div>
+  <div class="fig-predict"><b>Predict first.</b> Double R_proc and keep Q_meas. Does K∞ go up or down, and by about how much? Then multiply <i>both</i> by 10. What happens to K∞, and what happens to P∞?</div>
+  <div class="fig-row"><label for="c_R">R_proc [m²/step]</label><input type="range" id="c_R" min="0.1" max="10" step="0.1" value="2"><output id="c_R_o"></output></div>
+  <div class="fig-row"><label for="c_Q">Q_meas [m²]</label><input type="range" id="c_Q" min="0.5" max="50" step="0.5" value="4.5"><output id="c_Q_o"></output></div>
+  <div class="fig-row"><label for="c_K">hard-coded gain K</label><input type="range" id="c_K" min="0.01" max="0.99" step="0.01" value="0.13"><output id="c_K_o"></output></div>
+  <div class="fig-plot" id="plotC" style="min-height:230px"></div>
+  <div class="fig-plot" id="plotC2" style="min-height:230px"></div>
+  <div class="fig-tiles" id="tilesC"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>K∞ solves K²/(1 − K) = R_proc/Q_meas: multiplying both by 10 leaves it where it was, and P∞ grows ten-fold (it is in m²). Doubling R_proc alone raises the gain, because a belief that decays faster should listen more. The book's K = 0.13232 (p. 168) implies a ratio of 0.0202, which matches none of the chapter's filters (see map.md); the last tile is how you check any hard-coded gain against the filter it should have come from.</details>
+</figure>
+
+<figure class="fig-card" id="figD">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2d · pp. 160–161</div><div class="fig-title">A small R_proc makes K small, so a model error is never corrected</div></div><div class="fig-chip" id="chipD"></div></div>
+  <div class="fig-hint">True target: 1 m/step for 20 steps, then the velocity you set; R_proc = 1 m², Q_meas = 4 m². The filter assumes the velocity on the third slider and uses the first for its own R_proc.</div>
+  <div class="fig-predict"><b>Predict first.</b> Drop the filter's R_proc to 10⁻³ m². Does the filter <i>notice</i> that the target manoeuvred? Look at K and the innovation, not just the plot.</div>
+  <div class="fig-row"><label for="d_R">log₁₀ filter R_proc (0 → 1 m²)</label><input type="range" id="d_R" min="-3" max="1" step="0.1" value="0"><output id="d_R_o"></output></div>
+  <div class="fig-row"><label for="d_v">target velocity after step 20 [m/step]</label><input type="range" id="d_v" min="1" max="3" step="0.1" value="2"><output id="d_v_o"></output></div>
+  <div class="fig-row"><label for="d_u">velocity the filter assumes [m/step]</label><input type="range" id="d_u" min="0" max="3" step="0.1" value="1"><output id="d_u_o"></output></div>
+  <div class="fig-plot" id="plotD" style="min-height:330px"></div>
+  <div class="fig-plot" id="plotD2" style="min-height:230px"></div>
+  <div class="fig-tiles" id="tilesD"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>At R_proc = 10⁻³ m² (target velocity 2 m/step after step 20) the gain at step 40 is 0.028, the filter is 10.9 m behind the target, its 1σ is 0.33 m, and 40 % of the steps are above the 99 % NIS bound: sure and wrong ("The filter does not 'notice' that it is diverging", p. 161). The position plot shows a confident line; NIS is what shows the failure. At the honest R_proc = 1 m² the same target gives gain 0.39, an error of 1.3 m (the lag of a constant-velocity filter on a velocity step) and 2.5 % of steps above the bound. Setting the assumed velocity to 2 with the target at 1 (honest R_proc) leaves a 4.4 m error at step 40 but the gain stays at 0.39: the variances decide whether the filter can correct a wrong model. T5's gust is this failure on a drone.</details>
+</figure>
+</div>
+
+<script>
+(function(){
+/*DATA*/const DATA={"W1": [-0.651791, -0.174717, 1.663724, 0.659148, -1.641397, -0.005203, -0.623464, 0.148632, -1.608188, 0.241772, 0.235381, 1.575626, 0.316645, 0.510547, -1.493117, 2.252729, -1.915646, 1.101802, -0.329904, -0.880647, -0.656285, -0.672015, 0.380189, -0.110059, 1.482571], "V1": [-1.829604, -0.003081, -0.892056, 0.775872, -2.11806, -0.343694, 0.210173, -1.484269, 0.985216, 0.178713, 1.006857, 0.959185, -0.979855, -0.797796, -0.203332, 0.74796, 0.850967, -0.709685, -0.607197, -0.797823, -0.584238, -0.237923, -0.131815, 2.058114, -0.506404], "W2": [-0.288724, 0.458578, -0.953074, -0.368627, 0.013318, 0.774146, -1.316015, 1.371469, -0.352457, 0.169416, 0.847088, 0.660793, 1.059232, 0.173198, -0.019613, 0.316479, -0.995715, 1.214187, -0.775386, -1.260244, 2.056409, -0.136445, -1.179125, 1.85227, -0.329713, 1.062076, -0.829489, -0.24878, -1.688529, -1.908939, -0.976435, -0.078039, 0.797986, 2.426221, -1.031863, 1.00904, -0.604341, -0.152529, -1.481192, -1.478986], "V2": [-0.778461, -1.193111, -0.003554, -0.702514, 1.250697, 0.15302, 0.165238, 1.137435, 0.518112, -0.037333, -0.090723, -0.120949, 1.076722, 0.783086, 0.365918, 0.798829, -0.544533, 0.511023, -1.412334, 1.347271, 0.090048, 0.183393, 0.599384, -0.00971, -0.254108, 1.189785, 0.115751, -0.915872, 0.439559, -1.70512, 1.655542, -0.171131, 0.045884, 2.25777, 2.151741, 0.115807, 0.624866, 1.09018, 1.682021, -0.131093]};/*END DATA*/
+const CHI99=6.635;
+// ---------- filter (same as exercises/solutions/T3_solution.py)
+const predict=(x,P,u,R)=>[x+u,P+R];
+function update(xb,Pb,z,Q){const y=z-xb,S=Pb+Q,K=Pb/S;return{x:xb+K*y,P:Pb*Q/S,y,S,K}}
+function updateBayes(xb,Pb,z,Q){const S=Pb+Q,P=1/(1/Pb+1/Q),x=P*(xb/Pb+z/Q);return{x,P,logc:-0.5*(Math.log(2*Math.PI*S)+(z-xb)*(z-xb)/S)}}
+function runFilter(zs,x0,P0,u,R,Q){let x=x0,P=P0;const o={x:[],P:[],xb:[],Pb:[],y:[],S:[],K:[],nis:[]};
+  zs.forEach(z=>{const[xb,Pb]=predict(x,P,u,R);const r=update(xb,Pb,z,Q);x=r.x;P=r.P;o.x.push(x);o.P.push(P);o.xb.push(xb);o.Pb.push(Pb);o.y.push(r.y);o.S.push(r.S);o.K.push(r.K);o.nis.push(r.y*r.y/r.S)});return o}
+function steady(R,Q){const Pinf=2*R*Q/(R+Math.sqrt(R*R+4*R*Q));return{Pinf,Kinf:Pinf/Q}}
+const ratioFromGain=K=>K*K/(1-K);
+function fixedVar(K,R,Q){const a=(1-K)*(1-K);return(a*R+K*K*Q)/(1-a)}
+function truth(W,V,u,R,Q){let x=0;const xs=[],zs=[];W.forEach((w,k)=>{x+=(Array.isArray(u)?u[k]:u)+Math.sqrt(R)*w;xs.push(x);zs.push(x+Math.sqrt(Q)*V[k])});return{xs,zs}}
+const pdf=(x,mu,v)=>Math.exp(-0.5*(x-mu)*(x-mu)/v)/Math.sqrt(2*Math.PI*v);
+const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+const range=(a,b,n)=>Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
+// ---------- style
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const COL={blue:'#378ADD',coral:'#D85A30',teal:'#1D9E75',gray:'#888780'};
+function layout(extra){const ink=css('--ink'),mut=css('--ink2'),grid=css('--rule'),bg=css('--sheet');return Object.assign({paper_bgcolor:bg,plot_bgcolor:bg,font:{family:'IBM Plex Sans, system-ui, sans-serif',color:ink,size:12},margin:{l:56,r:12,t:36,b:40},legend:{font:{color:mut,size:11},bgcolor:'rgba(0,0,0,0)'},xaxis:{gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},yaxis:{gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},title:{x:0,font:{size:13,color:ink}}},extra)}
+const cfg={displayModeBar:false,responsive:true};
+const ug=(v,d,u)=>(v<0?'−':'')+Math.abs(v).toFixed(d)+(u||'');
+const sg=(v,d,u)=>(v<0?'−':'+')+Math.abs(v).toFixed(d)+(u||'');
+function tiles(id,obj){document.getElementById(id).innerHTML=Object.entries(obj).map(([k,v])=>`<div class="fig-tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+function chip(id,text,state){const c=document.getElementById(id);c.textContent=text;c.dataset.state=state}
+function bind(ids,fn){ids.forEach(id=>{const el=document.getElementById(id),o=document.getElementById(id+'_o');const upd=()=>{o.textContent=el.value;fn()};el.addEventListener('input',upd);o.textContent=el.value});fn()}
+const val=id=>+document.getElementById(id).value;
+const band=(k,m,s,n,color,name)=>({x:[...k,...[...k].reverse()],y:[...m.map((v,i)=>v+n*s[i]),...m.map((v,i)=>v-n*s[i]).reverse()],fill:'toself',mode:'none',fillcolor:color,name,hoverinfo:'skip'});
+
+// ---------- Fig A
+function figA(){const P=val('a_P'),Q=val('a_Q'),z=val('a_z'),xb=10;
+  const r=update(xb,P,z,Q),B=updateBayes(xb,P,z,Q),g=range(2,20,500);
+  Plotly.react('plotA',[{x:g,y:g.map(v=>pdf(v,xb,P)),name:'prior N(x̄, P̄)',mode:'lines',line:{color:COL.gray,dash:'dash',width:2}},
+    {x:g,y:g.map(v=>pdf(v,z,Q)),name:'likelihood N(z, Q_meas)',mode:'lines',line:{color:COL.coral,width:2}},
+    {x:g,y:g.map(v=>pdf(v,r.x,r.P)),name:'posterior',mode:'lines',line:{color:COL.teal,width:3},fill:'tozeroy',fillcolor:'rgba(29,158,117,0.12)'},
+    {x:[xb,r.x,z],y:[0,0,0],mode:'markers',showlegend:false,marker:{size:9,color:[COL.gray,COL.teal,COL.coral]}}],
+    layout({title:{text:'prior × likelihood → posterior (one update)'},xaxis:{title:'position [m]'},yaxis:{title:'density [1/m]'},height:360}),cfg);
+  chip('chipA',r.K<0.5?'prior-dominated':'measurement-dominated','ok');
+  tiles('tilesA',{'gain K = P̄/(P̄+Q_meas)':ug(r.K,3),'posterior mean':ug(r.x,3,' m'),'posterior variance P':ug(r.P,3,' m²'),
+    'P vs min(P̄, Q_meas)':`${ug(r.P,3)} < ${ug(Math.min(P,Q),3)}`,
+    'Bayes form − gain form, x / P (should be 0)':`${Math.abs(B.x-r.x).toFixed(3)} / ${Math.abs(B.P-r.P).toFixed(3)}`,
+    'evidence log c = log N(z; x̄, S)':ug(B.logc,3)})}
+
+// ---------- Fig B
+function figB(){const x0=val('b_x0'),P0=val('b_P0'),R=val('b_R'),Q=val('b_Q');
+  const t=truth(DATA.W1,DATA.V1,1.0,2.0,4.5),o=runFilter(t.zs,x0,P0,1.0,R,Q),n=t.zs.length,k=Array.from({length:n},(_,i)=>i+1);
+  const sd=o.P.map(Math.sqrt),st=steady(R,Q),gap=o.P[n-1]-st.Pinf;
+  const rms=Math.sqrt(mean(o.x.map((v,i)=>(v-t.xs[i])**2)));
+  Plotly.react('plotB',[band(k,o.x,sd,1,'rgba(55,138,221,0.18)','estimate ±1σ'),
+    {x:k,y:t.xs,name:'true position',mode:'lines',line:{color:COL.gray,width:2}},
+    {x:k,y:t.zs,name:'RFID measurements',mode:'markers',marker:{color:COL.coral,size:6}},
+    {x:[0,...k],y:[x0,...o.x],name:'Kalman estimate',mode:'lines',line:{color:COL.blue,width:2.5}}],
+    layout({title:{text:"dog in a hallway: the filter's belief against the truth"},xaxis:{title:'step k'},yaxis:{title:'position [m]'},height:380}),cfg);
+  const conv=Math.abs(gap)<1e-3;chip('chipB',conv?'P at the fixed point':'P still converging',conv?'ok':'warn');
+  tiles('tilesB',{'estimate after 25 steps':ug(o.x[n-1],2,' m'),'true position':ug(t.xs[n-1],2,' m'),'P after 25 steps':ug(o.P[n-1],4,' m²'),
+    'fixed point P∞ (solve P² + R_proc·P − R_proc·Q_meas = 0)':ug(st.Pinf,4,' m²'),'P₂₅ − P∞ (→ 0, any x₀)':sg(gap,4,' m²'),
+    'RMS error vs truth / mean NIS (≈ 1)':`${rms.toFixed(2)} m / ${mean(o.nis).toFixed(2)}`})}
+
+// ---------- Fig C
+function figC(){const R=val('c_R'),Q=val('c_Q'),Kf=val('c_K'),N=30;
+  let x=0,P=400;const Ks=[],Ps=[];
+  for(let i=0;i<N;i++){const[xb,Pb]=predict(x,P,0,R);const r=update(xb,Pb,0,Q);x=r.x;P=r.P;Ks.push(Pb/r.S);Ps.push(P)}
+  const st=steady(R,Q),Pfix=fixedVar(Kf,R,Q),rfix=ratioFromGain(Kf),kk=Array.from({length:N},(_,i)=>i+1);
+  const idx=Ks.findIndex(v=>Math.abs(v-st.Kinf)<0.01*st.Kinf);
+  const sh=(y,c,d)=>({type:'line',xref:'paper',x0:0,x1:1,y0:y,y1:y,line:{color:c,dash:d,width:1.5}});
+  Plotly.react('plotC',[{x:kk,y:Ks,mode:'lines',name:'K_k',line:{color:COL.teal,width:2.5}}],
+    layout({title:{text:'gain K_k = P̄/(P̄ + Q_meas); dotted coral = your fixed K'},xaxis:{title:'step k'},yaxis:{title:'K'},height:230,showlegend:false,
+      shapes:[{type:'rect',xref:'paper',x0:0,x1:1,y0:st.Kinf*0.99,y1:st.Kinf*1.01,fillcolor:'rgba(29,158,117,0.2)',line:{width:0}},sh(Kf,COL.coral,'dot')]}),cfg);
+  Plotly.react('plotC2',[{x:kk,y:Ps,mode:'lines',name:'P_k',line:{color:COL.blue,width:2.5}}],
+    layout({title:{text:'posterior variance P_k [m²]; dashed gray = P∞, dotted coral = fixed-K variance'},xaxis:{title:'step k'},yaxis:{title:'P [m²]',type:'log'},height:230,showlegend:false,
+      shapes:[sh(st.Pinf,COL.gray,'dash'),sh(Pfix,COL.coral,'dot')]}),cfg);
+  const ok=Math.abs(Kf-st.Kinf)<0.005;chip('chipC',ok?'K at the optimum':(Kf<st.Kinf?'K too low: slow':'K too high: noisy'),ok?'ok':'warn');
+  tiles('tilesC',{'K∞ / P∞':`${ug(st.Kinf,4)} / ${ug(st.Pinf,4,' m²')}`,'K∞²/(1−K∞) − R_proc/Q_meas (should be 0)':Math.abs(ratioFromGain(st.Kinf)-R/Q).toFixed(3),
+    'steps until K_k is within 1% of K∞':idx<0?'more than 30':String(idx+1),'variance of the hard-coded K':ug(Pfix,4,' m²'),
+    'that variance / P∞ (cost of not adapting)':ug(Pfix/st.Pinf,3,'×'),'R_proc/Q_meas your K assumes':ug(rfix,5)})}
+
+// ---------- Fig D
+function figD(){const Rf=Math.pow(10,val('d_R')),v=val('d_v'),u=val('d_u'),n=DATA.W2.length;
+  const ut=Array.from({length:n},(_,i)=>i<20?1.0:v),t=truth(DATA.W2,DATA.V2,ut,1.0,4.0),o=runFilter(t.zs,t.zs[0],4.0,u,Rf,4.0);
+  const k=Array.from({length:n},(_,i)=>i+1),sd=o.P.map(Math.sqrt),Kk=o.Pb.map((p,i)=>p/o.S[i]),frac=o.nis.filter(q=>q>CHI99).length/n,err=o.x[n-1]-t.xs[n-1];
+  Plotly.react('plotD',[band(k,o.x,sd,2,'rgba(55,138,221,0.18)','estimate ±2σ'),{x:k,y:t.xs,name:'true position',mode:'lines',line:{color:COL.gray,width:2}},
+    {x:k,y:t.zs,name:'measurements',mode:'markers',marker:{color:COL.coral,size:5}},{x:k,y:o.x,name:'filter',mode:'lines',line:{color:COL.blue,width:2.5}}],
+    layout({title:{text:'position [m]: the filter cannot see its own failure here'},xaxis:{title:'step k'},yaxis:{title:'position [m]'},height:330,
+      shapes:[{type:'line',x0:20.5,x1:20.5,yref:'paper',y0:0,y1:1,line:{color:COL.gray,dash:'dot',width:1}}]}),cfg);
+  Plotly.react('plotD2',[{x:k,y:o.nis,mode:'lines',line:{color:COL.teal,width:1.8},name:'NIS'}],
+    layout({title:{text:'NIS = y²/S (dashed: 99% χ² bound, 6.635)'},xaxis:{title:'step k'},yaxis:{title:'NIS'},height:230,showlegend:false,
+      shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:CHI99,y1:CHI99,line:{color:COL.gray,dash:'dash',width:1}}]}),cfg);
+  let c,s;if(frac>0.25){c='diverged: ignores the data';s='bad'}else if(frac>0.05){c='overconfident';s='warn'}else{c='consistent';s='ok'}chip('chipD',c,s);
+  tiles('tilesD',{'filter R_proc':ug(Rf,4,' m²'),'gain K at the last step':ug(Kk[n-1],3),'error at step 40 (filter − truth)':sg(err,2,' m'),
+    'mean NIS (honest and matched: ≈ 1)':ug(mean(o.nis),2),'NIS above the 99% bound':`${(100*frac).toFixed(1)}% of steps (expect ≈ 1%)`,'P at the last step':ug(o.P[n-1],4,' m²')})}
+
+let inited=false;
+function init(){if(inited)return;if(!window.Plotly){setTimeout(init,300);return}inited=true;bind(['a_P','a_Q','a_z'],figA);bind(['b_x0','b_P0','b_R','b_Q'],figB);bind(['c_R','c_Q','c_K'],figC);bind(['d_R','d_v','d_u'],figD)}
+window.__ixRedraw=()=>{if(!inited){init();return}figA();figB();figC();figD()};
+if(!document.getElementById('panel-session').hidden)init();
+})();
+</script>

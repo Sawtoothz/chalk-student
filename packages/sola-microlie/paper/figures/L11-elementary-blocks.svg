@@ -1,0 +1,378 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="526.110637pt" height="384.624pt" viewBox="0 0 526.110637 384.624" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-11T00:13:37.880257</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.6.3, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 384.624 
+L 526.110637 384.624 
+L 526.110637 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 31.745363 227.392995 
+L 161.310637 227.392995 
+L 161.310637 97.827722 
+L 31.745363 97.827722 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p7db3eb62f8)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAYAAACJm/9dAAACTElEQVR4nO3VsYmCQRRG0VEswhKMBfuvYbcIA41E+MVAdhPDm88E51Tw8eDydq9t+xvw9Xt/zZ6whP3sAbAiYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGhMNt+8zesITH2x3GGOP8/Jk9YQk+BgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAaEw+P9mb1hCaf9ffaEJVyPl9kTluBjQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUD4B6sPFQ+xQcohAAAAAElFTkSuQmCC" id="image6eefa453c7" transform="scale(1 -1) translate(0 -129.6)" x="31.745363" y="-97.792995" width="129.6" height="129.6"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="53.339576" y="121.511387" transform="rotate(-0 53.339576 121.511387)">−0.87</text>
+   </g>
+   <g id="text_2">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="96.528" y="121.511387" transform="rotate(-0 96.528 121.511387)">+0.50</text>
+   </g>
+   <g id="text_3">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="139.716424" y="121.511387" transform="rotate(-0 139.716424 121.511387)">−0.50</text>
+   </g>
+   <g id="text_4">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="53.339576" y="164.699812" transform="rotate(-0 53.339576 164.699812)">−0.50</text>
+   </g>
+   <g id="text_5">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="96.528" y="164.699812" transform="rotate(-0 96.528 164.699812)">−0.87</text>
+   </g>
+   <g id="text_6">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="139.716424" y="164.699812" transform="rotate(-0 139.716424 164.699812)">+1.00</text>
+   </g>
+   <g id="text_7">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="53.339576" y="207.888236" transform="rotate(-0 53.339576 207.888236)">+0.00</text>
+   </g>
+   <g id="text_8">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="96.528" y="207.888236" transform="rotate(-0 96.528 207.888236)">+0.00</text>
+   </g>
+   <g id="text_9">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="139.716424" y="207.888236" transform="rotate(-0 139.716424 207.888236)">−1.00</text>
+   </g>
+   <g id="text_10">
+    <!-- $J^{X^{-1}}_{X}$  FD -->
+    <g style="fill: #1f1e1d" transform="translate(31.745363 87.827722)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0" y="-0.2538390624999991">J</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="6.096191 7.347102" y="2.5521921874999993 -4.4628859375">XX</tspan>
+      <tspan style="font: 5.39px 'cmsy10'" x="14.599302" y="-7.409218750000001">¡</tspan>
+      <tspan style="font: 5.39px 'cmr10'" x="18.786553" y="-7.409218750000001">1</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="22.674117 26.170699 29.667281 35.994429" y="-0.2538390624999991">  FD</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_3">
+    <path d="M 210.545363 227.392995 
+L 340.110637 227.392995 
+L 340.110637 97.827722 
+L 210.545363 97.827722 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p0989631e2c)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAYAAACJm/9dAAACT0lEQVR4nO3VoW0CUABFUWgoSTdgg2IYvzuQYNEEiUIVqGgCBnn9/+KcCZ65ecvH/f5cwNvqtB89YQofowfAjIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBBWn+fD6A1T+N98j54whZ/FdvSEKXgMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjLv+vlOXrEDI6/69ETprD7uo2eMAWPAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAHhBdhpEaeekPU1AAAAAElFTkSuQmCC" id="image584b62bc41" transform="scale(1 -1) translate(0 -129.6)" x="210.545363" y="-97.792995" width="129.6" height="129.6"/>
+   </g>
+   <g id="matplotlib.axis_3"/>
+   <g id="matplotlib.axis_4"/>
+   <g id="text_11">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="232.139576" y="121.511387" transform="rotate(-0 232.139576 121.511387)">+0.26</text>
+   </g>
+   <g id="text_12">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="275.328" y="121.511387" transform="rotate(-0 275.328 121.511387)">−0.97</text>
+   </g>
+   <g id="text_13">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="318.516424" y="121.511387" transform="rotate(-0 318.516424 121.511387)">+0.37</text>
+   </g>
+   <g id="text_14">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="232.139576" y="164.699812" transform="rotate(-0 232.139576 164.699812)">+0.97</text>
+   </g>
+   <g id="text_15">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="275.328" y="164.699812" transform="rotate(-0 275.328 164.699812)">+0.26</text>
+   </g>
+   <g id="text_16">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="318.516424" y="164.699812" transform="rotate(-0 318.516424 164.699812)">−1.34</text>
+   </g>
+   <g id="text_17">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="232.139576" y="207.888236" transform="rotate(-0 232.139576 207.888236)">+0.00</text>
+   </g>
+   <g id="text_18">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="275.328" y="207.888236" transform="rotate(-0 275.328 207.888236)">+0.00</text>
+   </g>
+   <g id="text_19">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="318.516424" y="207.888236" transform="rotate(-0 318.516424 207.888236)">+1.00</text>
+   </g>
+   <g id="text_20">
+    <!-- $J^{XY}_{X}$  FD -->
+    <g style="fill: #1f1e1d" transform="translate(210.545363 87.827722)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0" y="-0.5300156250000008">J</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="6.096191 7.347102 13.723665" y="2.2760156249999994 -4.7390625 -4.7390625">XXY</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="18.891774 22.388356 25.884938 32.212087" y="-0.5300156250000008">  FD</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_3">
+   <g id="patch_4">
+    <path d="M 389.345363 227.392995 
+L 518.910637 227.392995 
+L 518.910637 97.827722 
+L 389.345363 97.827722 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#pf8779fcb61)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAYAAACJm/9dAAACOklEQVR4nO3VoQ3DQAAEwST6SlyF+0euwmXYxFJCApf/g5kKjqzufV/X9wV/4zxmT1jCZ/YAWJEwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAPCmD1gFeM8Zk9YwrPtsycswWNAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBjjPGZvWMKz7bMnsBCPAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAHhB5iSDRw8zrZZAAAAAElFTkSuQmCC" id="image7236b3ea35" transform="scale(1 -1) translate(0 -129.6)" x="389.345363" y="-97.792995" width="129.6" height="129.6"/>
+   </g>
+   <g id="matplotlib.axis_5"/>
+   <g id="matplotlib.axis_6"/>
+   <g id="text_21">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="410.939576" y="121.511387" transform="rotate(-0 410.939576 121.511387)">+1.00</text>
+   </g>
+   <g id="text_22">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="454.128" y="121.511387" transform="rotate(-0 454.128 121.511387)">+0.00</text>
+   </g>
+   <g id="text_23">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="497.316424" y="121.511387" transform="rotate(-0 497.316424 121.511387)">+0.00</text>
+   </g>
+   <g id="text_24">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="410.939576" y="164.699812" transform="rotate(-0 410.939576 164.699812)">+0.00</text>
+   </g>
+   <g id="text_25">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="454.128" y="164.699812" transform="rotate(-0 454.128 164.699812)">+1.00</text>
+   </g>
+   <g id="text_26">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="497.316424" y="164.699812" transform="rotate(-0 497.316424 164.699812)">+0.00</text>
+   </g>
+   <g id="text_27">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="410.939576" y="207.888236" transform="rotate(-0 410.939576 207.888236)">+0.00</text>
+   </g>
+   <g id="text_28">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="454.128" y="207.888236" transform="rotate(-0 454.128 207.888236)">+0.00</text>
+   </g>
+   <g id="text_29">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="497.316424" y="207.888236" transform="rotate(-0 497.316424 207.888236)">+1.00</text>
+   </g>
+   <g id="text_30">
+    <!-- $J^{XY}_{Y}$  FD -->
+    <g style="fill: #1f1e1d" transform="translate(389.345363 87.827722)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0" y="-0.5300156250000008">J</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="6.096191 7.347102 13.723665" y="2.2760156249999994 -4.7390625 -4.7390625">YXY</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="18.891774 22.388356 25.884938 32.212087" y="-0.5300156250000008">  FD</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_4">
+   <g id="patch_5">
+    <path d="M 31.745363 377.424 
+L 161.310637 377.424 
+L 161.310637 247.858727 
+L 31.745363 247.858727 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p8b8bcac651)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAYAAACJm/9dAAACTElEQVR4nO3VsYmCQRRG0VEswhKMBfuvYbcIA41E+MVAdhPDm88E51Tw8eDydq9t+xvw9Xt/zZ6whP3sAbAiYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGhMNt+8zesITH2x3GGOP8/Jk9YQk+BgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAaEw+P9mb1hCaf9ffaEJVyPl9kTluBjQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUD4B6sPFQ+xQcohAAAAAElFTkSuQmCC" id="imageef425e151b" transform="scale(1 -1) translate(0 -129.6)" x="31.745363" y="-247.824" width="129.6" height="129.6"/>
+   </g>
+   <g id="matplotlib.axis_7"/>
+   <g id="matplotlib.axis_8"/>
+   <g id="text_31">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="53.339576" y="271.542392" transform="rotate(-0 53.339576 271.542392)">−0.87</text>
+   </g>
+   <g id="text_32">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="96.528" y="271.542392" transform="rotate(-0 96.528 271.542392)">+0.50</text>
+   </g>
+   <g id="text_33">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="139.716424" y="271.542392" transform="rotate(-0 139.716424 271.542392)">−0.50</text>
+   </g>
+   <g id="text_34">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="53.339576" y="314.730816" transform="rotate(-0 53.339576 314.730816)">−0.50</text>
+   </g>
+   <g id="text_35">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="96.528" y="314.730816" transform="rotate(-0 96.528 314.730816)">−0.87</text>
+   </g>
+   <g id="text_36">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="139.716424" y="314.730816" transform="rotate(-0 139.716424 314.730816)">+1.00</text>
+   </g>
+   <g id="text_37">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="53.339576" y="357.919241" transform="rotate(-0 53.339576 357.919241)">+0.00</text>
+   </g>
+   <g id="text_38">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="96.528" y="357.919241" transform="rotate(-0 96.528 357.919241)">+0.00</text>
+   </g>
+   <g id="text_39">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="139.716424" y="357.919241" transform="rotate(-0 139.716424 357.919241)">−1.00</text>
+   </g>
+   <g id="text_40">
+    <!-- $-\mathrm{Ad}_X$  (62) -->
+    <g style="fill: #1f1e1d" transform="translate(31.745363 237.858727)">
+     <text>
+      <tspan style="font: 11px 'cmsy10'" x="0" y="-0.65625">¡</tspan>
+      <tspan style="font: 11px 'cmr10'" x="8.54541 16.79541" y="-0.65625">Ad</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="23.393399" y="1.2144375000000007">X</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="30.47147 33.968052 37.464634 41.756138 48.754673 55.753208" y="-0.65625">  (62)</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_5">
+   <g id="patch_6">
+    <path d="M 210.545363 377.424 
+L 340.110637 377.424 
+L 340.110637 247.858727 
+L 210.545363 247.858727 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#pd1cad1f0c4)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAYAAACJm/9dAAACT0lEQVR4nO3VoW0CUABFUWgoSTdgg2IYvzuQYNEEiUIVqGgCBnn9/+KcCZ65ecvH/f5cwNvqtB89YQofowfAjIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBBWn+fD6A1T+N98j54whZ/FdvSEKXgMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjCgCAMCMKAIAwIwoAgDAjLv+vlOXrEDI6/69ETprD7uo2eMAWPAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAHhBdhpEaeekPU1AAAAAElFTkSuQmCC" id="imaged2b3e62d1d" transform="scale(1 -1) translate(0 -129.6)" x="210.545363" y="-247.824" width="129.6" height="129.6"/>
+   </g>
+   <g id="matplotlib.axis_9"/>
+   <g id="matplotlib.axis_10"/>
+   <g id="text_41">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="232.139576" y="271.542392" transform="rotate(-0 232.139576 271.542392)">+0.26</text>
+   </g>
+   <g id="text_42">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="275.328" y="271.542392" transform="rotate(-0 275.328 271.542392)">−0.97</text>
+   </g>
+   <g id="text_43">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="318.516424" y="271.542392" transform="rotate(-0 318.516424 271.542392)">+0.37</text>
+   </g>
+   <g id="text_44">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="232.139576" y="314.730816" transform="rotate(-0 232.139576 314.730816)">+0.97</text>
+   </g>
+   <g id="text_45">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="275.328" y="314.730816" transform="rotate(-0 275.328 314.730816)">+0.26</text>
+   </g>
+   <g id="text_46">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="318.516424" y="314.730816" transform="rotate(-0 318.516424 314.730816)">−1.34</text>
+   </g>
+   <g id="text_47">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="232.139576" y="357.919241" transform="rotate(-0 232.139576 357.919241)">+0.00</text>
+   </g>
+   <g id="text_48">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="275.328" y="357.919241" transform="rotate(-0 275.328 357.919241)">+0.00</text>
+   </g>
+   <g id="text_49">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="318.516424" y="357.919241" transform="rotate(-0 318.516424 357.919241)">+1.00</text>
+   </g>
+   <g id="text_50">
+    <!-- $\mathrm{Ad}_Y^{-1}$  (65) -->
+    <g style="fill: #1f1e1d" transform="translate(210.545363 237.858727)">
+     <text>
+      <tspan style="font: 11px 'cmr10'" x="0 8.25" y="-0.6612656250000022">Ad</tspan>
+      <tspan style="font: 7.7px 'cmsy10'" x="14.847989" y="-4.870312500000001">¡</tspan>
+      <tspan style="font: 7.7px 'cmr10'" x="20.829776" y="-4.870312500000001">1</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="14.847989" y="2.144765625">Y</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="25.381284 28.877866 32.374448 36.665952 43.664487 50.663022" y="-0.6612656250000022">  (65)</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_6">
+   <g id="patch_7">
+    <path d="M 389.345363 377.424 
+L 518.910637 377.424 
+L 518.910637 247.858727 
+L 389.345363 247.858727 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p94cc433531)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMYAAADGCAYAAACJm/9dAAACOklEQVR4nO3VoQ3DQAAEwST6SlyF+0euwmXYxFJCApf/g5kKjqzufV/X9wV/4zxmT1jCZ/YAWJEwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAOCMCAIA4IwIAgDgjAgCAPCmD1gFeM8Zk9YwrPtsycswWNAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBAGBGFAEAYEYUAQBgRhQBjjPGZvWMKz7bMnsBCPAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAFBGBCEAUEYEIQBQRgQhAHhB5iSDRw8zrZZAAAAAElFTkSuQmCC" id="imagee11c9dbc62" transform="scale(1 -1) translate(0 -129.6)" x="389.345363" y="-247.824" width="129.6" height="129.6"/>
+   </g>
+   <g id="matplotlib.axis_11"/>
+   <g id="matplotlib.axis_12"/>
+   <g id="text_51">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="410.939576" y="271.542392" transform="rotate(-0 410.939576 271.542392)">+1.00</text>
+   </g>
+   <g id="text_52">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="454.128" y="271.542392" transform="rotate(-0 454.128 271.542392)">+0.00</text>
+   </g>
+   <g id="text_53">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="497.316424" y="271.542392" transform="rotate(-0 497.316424 271.542392)">+0.00</text>
+   </g>
+   <g id="text_54">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="410.939576" y="314.730816" transform="rotate(-0 410.939576 314.730816)">+0.00</text>
+   </g>
+   <g id="text_55">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="454.128" y="314.730816" transform="rotate(-0 454.128 314.730816)">+1.00</text>
+   </g>
+   <g id="text_56">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="497.316424" y="314.730816" transform="rotate(-0 497.316424 314.730816)">+0.00</text>
+   </g>
+   <g id="text_57">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="410.939576" y="357.919241" transform="rotate(-0 410.939576 357.919241)">+0.00</text>
+   </g>
+   <g id="text_58">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="454.128" y="357.919241" transform="rotate(-0 454.128 357.919241)">+0.00</text>
+   </g>
+   <g id="text_59">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="497.316424" y="357.919241" transform="rotate(-0 497.316424 357.919241)">+1.00</text>
+   </g>
+   <g id="text_60">
+    <!-- $I$  (66) -->
+    <g style="fill: #1f1e1d" transform="translate(389.345363 237.858727)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0" y="-0.65625">I</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="4.828613 8.325195 11.821777 16.113281 23.111816 30.110352" y="-0.65625">  (66)</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="text_61">
+   <text style="fill: #1f1e1d; font: 10.5px 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" transform="translate(7.2 15.178359)">Fig L11 · (61)–(66)  The inverse and composition blocks are adjoints: FD (top) = formula (bottom)</text>
+   <text style="fill: #1f1e1d; font: 10.5px 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif" transform="translate(7.2 26.936062)">max differences 2e−10, 9e−11, 1e−10</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p7db3eb62f8">
+   <rect x="31.745363" y="97.827722" width="129.565273" height="129.565273"/>
+  </clipPath>
+  <clipPath id="p0989631e2c">
+   <rect x="210.545363" y="97.827722" width="129.565273" height="129.565273"/>
+  </clipPath>
+  <clipPath id="pf8779fcb61">
+   <rect x="389.345363" y="97.827722" width="129.565273" height="129.565273"/>
+  </clipPath>
+  <clipPath id="p8b8bcac651">
+   <rect x="31.745363" y="247.858727" width="129.565273" height="129.565273"/>
+  </clipPath>
+  <clipPath id="pd1cad1f0c4">
+   <rect x="210.545363" y="247.858727" width="129.565273" height="129.565273"/>
+  </clipPath>
+  <clipPath id="p94cc433531">
+   <rect x="389.345363" y="247.858727" width="129.565273" height="129.565273"/>
+  </clipPath>
+ </defs>
+</svg>

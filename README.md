@@ -34,11 +34,17 @@ Then open **http://localhost:8765**. Details: [Install](https://github.com/Sawto
 
 | Package | Source | Open with |
 | --- | --- | --- |
+| One-dimensional Kalman filters (**open example**, book included) | Labbe, *Kalman and Bayesian Filters in Python*, ch. 4 (CC BY 4.0) | `just view labbe-kbf 4` |
+| A micro Lie theory (**open example**, paper included, easy read) | Solà, Deray, Atchuthan, 2018 (CC BY-NC-SA 4.0) | `just view sola-microlie 1` |
 | Nonparametric filters | Thrun, Burgard, Fox, *Probabilistic Robotics*, ch. 4 | `just view thrun-pr 4` |
 | Robot motion | *Probabilistic Robotics*, ch. 5 | `just view thrun-pr 5` |
 | A tour of multiple view geometry | Hartley, Zisserman, *Multiple View Geometry*, ch. 1 | `just view hz-mvg2 1` |
 | FAST-LIO2 (paper) | Xu et al., 2021 | `just view xu-fastlio2 1` |
 | Gaussian filters (worked example) | *Probabilistic Robotics*, ch. 3 | `examples/thrun-pr/ch03-gaussian-filters/` |
+
+The two **open examples** ship with their source PDFs (`library/open/`), so the Reader's annotated-page tab works
+out of the box; start with them. For the others, the book is not included: the lecture, cards and exercises work
+without it; with your own copy of the PDF at the path in `books.yaml`, `just teach <book> <chapter>` adds the annotated pages.
 
 Studying these needs **no AI account**. To build packages for your own chapters, set up an AI agent (Claude Code,
 Codex, Gemini CLI or another): see [Choose an AI engine](https://github.com/Sawtoothz/chalk-student/wiki/Choose-an-AI-Engine).
@@ -78,4 +84,8 @@ With Docker, type `chalk` (Windows) or `./chalk` instead of `just`.
 
 [MIT](LICENSE). The license covers Chalk's code and the teaching material written for it. Short passages quoted
 from the books and papers (highlight anchors, equations, page citations) remain the property of their authors and
-publishers and are included for teaching; the books themselves are not in this repository.
+publishers and are included for teaching; those books themselves are not in this repository.
+
+Exceptions: the openly licensed sources in `library/open/` and the packages built from them keep their own terms,
+stated in `library/open/README.md` and each package's `LICENSE.md`: Labbe's book and `packages/labbe-kbf/` are
+CC BY 4.0; Solà et al.'s paper and `packages/sola-microlie/` are CC BY-NC-SA 4.0 (non-commercial, share-alike).

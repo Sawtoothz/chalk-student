@@ -1,0 +1,202 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="655.808906pt" height="208.224pt" viewBox="0 0 655.808906 208.224" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-11T00:13:37.545677</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.6.3, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 208.224 
+L 655.808906 208.224 
+L 655.808906 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="patch_2">
+    <path d="M 15.781941 201.024 
+L 213.370059 201.024 
+L 213.370059 69.298588 
+L 15.781941 69.298588 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p191140192e)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAS4AAADKCAYAAAAb4q1jAAAC30lEQVR4nO3WoQ0CUQBEQcBRAG1QKS1RABaNQRME5k4e9sChPi+ZqWDVy27naVo2/JXrYx49gZXT+TZ6Al92owcA/Eq4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8gRLiBHuIAc4QJyhAvIES4gR7iAHOECcoQLyBEuIEe4gBzhAnKEC8jZXu7PZfQIPh0P+9ETWNnNr9ET+OJxATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXEDOG2hKEBpqvrk1AAAAAElFTkSuQmCC" id="image632da8d79a" transform="scale(1 -1) translate(0 -132.218182)" x="15.781941" y="-68.805818" width="197.672727" height="132.218182"/>
+   </g>
+   <g id="matplotlib.axis_1"/>
+   <g id="matplotlib.axis_2"/>
+   <g id="text_1">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="48.713294" y="104.319394" transform="rotate(-0 48.713294 104.319394)">−1.00</text>
+   </g>
+   <g id="text_2">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="114.576" y="104.319394" transform="rotate(-0 114.576 104.319394)">+0.00</text>
+   </g>
+   <g id="text_3">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="180.438706" y="104.319394" transform="rotate(-0 180.438706 104.319394)">+0.30</text>
+   </g>
+   <g id="text_4">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="48.713294" y="170.1821" transform="rotate(-0 48.713294 170.1821)">+0.00</text>
+   </g>
+   <g id="text_5">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="114.576" y="170.1821" transform="rotate(-0 114.576 170.1821)">−1.00</text>
+   </g>
+   <g id="text_6">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="180.438706" y="170.1821" transform="rotate(-0 180.438706 170.1821)">−2.48</text>
+   </g>
+   <g id="text_7">
+    <!-- $H = J^{X^{-1}\cdot b}_{X}$  (2×3, FD of the whole) -->
+    <g style="fill: #1f1e1d" transform="translate(15.781941 59.298588)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0 21.549902" y="-0.2538390624999991">HJ</tspan>
+      <tspan style="font: 11px 'cmr10'" x="11.073047" y="-0.2538390624999991">=</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="27.646094 28.897005 48.358322" y="2.5521921874999993 -4.4628859375 -4.4628859375">XXb</tspan>
+      <tspan style="font: 5.39px 'cmsy10'" x="36.149205" y="-7.409218750000001">¡</tspan>
+      <tspan style="font: 5.39px 'cmr10'" x="40.336456" y="-7.409218750000001">1</tspan>
+      <tspan style="font: 7.7px 'cmsy10'" x="44.874523" y="-4.4628859375">¢</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="52.364664 55.861246 59.357828 63.649332 70.647867 79.864664 86.863199 90.359781 93.856363 100.183511 108.653726 112.150308 118.880289 122.752847 126.249429 130.562418 137.534097 144.301675 147.798257 156.794839 163.766519 170.4965 173.552652 180.32023" y="-0.2538390624999991">  (2×3, FD of the whole)</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_2">
+   <g id="patch_3">
+    <path d="M 232.981941 201.024 
+L 430.570059 201.024 
+L 430.570059 69.298588 
+L 232.981941 69.298588 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p1a5157147a)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAS4AAADKCAYAAAAb4q1jAAAC4ElEQVR4nO3WsQ1BYQCFUbRKHaPYxoyGsIBOo1dItOJpH53q9yXnTHCrL3d5vT2mBX9ldz+PnsDMcX8YPYEvq9EDAH4lXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkLJ+X0zR6BJ9e683oCcw81tvRE/jicQE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAjnABOcIF5AgXkCNcQI5wATnCBeQIF5AjXECOcAE5wgXkCBeQI1xAzhvW1A5Wz2lw3AAAAABJRU5ErkJggg==" id="imageb63e6c9e14" transform="scale(1 -1) translate(0 -132.218182)" x="232.981941" y="-68.805818" width="197.672727" height="132.218182"/>
+   </g>
+   <g id="matplotlib.axis_3"/>
+   <g id="matplotlib.axis_4"/>
+   <g id="text_8">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="265.913294" y="104.319394" transform="rotate(-0 265.913294 104.319394)">+0.87</text>
+   </g>
+   <g id="text_9">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="331.776" y="104.319394" transform="rotate(-0 331.776 104.319394)">+0.50</text>
+   </g>
+   <g id="text_10">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="397.638706" y="104.319394" transform="rotate(-0 397.638706 104.319394)">−0.23</text>
+   </g>
+   <g id="text_11">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="265.913294" y="170.1821" transform="rotate(-0 265.913294 170.1821)">−0.50</text>
+   </g>
+   <g id="text_12">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="331.776" y="170.1821" transform="rotate(-0 331.776 170.1821)">+0.87</text>
+   </g>
+   <g id="text_13">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="397.638706" y="170.1821" transform="rotate(-0 397.638706 170.1821)">+3.60</text>
+   </g>
+   <g id="text_14">
+    <!-- $J^{X^{-1}\cdot b}_{X^{-1}}$  (2×3, FD) -->
+    <g style="fill: #1f1e1d" transform="translate(232.981941 59.298588)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0" y="-0.2693031250000004">J</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="6.096191 7.347102 26.808419" y="2.536728125 -5.4628859375 -5.4628859375">XXb</tspan>
+      <tspan style="font: 5.39px 'cmsy10'" x="13.348392 14.599302" y="-0.4096046874999999 -8.40921875">¡¡</tspan>
+      <tspan style="font: 5.39px 'cmr10'" x="17.535643 18.786553" y="-0.4096046874999999 -8.40921875">11</tspan>
+      <tspan style="font: 7.7px 'cmsy10'" x="23.324621" y="-5.4628859375">¢</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="30.814761 34.311343 37.807925 42.099429 49.097964 58.314761 65.313296 68.809878 72.306461 78.633609 87.103824" y="-0.2693031250000004">  (2×3, FD)</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="axes_3">
+   <g id="patch_4">
+    <path d="M 483.113294 201.024 
+L 614.838706 201.024 
+L 614.838706 69.298588 
+L 483.113294 69.298588 
+z
+" style="fill: #ffffff"/>
+   </g>
+   <g clip-path="url(#p2fe799b85d)">
+    <image xlink:href="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAMoAAADKCAYAAADkZd+oAAACb0lEQVR4nO3VsYlCURRFURWLsISJBfuvQYuYQCMZ+B8D0chkop29J6xVweHC5m7XZXlt4J/LbR09YSq70QPgGwgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFgv11eY7eMI37wy0+jn/n0ROm4qNAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhALB/v54jt4wjZ/dbfSEafweTqMnTMVHgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoEAgFAqFAIBQIhAKBUCAQCgRCgUAoELwBof8VF01yX7UAAAAASUVORK5CYII=" id="imagee59b7907bc" transform="scale(1 -1) translate(0 -132.218182)" x="483.113294" y="-68.805818" width="132.218182" height="132.218182"/>
+   </g>
+   <g id="matplotlib.axis_5"/>
+   <g id="matplotlib.axis_6"/>
+   <g id="text_15">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="505.067529" y="93.342277" transform="rotate(-0 505.067529 93.342277)">−0.87</text>
+   </g>
+   <g id="text_16">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="548.976" y="93.342277" transform="rotate(-0 548.976 93.342277)">+0.50</text>
+   </g>
+   <g id="text_17">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="592.884471" y="93.342277" transform="rotate(-0 592.884471 93.342277)">−0.50</text>
+   </g>
+   <g id="text_18">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="505.067529" y="137.250747" transform="rotate(-0 505.067529 137.250747)">−0.50</text>
+   </g>
+   <g id="text_19">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="548.976" y="137.250747" transform="rotate(-0 548.976 137.250747)">−0.87</text>
+   </g>
+   <g id="text_20">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="592.884471" y="137.250747" transform="rotate(-0 592.884471 137.250747)">+1.00</text>
+   </g>
+   <g id="text_21">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="505.067529" y="181.159218" transform="rotate(-0 505.067529 181.159218)">+0.00</text>
+   </g>
+   <g id="text_22">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="548.976" y="181.159218" transform="rotate(-0 548.976 181.159218)">+0.00</text>
+   </g>
+   <g id="text_23">
+    <text style="fill: #1f1e1d; font: 7.5px 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: middle" x="592.884471" y="181.159218" transform="rotate(-0 592.884471 181.159218)">−1.00</text>
+   </g>
+   <g id="text_24">
+    <!-- $J^{X^{-1}}_{X}$  (3×3, FD) -->
+    <g style="fill: #1f1e1d" transform="translate(483.113294 59.298588)">
+     <text>
+      <tspan style="font: 11px 'cmmi10'" x="0" y="-0.2538390624999991">J</tspan>
+      <tspan style="font: 7.7px 'cmmi10'" x="6.096191 7.347102" y="2.5521921874999993 -4.4628859375">XX</tspan>
+      <tspan style="font: 5.39px 'cmsy10'" x="14.599302" y="-7.409218750000001">¡</tspan>
+      <tspan style="font: 5.39px 'cmr10'" x="18.786553" y="-7.409218750000001">1</tspan>
+      <tspan style="font: 11px 'DejaVu Sans'" x="22.674117 26.170699 29.667281 33.958785 40.95732 50.174117 57.172652 60.669234 64.165816 70.492964 78.963179" y="-0.2538390624999991">  (3×3, FD)</tspan>
+     </text>
+    </g>
+   </g>
+  </g>
+  <g id="text_25">
+   <text style="fill: #1f1e1d; font: 18px 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="229.104" y="117.864" transform="rotate(-0 229.104 117.864)">=</text>
+  </g>
+  <g id="text_26">
+   <text style="fill: #1f1e1d; font: 22px 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: middle" x="444.384" y="117.864" transform="rotate(-0 444.384 117.864)">·</text>
+  </g>
+  <g id="text_27">
+   <text style="fill: #1f1e1d; font: 10.5px 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start" x="7.2" y="15.224297" transform="rotate(-0 7.2 15.224297)">Fig L10 · (58), §V-A  Chain rule: the measurement Jacobian is the product of two blocks  (max |product − whole| = 7e−10)</text>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p191140192e">
+   <rect x="15.781941" y="69.298588" width="197.588118" height="131.725412"/>
+  </clipPath>
+  <clipPath id="p1a5157147a">
+   <rect x="232.981941" y="69.298588" width="197.588118" height="131.725412"/>
+  </clipPath>
+  <clipPath id="p2fe799b85d">
+   <rect x="483.113294" y="69.298588" width="131.725412" height="131.725412"/>
+  </clipPath>
+ </defs>
+</svg>
