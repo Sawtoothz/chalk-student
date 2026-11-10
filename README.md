@@ -73,3 +73,9 @@ With Docker, type `chalk` (Windows) or `./chalk` instead of `just`.
 | `.claude/skills/teach/` | The `/teach` pipeline an AI agent follows to build a package |
 | `AGENTS.md` | The rules every AI agent works under in this project |
 | `books.yaml` | The books and papers the Library knows, with chapter page ranges (PDFs not included) |
+
+## License
+
+[MIT](LICENSE). The license covers Chalk's code and the teaching material written for it. Short passages quoted
+from the books and papers (highlight anchors, equations, page citations) remain the property of their authors and
+publishers and are included for teaching; the books themselves are not in this repository.
