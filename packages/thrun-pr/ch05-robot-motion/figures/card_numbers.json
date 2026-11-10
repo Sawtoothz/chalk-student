@@ -1,0 +1,49 @@
+{
+  "cards_vs_reference": "agree",
+  "C1_prob_normal_zero_at_sigma": 38.6,
+  "C1_naive_density_at_rest": "nan",
+  "C1_speedup_rng_normal_vs_12_uniforms": 7.2,
+  "C2_book_form_err_m": {
+    "1e-06": 4.104079055766707e-11,
+    "1e-09": 4.1948369332062314e-08,
+    "1e-12": 7.167947166634601e-05,
+    "0.0": NaN
+  },
+  "C2_chord_form_err_m": {
+    "1e-06": 1.9212062496443139e-16,
+    "1e-09": 1.1275702593849246e-17,
+    "1e-12": 1.487525380650112e-16,
+    "0.0": 1.5113778284447932e-16
+  },
+  "C3_line7_vhat": [
+    -1.0,
+    1.0,
+    1.0
+  ],
+  "C3_chord_vhat": [
+    1.0,
+    -1.0,
+    1.0
+  ],
+  "C3_lambda_patch_vhat": [
+    1.0,
+    -1.0,
+    1.0
+  ],
+  "C3_log_ratio_book_vs_fixed_right_turn": -80.0,
+  "C3_book_vhat_rel_err_at_w_1e-9": 1.3930423403696324e-07,
+  "C3_round_trip_worst": 5.438760553033717e-12,
+  "C3_jacdet_rel_err": 3.1197079422808952e-09,
+  "C3_pose_density_mass": 0.9999,
+  "C4_inplace_rot1_book_deg": -150.0,
+  "C4_inplace_heading_std_book_rad": 0.409,
+  "C4_inplace_heading_std_robust_rad": 0.052,
+  "C4_reverse_heading_std_rad": {
+    "book": 0.4446,
+    "robust": 0.0158,
+    "forward": 0.0158
+  },
+  "C4_jacdet_rel_err": 5.58255092331258e-10,
+  "C4_pose_density_mass": 0.9995,
+  "cpp": "compiled; forward, inverse, both log densities agree with Python to 1e-9"
+}

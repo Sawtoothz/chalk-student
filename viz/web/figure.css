@@ -1,0 +1,250 @@
+/* Study figure style: rounded figure card, isometric stage, ground-glass plates, readout tiles.
+   Light theme by default; dark via prefers-color-scheme or [data-theme="dark"]. */
+
+:root {
+  --fig-sans: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --fig-mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --fig-surface: #ffffff;
+  --fig-tile: #f5f4ef;
+  --fig-plate: #f5f4ef;
+  --fig-border: rgba(31, 30, 29, 0.12);
+  --fig-border-strong: rgba(31, 30, 29, 0.24);
+  --fig-ink: #1f1e1d;
+  --fig-muted: #5f5e5a;
+  --fig-faint: #888780;
+
+  --fig-blue: #378add;
+  --fig-blue-deep: #0c447c;
+  --fig-coral: #d85a30;
+  --fig-coral-deep: #712b13;
+  --fig-teal: #1d9e75;
+  --fig-teal-deep: #085041;
+  --fig-gray: #888780;
+  --fig-amber: #ba7517;
+
+  --fig-edge: #2c2c2a;
+  --fig-bench: #d3d1c7;
+  --fig-foot: #b4b2a9;
+  --fig-grid: #b4b2a9;
+
+  --fig-ok-bg: #eaf3de;
+  --fig-ok-ink: #3b6d11;
+  --fig-warn-bg: #faeeda;
+  --fig-warn-ink: #854f0b;
+  --fig-bad-bg: #fcebeb;
+  --fig-bad-ink: #a32d2d;
+
+  --fig-radius: 12px;
+  --fig-ease: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --fig-surface: #262624;
+    --fig-tile: #30302e;
+    --fig-plate: #30302e;
+    --fig-border: rgba(245, 244, 239, 0.12);
+    --fig-border-strong: rgba(245, 244, 239, 0.24);
+    --fig-ink: #f5f4ef;
+    --fig-muted: #b4b2a9;
+    --fig-faint: #888780;
+    --fig-edge: #d3d1c7;
+    --fig-bench: #5f5e5a;
+    --fig-foot: #444441;
+    --fig-grid: #5f5e5a;
+    --fig-ok-bg: #27500a;
+    --fig-ok-ink: #c0dd97;
+    --fig-warn-bg: #633806;
+    --fig-warn-ink: #fac775;
+    --fig-bad-bg: #791f1f;
+    --fig-bad-ink: #f7c1c1;
+  }
+}
+
+[data-theme="dark"] {
+  --fig-surface: #262624;
+  --fig-tile: #30302e;
+  --fig-plate: #30302e;
+  --fig-border: rgba(245, 244, 239, 0.12);
+  --fig-border-strong: rgba(245, 244, 239, 0.24);
+  --fig-ink: #f5f4ef;
+  --fig-muted: #b4b2a9;
+  --fig-faint: #888780;
+  --fig-edge: #d3d1c7;
+  --fig-bench: #5f5e5a;
+  --fig-foot: #444441;
+  --fig-grid: #5f5e5a;
+  --fig-ok-bg: #27500a;
+  --fig-ok-ink: #c0dd97;
+  --fig-warn-bg: #633806;
+  --fig-warn-ink: #fac775;
+  --fig-bad-bg: #791f1f;
+  --fig-bad-ink: #f7c1c1;
+}
+
+.fig-card {
+  box-sizing: border-box;
+  max-width: 760px;
+  padding: 14px 14px 12px;
+  border: 0.5px solid var(--fig-border);
+  border-radius: var(--fig-radius);
+  background: var(--fig-surface);
+  color: var(--fig-ink);
+  font-family: var(--fig-sans);
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.fig-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+.fig-num {
+  font-family: var(--fig-mono);
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  color: var(--fig-faint);
+}
+
+.fig-title {
+  margin-top: 2px;
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.fig-hint {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--fig-muted);
+}
+
+.fig-chip {
+  margin-top: 2px;
+  padding: 3px 8px;
+  border-radius: 8px;
+  font-size: 11px;
+  white-space: nowrap;
+  transition: background-color 240ms var(--fig-ease), color 240ms var(--fig-ease);
+}
+.fig-chip[data-state="ok"] { background: var(--fig-ok-bg); color: var(--fig-ok-ink); }
+.fig-chip[data-state="warn"] { background: var(--fig-warn-bg); color: var(--fig-warn-ink); }
+.fig-chip[data-state="bad"] { background: var(--fig-bad-bg); color: var(--fig-bad-ink); }
+
+.fig-stage {
+  position: relative;
+  height: 280px;
+  margin-top: 6px;
+  overflow: hidden;
+  touch-action: none;
+  cursor: grab;
+}
+.fig-stage.is-dragging { cursor: grabbing; }
+.fig-stage canvas { display: block; }
+
+.fig-tag {
+  position: absolute;
+  font-size: 11px;
+  color: var(--fig-muted);
+  white-space: nowrap;
+  pointer-events: none;
+}
+.fig-tag.is-strong { font-weight: 500; color: var(--fig-ink); }
+
+.fig-plates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.fig-plate-label {
+  margin-bottom: 3px;
+  font-family: var(--fig-mono);
+  font-size: 11px;
+  color: var(--fig-faint);
+}
+
+.fig-plate {
+  display: block;
+  width: 100%;
+  background: var(--fig-plate);
+  border: 0.5px solid var(--fig-border-strong);
+  border-radius: 6px;
+  touch-action: none;
+}
+.fig-plate.is-pickable { cursor: crosshair; }
+
+.fig-controls { margin-top: 14px; }
+
+.fig-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+.fig-row label {
+  min-width: 72px;
+  font-size: 13px;
+  color: var(--fig-muted);
+}
+.fig-row input[type="range"] { flex: 1; accent-color: var(--fig-teal); }
+.fig-row output {
+  min-width: 52px;
+  text-align: right;
+  font-family: var(--fig-mono);
+  font-size: 12px;
+  color: var(--fig-ink);
+  font-variant-numeric: tabular-nums;
+}
+
+.fig-tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 14px;
+  font-family: var(--fig-mono);
+}
+
+.fig-tile {
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--fig-tile);
+}
+.fig-tile.is-wide { grid-column: 1 / -1; }
+.fig-tile .k { font-size: 11px; color: var(--fig-faint); }
+.fig-tile .v {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.6;
+  font-variant-numeric: tabular-nums;
+}
+.fig-tile .v.is-big { font-size: 15px; }
+
+.fig-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 14px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--fig-muted);
+}
+.fig-key { display: inline-flex; align-items: center; gap: 5px; }
+.fig-swatch { width: 10px; height: 10px; border-radius: 2px; }
+.fig-swatch[data-role="blue"] { background: var(--fig-blue); }
+.fig-swatch[data-role="coral"] { background: var(--fig-coral); }
+.fig-swatch[data-role="teal"] { background: var(--fig-teal); }
+.fig-swatch[data-role="gray"] { background: var(--fig-gray); }
+.fig-swatch[data-role="amber"] { background: var(--fig-amber); }
+
+@media (max-width: 480px) {
+  .fig-stage { height: 250px; }
+  .fig-row label { min-width: 64px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .fig-chip { transition: none; }
+}

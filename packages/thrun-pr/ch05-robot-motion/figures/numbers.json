@@ -1,0 +1,96 @@
+{
+  "L1": {
+    "alpha": [
+      0.02,
+      0.002,
+      0.02,
+      0.005
+    ],
+    "path_m": 5.4,
+    "steps": 5,
+    "a_major_std_m": 0.481,
+    "b_major_std_m": 0.888
+  },
+  "L2": {
+    "v_mps": 1.0,
+    "w_radps": 0.8,
+    "dt_s": 2.0,
+    "r_m": 1.25,
+    "closed_form_vs_rk4_max_err": 8e-13
+  },
+  "L3": {
+    "max_abs_gamma_recovered_alpha56_zero": 5.9e-16,
+    "std_gamma_recovered_alpha56_nonzero_radps": 0.128,
+    "std_gamma_expected_radps": 0.128
+  },
+  "L4": {
+    "N": 1000000,
+    "var_normal12": 1.0003,
+    "var_triangular": 1.0007,
+    "frac_normal12_beyond_2b": 0.0445,
+    "max_abs_normal12_seen_b": 5.02,
+    "support_normal12_b": 6.0,
+    "support_triangular_b": 2.449
+  },
+  "L5": {
+    "book_line7_vhat_for_(1,-0.5)_(-1,0.5)_(1,0.5)": [
+      -1.0,
+      1.0,
+      1.0
+    ]
+  },
+  "L6": {
+    "example_rot1_deg": -33.4,
+    "example_trans_m": 2.012,
+    "example_rot2_deg": 83.4,
+    "seam_theta_bar_deg": 178,
+    "mass_lost_unwrapped_frac": 0.477
+  },
+  "L7": {
+    "alpha": [
+      0.01,
+      0.0005,
+      0.01,
+      0.0005
+    ],
+    "step_m": 0.5,
+    "path_m": 17.0,
+    "major_std_m_by_distance": {
+      "3.0": 0.118,
+      "6.0": 0.225,
+      "9.0": 0.682,
+      "12.0": 0.888,
+      "15.0": 1.458,
+      "17.0": 1.894
+    }
+  },
+  "L8": {
+    "accept_rate_final_pose": 0.821,
+    "through_wall_frac_of_accepted_by_checks": {
+      "1": 0.8186,
+      "2": 0.752,
+      "5": 0.4131,
+      "10": 0.0158,
+      "20": 0.0063
+    },
+    "step_len_m": {
+      "1": 3.0,
+      "2": 1.5,
+      "5": 0.6,
+      "10": 0.3,
+      "20": 0.15
+    },
+    "cspace_wall_thickness_m": 0.45,
+    "p_10_retries_all_fail": 3.4e-08
+  },
+  "L9": {
+    "samples": 400000,
+    "velocity_TV_with_jacobian": 0.044,
+    "odometry_TV_with_jacobian": 0.134,
+    "odometry_TV_with_jacobian_and_measured_delta_variances": 0.064,
+    "velocity_TV_density_vs_samples": 0.086,
+    "velocity_TV_samples_vs_samples": 0.063,
+    "odometry_TV_density_vs_samples": 0.153,
+    "odometry_TV_samples_vs_samples": 0.091
+  }
+}

@@ -1,0 +1,771 @@
+{
+  "repos": [
+    {
+      "repo": "https://github.com/hku-mars/ikd-Tree",
+      "commit": "c0e36a16b6e4d557d3783b16911207f6398dd478",
+      "licence": "GNU GENERAL PUBLIC LICENSE v2",
+      "symbols": {
+        "void Nearest_Search": [
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 236,
+            "text": "void Nearest_Search(PointType point, int k_nearest, PointVector &Nearest_Points, vector<float> & Point_Distance, double max_dist = INFINITY);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L236"
+          }
+        ],
+        "int Add_Points": [
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 239,
+            "text": "int Add_Points(PointVector & PointToAdd, bool downsample_on);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L239"
+          }
+        ],
+        "int Delete_Point_Boxes": [
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 242,
+            "text": "int Delete_Point_Boxes(vector<BoxPointType> & BoxPoints);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L242"
+          }
+        ],
+        "void Rebuild": [
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 205,
+            "text": "void Rebuild(KD_TREE_NODE ** root);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L205"
+          }
+        ],
+        "balance_criterion_param": [
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 12,
+            "text": "balance_criterion_param = balance_param;",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L12"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 35,
+            "text": "void KD_TREE<PointType>::Set_balance_criterion_param(float balance_param){",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L35"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 36,
+            "text": "balance_criterion_param = balance_param;",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L36"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 47,
+            "text": "Set_balance_criterion_param(balance_param);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L47"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 1103,
+            "text": "if (balance_evaluation > balance_criterion_param || balance_evaluation < 1-balance_criterion_param){",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L1103"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 195,
+            "text": "float balance_criterion_param = 0.7f;",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L195"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 229,
+            "text": "void Set_balance_criterion_param(float balance_param);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L229"
+          }
+        ],
+        "delete_criterion_param": [
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 11,
+            "text": "delete_criterion_param = delete_param;",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L11"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 30,
+            "text": "void KD_TREE<PointType>::Set_delete_criterion_param(float delete_param){",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L30"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 31,
+            "text": "delete_criterion_param = delete_param;",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L31"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 46,
+            "text": "Set_delete_criterion_param(delete_param);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L46"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.cpp",
+            "line": 1100,
+            "text": "if (delete_evaluation > delete_criterion_param){",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.cpp#L1100"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 194,
+            "text": "float delete_criterion_param = 0.5f;",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L194"
+          },
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 228,
+            "text": "void Set_delete_criterion_param(float delete_param);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L228"
+          }
+        ],
+        "void Build(": [
+          {
+            "path": "ikd-Tree/ikd_Tree.h",
+            "line": 235,
+            "text": "void Build(PointVector point_cloud);",
+            "url": "https://github.com/hku-mars/ikd-Tree/blob/c0e36a16b6e4d557d3783b16911207f6398dd478/ikd-Tree/ikd_Tree.h#L235"
+          }
+        ]
+      }
+    },
+    {
+      "repo": "https://github.com/hku-mars/IKFoM",
+      "commit": "59cfc095ca74425f9b330c7c04a5d74f68c6dd62",
+      "licence": "GNU GENERAL PUBLIC LICENSE v2",
+      "symbols": {
+        "update_iterated_dyn_share_modified": [
+          {
+            "path": "Sample_1/FAST_LIO/include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 2210,
+            "text": "void update_iterated_dyn_share_modified(double R) {",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/Sample_1/FAST_LIO/include/IKFoM_toolkit/esekfom/esekfom.hpp#L2210"
+          },
+          {
+            "path": "Sample_1/FAST_LIO/include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 2506,
+            "text": "void update_iterated_dyn_share_modified_extrinsic(double R){",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/Sample_1/FAST_LIO/include/IKFoM_toolkit/esekfom/esekfom.hpp#L2506"
+          },
+          {
+            "path": "Sample_1/FAST_LIO/src/laserMapping.cpp",
+            "line": 1313,
+            "text": "kf.update_iterated_dyn_share_modified_extrinsic(LASER_POINT_COV); //, solve_H_time);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/Sample_1/FAST_LIO/src/laserMapping.cpp#L1313"
+          },
+          {
+            "path": "Sample_1/FAST_LIO/src/laserMapping.cpp",
+            "line": 1315,
+            "text": "kf.update_iterated_dyn_share_modified(LASER_POINT_COV); //, solve_H_time);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/Sample_1/FAST_LIO/src/laserMapping.cpp#L1315"
+          }
+        ],
+        "boxplus": [
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 533,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L533"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 839,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L839"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1135,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L1135"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1435,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L1435"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1735,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L1735"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 2039,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L2039"
+          }
+        ],
+        "boxminus": [
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 421,
+            "text": "x_.boxminus(dx, x_propagated);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L421"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 529,
+            "text": "z.boxminus(innovation, h(x_, valid));",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L529"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 723,
+            "text": "x_.boxminus(dx, x_propagated);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L723"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 835,
+            "text": "z.boxminus(innovation, h);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L835"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1027,
+            "text": "x_.boxminus(dx, x_propagated);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L1027"
+          },
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1326,
+            "text": "x_.boxminus(dx, x_propagated);",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L1326"
+          }
+        ],
+        "predict(": [
+          {
+            "path": "IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 275,
+            "text": "void predict(double &dt, processnoisecovariance &Q, const input &i_in){",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/IKFoM_toolkit/esekfom/esekfom.hpp#L275"
+          },
+          {
+            "path": "README.md",
+            "line": 107,
+            "text": "kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/README.md#L107"
+          },
+          {
+            "path": "README.md",
+            "line": 154,
+            "text": "kf.predict(dt, Q, in); // process noise covariance: Q",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/README.md#L154"
+          },
+          {
+            "path": "README.md",
+            "line": 259,
+            "text": "kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/README.md#L259"
+          },
+          {
+            "path": "README.md",
+            "line": 303,
+            "text": "kf.predict(dt, Q, in); // process noise covariance: Q, an Eigen matrix",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/README.md#L303"
+          },
+          {
+            "path": "README.md",
+            "line": 401,
+            "text": "kf.predict(dt, Q, in); // process noise covariance: Q",
+            "url": "https://github.com/hku-mars/IKFoM/blob/59cfc095ca74425f9b330c7c04a5d74f68c6dd62/README.md#L401"
+          }
+        ]
+      }
+    },
+    {
+      "repo": "https://github.com/hku-mars/FAST_LIO",
+      "commit": "7cc4175de6f8ba2edf34bab02a42195b141027e9",
+      "licence": "GNU GENERAL PUBLIC LICENSE v2",
+      "symbols": {
+        "MTK_BUILD_MANIFOLD(state_ikfom": [
+          {
+            "path": "include/use-ikfom.hpp",
+            "line": 12,
+            "text": "MTK_BUILD_MANIFOLD(state_ikfom,",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/use-ikfom.hpp#L12"
+          }
+        ],
+        "float s = 1 - 0.9": [
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 681,
+            "text": "float s = 1 - 0.9 * fabs(pd2) / sqrt(p_body.norm());",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L681"
+          }
+        ],
+        "ekfom_data.h(i) = -norm_p.intensity": [
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 751,
+            "text": "ekfom_data.h(i) = -norm_p.intensity;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L751"
+          }
+        ],
+        "P_ = xp * P_": [
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 378,
+            "text": "P_ = xp * P_ * xp.transpose() + (f_w1 * dt) * Q * (f_w1 * dt).transpose();",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L378"
+          }
+        ],
+        "get_f(": [
+          {
+            "path": "include/use-ikfom.hpp",
+            "line": 47,
+            "text": "Eigen::Matrix<double, 24, 1> get_f(state_ikfom &s, const input_ikfom &in)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/use-ikfom.hpp#L47"
+          }
+        ],
+        "df_dx(": [
+          {
+            "path": "include/use-ikfom.hpp",
+            "line": 61,
+            "text": "Eigen::Matrix<double, 24, 23> df_dx(state_ikfom &s, const input_ikfom &in)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/use-ikfom.hpp#L61"
+          }
+        ],
+        "df_dw(": [
+          {
+            "path": "include/use-ikfom.hpp",
+            "line": 80,
+            "text": "Eigen::Matrix<double, 24, 12> df_dw(state_ikfom &s, const input_ikfom &in)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/use-ikfom.hpp#L80"
+          }
+        ],
+        "void h_share_model": [
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 638,
+            "text": "void h_share_model(state_ikfom &s, esekfom::dyn_share_datastruct<double> &ekfom_data)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L638"
+          }
+        ],
+        "esti_plane(": [
+          {
+            "path": "include/common_lib.h",
+            "line": 226,
+            "text": "bool esti_plane(Matrix<T, 4, 1> &pca_result, const PointVector &point, const T &threshold)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/common_lib.h#L226"
+          },
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 678,
+            "text": "if (esti_plane(pabcd, points_near, 0.1f))",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L678"
+          }
+        ],
+        "UndistortPcl(": [
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 67,
+            "text": "void UndistortPcl(const MeasureGroup &meas, esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_state, PointCloudXYZI &pcl_in_out);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L67"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 216,
+            "text": "void ImuProcess::UndistortPcl(const MeasureGroup &meas, esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_state, PointCloudXYZI &pcl_out)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L216"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 382,
+            "text": "UndistortPcl(meas, kf_state, *cur_pcl_un_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L382"
+          }
+        ],
+        "backward propagation": [
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 307,
+            "text": "/*** undistort each lidar point (backward propagation) ***/",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L307"
+          }
+        ],
+        "update_iterated_dyn_share_modified": [
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1619,
+            "text": "void update_iterated_dyn_share_modified(double R, double &solve_time) {",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1619"
+          },
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 960,
+            "text": "kf.update_iterated_dyn_share_modified(LASER_POINT_COV, solve_H_time);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L960"
+          }
+        ],
+        "void lasermap_fov_segment": [
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 231,
+            "text": "void lasermap_fov_segment()",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L231"
+          }
+        ],
+        "void map_incremental": [
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 427,
+            "text": "void map_incremental()",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L427"
+          }
+        ],
+        "IMU_init(": [
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 66,
+            "text": "void IMU_init(const MeasureGroup &meas, esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_state, int &N);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L66"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 159,
+            "text": "void ImuProcess::IMU_init(const MeasureGroup &meas, esekfom::esekf<state_ikfom, 12, input_ikfom> &kf_state, int &N)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L159"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 359,
+            "text": "IMU_init(meas, kf_state, init_iter_num);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L359"
+          }
+        ],
+        "init_dyn_share": [
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 238,
+            "text": "void init_dyn_share(processModel f_in, processMatrix1 f_x_in, processMatrix2 f_w_in, measurementModel_dyn_share h_dyn_share_in, int maximum_iteration, scalar_ty",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L238"
+          },
+          {
+            "path": "src/laserMapping.cpp",
+            "line": 828,
+            "text": "kf.init_dyn_share(get_f, df_dx, df_dw, h_share_model, NUM_MAX_ITERATIONS, epsi);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/laserMapping.cpp#L828"
+          }
+        ],
+        "x_.boxplus(dx_)": [
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 495,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L495"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 706,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L706"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 907,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L907"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1113,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1113"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1317,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1317"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1525,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1525"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1817,
+            "text": "x_.boxplus(dx_);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1817"
+          }
+        ],
+        "S2_Nx_yy": [
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 347,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L347"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 449,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L449"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 553,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L553"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 660,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L660"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 764,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L764"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 863,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L863"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 963,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L963"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1068,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1068"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1169,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1169"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1271,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1271"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1373,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1373"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1479,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1479"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1581,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1581"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1689,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1689"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1878,
+            "text": "x_.S2_Nx_yy(Nx, idx);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1878"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/build_manifold.hpp",
+            "line": 105,
+            "text": "#define MTK_S2_Nx_yy(            type, id) if(id.IDX == idx){id.S2_Nx_yy(res);}",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/build_manifold.hpp#L105"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/build_manifold.hpp",
+            "line": 216,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res, int idx) {\\",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/build_manifold.hpp#L216"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/build_manifold.hpp",
+            "line": 217,
+            "text": "MTK_TRANSFORM(MTK_S2_Nx_yy, entries)\\",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/build_manifold.hpp#L217"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/S2.hpp",
+            "line": 259,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/S2.hpp#L259"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/SOn.hpp",
+            "line": 140,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/SOn.hpp#L140"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/SOn.hpp",
+            "line": 251,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/SOn.hpp#L251"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/vect.hpp",
+            "line": 133,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/vect.hpp#L133"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/vect.hpp",
+            "line": 254,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/vect.hpp#L254"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/vect.hpp",
+            "line": 304,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/vect.hpp#L304"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/vect.hpp",
+            "line": 363,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/vect.hpp#L363"
+          },
+          {
+            "path": "include/IKFoM_toolkit/mtk/types/vect.hpp",
+            "line": 417,
+            "text": "void S2_Nx_yy(Eigen::Matrix<scalar, 2, 3> &res)",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/mtk/types/vect.hpp#L417"
+          }
+        ],
+        "dyn_share.converge": [
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1006,
+            "text": "dyn_share.converge = true;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1006"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1114,
+            "text": "dyn_share.converge = true;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1114"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1119,
+            "text": "dyn_share.converge = false;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1119"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1123,
+            "text": "if(dyn_share.converge) t++;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1123"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1419,
+            "text": "dyn_share.converge = true;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1419"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1526,
+            "text": "dyn_share.converge = true;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1526"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1531,
+            "text": "dyn_share.converge = false;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1531"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1535,
+            "text": "if(dyn_share.converge) t++;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1535"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1623,
+            "text": "dyn_share.converge = true;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1623"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1818,
+            "text": "dyn_share.converge = true;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1818"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1823,
+            "text": "dyn_share.converge = false;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1823"
+          },
+          {
+            "path": "include/IKFoM_toolkit/esekfom/esekfom.hpp",
+            "line": 1827,
+            "text": "if(dyn_share.converge) t++;",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/include/IKFoM_toolkit/esekfom/esekfom.hpp#L1827"
+          }
+        ],
+        "P_compensate": [
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 330,
+            "text": "* P_compensate = R_imu_e ^ T * (R_i * P_i + T_ei) where T_ei is represented in global frame */",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L330"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 335,
+            "text": "V3D P_compensate = imu_state.offset_R_L_I.conjugate() * (imu_state.rot.conjugate() * (R_i * (imu_state.offset_R_L_I * P_i + imu_state.offset_T_L_I) + T_ei) - im",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L335"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 338,
+            "text": "it_pcl->x = P_compensate(0);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L338"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 339,
+            "text": "it_pcl->y = P_compensate(1);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L339"
+          },
+          {
+            "path": "src/IMU_Processing.hpp",
+            "line": 340,
+            "text": "it_pcl->z = P_compensate(2);",
+            "url": "https://github.com/hku-mars/FAST_LIO/blob/7cc4175de6f8ba2edf34bab02a42195b141027e9/src/IMU_Processing.hpp#L340"
+          }
+        ]
+      }
+    }
+  ]
+}

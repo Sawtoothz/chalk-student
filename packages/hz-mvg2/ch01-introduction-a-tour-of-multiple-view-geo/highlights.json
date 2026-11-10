@@ -1,0 +1,493 @@
+{
+ "book": "hz-mvg2",
+ "chapter": 1,
+ "printed_pages": [
+  1,
+  22
+ ],
+ "page_offset": 18,
+ "colors": {
+  "define": "#9FE1CB",
+  "key": "#FAC775",
+  "derive": "#F09595",
+  "pitfall": "#F5C4B3",
+  "link": "#B5D4F4",
+  "section": "#D3D1C7"
+ },
+ "items": [
+  {
+   "page": 1,
+   "kind": "section",
+   "anchor": "Introduction – a Tour of Multiple View Geometry",
+   "note": "Skim, 2 min. The book says this chapter is informal on purpose; precise definitions start in ch. 2. Read it for the map of ideas, not for formulas. EXERCISE: ch. 1 has no end-of-chapter exercises; the package writes its own (T1–T3, numerical checks of the chapter's claims)."
+  },
+  {
+   "page": 1,
+   "kind": "section",
+   "anchor": "1.1 Introduction – the ubiquitous projective geometry",
+   "note": "Must read, 30 min. Take one thing: in homogeneous coordinates, points at infinity are ordinary points and a projective map is a plain matrix product."
+  },
+  {
+   "page": 1,
+   "kind": "define",
+   "anchor": "we may deﬁne a projective transformation of a plane as any mapping of the points on the plane that preserves straight lines",
+   "note": "DEFINE: the geometric definition. The algebraic one (non-singular H on homogeneous coordinates) is on p. 3; ch. 2 proves they are the same. WHY: straightness is the only invariant a camera cannot break, which is why line features survive any viewpoint."
+  },
+  {
+   "page": 1,
+   "kind": "key",
+   "anchor": "Angles, distance, ratios of distances – none of these are preserved",
+   "note": "ROBOT: a floor tile seen by the tracked robot's camera keeps its straight edges but not its right angles or lengths. Any metric you read off the raw image of a plane is wrong until you undo the homography."
+  },
+  {
+   "page": 1,
+   "kind": "key",
+   "anchor": "Two lines (we are thinking here of 2-dimensional geometry) almost always meet in a point",
+   "note": "WHY: the exception for parallel lines is the motivation for the whole construction. After p. 2 every pair of lines meets, and code needs no special case for parallel lines (their intersection is a point with last coordinate 0)."
+  },
+  {
+   "page": 2,
+   "kind": "define",
+   "anchor": "(x, y, 1) and (2x, 2y, 2) represent the same point, and furthermore, (kx, ky, k) represents the same point as well, for any non-zero value k",
+   "note": "DEFINE: a point is a ray through the origin of R³, not a triple. SHAPES: 3-vector, 2 degrees of freedom. PITFALL: never compare homogeneous points with ==; compare after normalizing, or test that the cross product is zero."
+  },
+  {
+   "page": 2,
+   "kind": "derive",
+   "anchor": "Given a coordinate triple (kx, ky, k), we can get the original coordinates back by dividing by k to get (x, y).",
+   "note": "CODE: `dehom(Xh)` (T3, card C1). TEST: round trip with (x, y, 1) scaled by random non-zero k. PITFALL: dividing by a tiny last coordinate gives huge, meaningless numbers; `dehom` refuses points with |w| < tol·‖X‖."
+  },
+  {
+   "page": 2,
+   "kind": "define",
+   "anchor": "They are the points represented by homogeneous coordinates in which the last coordinate is zero.",
+   "note": "DEFINE: ideal points, last coordinate 0. CODE: the scale-free test |w| < tol·‖X‖ inside `dehom` (T3, C1). ROBOT: the common direction of the corridor walls is such a point; it is a direction, not a place, and carries rotation but no translation. Its image, the vanishing point, is an ordinary finite pixel (w ≠ 0); the horizon is the image of the floor's line at infinity, a line, not a point."
+  },
+  {
+   "page": 2,
+   "kind": "define",
+   "anchor": "the points at inﬁnity in the two-dimensional projective space form a line, usually called the line at inﬁnity. In three-dimensions they form the plane at inﬁnity.",
+   "note": "DEFINE: l∞ in ℙ² and π∞ in ℙ³. These two objects drive the whole affine rung of the ladder on pp. 3–4."
+  },
+  {
+   "page": 2,
+   "kind": "key",
+   "anchor": "this is just an accident of the particular coordinate frame chosen",
+   "note": "WHY: same move as choosing a world frame in SLAM. The origin is gauge, not physics; that is the gauge freedom you fix with a prior on the first pose in GTSAM. P. 3 extends the idea: in projective space even 'at infinity' is gauge."
+  },
+  {
+   "page": 3,
+   "kind": "define",
+   "anchor": "to IRn, followed by a Euclidean transformation moving the origin of the space",
+   "note": "DEFINE: affine = linear (any invertible A, non-uniform stretch allowed) plus translation. In homogeneous form [A t; 0ᵀ 1]; the zero bottom row is why ideal points stay ideal (next sentence)."
+  },
+  {
+   "page": 3,
+   "kind": "key",
+   "anchor": "The result of either a Euclidean or an afﬁne transformation is that points at inﬁnity remain at inﬁnity.",
+   "note": "TEST: apply a random [A t; 0ᵀ 1] to (x, y, 0); the last coordinate stays 0. Apply a general H; it does not. That pair of checks is why affine maps keep the line at infinity and projective maps do not (T1 question 1)."
+  },
+  {
+   "page": 3,
+   "kind": "derive",
+   "anchor": "X′ = H(n+1)×(n+1)X.",
+   "note": "CODE: X′ = H @ X on ℙ² and ℙ³, then `dehom` (card C1). SHAPES: H is (n+1)×(n+1), non-singular, defined up to scale, so (n+1)² − 1 dof (8 for ℙ², 15 for ℙ³). ROBOT: your SE(3) 4×4 is the case with rotation block, translation and bottom row (0, 0, 0, 1)."
+  },
+  {
+   "page": 3,
+   "kind": "pitfall",
+   "anchor": "singling out the line at inﬁnity in space or the plane at inﬁnity in the image",
+   "note": "PRINT SLIP: the roles are swapped. The sentence before has them right: the plane at infinity lives in the 3D world (space), the line at infinity in the image."
+  },
+  {
+   "page": 3,
+   "kind": "section",
+   "anchor": "1.1.1 Afﬁne and Euclidean Geometry",
+   "note": "Must read, 35 min. The spine of the package: projective ⊃ affine (fix the line/plane at infinity) ⊃ Euclidean (fix the circular points / absolute conic). Each rung is a group the data cannot see until you add that object."
+  },
+  {
+   "page": 4,
+   "kind": "key",
+   "anchor": "We say that parallelism is not a concept of projective geometry.",
+   "note": "WHY: parallelism needs l∞ to be known. ROBOT: a monocular projective reconstruction cannot tell you that two walls are parallel; the corridor may come back as a wedge."
+  },
+  {
+   "page": 4,
+   "kind": "key",
+   "anchor": "The points at inﬁnity in the plane show up in the image as the horizon line.",
+   "note": "ROBOT: for the tracked robot on flat ground, the image of l∞ is the horizon; its position in the image gives camera pitch and roll relative to the ground plane. Ground-plane rectification (ch. 2) uses exactly this line."
+  },
+  {
+   "page": 4,
+   "kind": "define",
+   "anchor": "The geometry of the projective plane and a distinguished line is known as afﬁne geometry",
+   "note": "DEFINE: affine = projective + l∞. An affine transformation is any H that maps l∞ to itself; on p. 3 that showed up as a zero bottom row."
+  },
+  {
+   "page": 4,
+   "kind": "key",
+   "anchor": "then we deﬁne the two intervals AB and CD to have equal length if the lines AC and BD are also parallel",
+   "note": "WHY: affine geometry gives length ratios along parallel directions (parallelogram construction) but not angles. That is what an affine reconstruction keeps: midpoints and centroids are right, right angles are not."
+  },
+  {
+   "page": 5,
+   "kind": "key",
+   "anchor": "a circle is not a concept of afﬁne geometry, since arbitrary stretching of the plane, which preserves the line at inﬁnity, turns the circle into an ellipse",
+   "note": "WHY: the step from affine to Euclidean is to tell circles from ellipses. The circular points are the algebraic handle for that."
+  },
+  {
+   "page": 5,
+   "kind": "derive",
+   "anchor": "(x −aw)2 + (y −bw)2 = r2w2",
+   "note": "DERIVE: substitute (x, y, w) = (1, ±i, 0): 1 + i² = 0 for every a, b, r. CODE: `circle_conic(a, b, r)` (T3, C2) returns the 3×3 conic C. TEST: (1, ±i, 0) C (1, ±i, 0)ᵀ = 0 to 1e-12 for random a, b, r; non-zero for a real point off the circle."
+  },
+  {
+   "page": 5,
+   "kind": "define",
+   "anchor": "For obvious reasons, they are called the circular points of the plane.",
+   "note": "DEFINE: I, J = (1, ±i, 0)ᵀ, a complex-conjugate pair on l∞. Fixing them fixes Euclidean structure up to similarity (rotation, translation, uniform scale). Precise form in ch. 2 (the dual conic C*∞ = I Jᵀ + J Iᵀ)."
+  },
+  {
+   "page": 5,
+   "kind": "key",
+   "anchor": "A circle on the other hand is deﬁned by only three points.",
+   "note": "DERIVE: a conic has 6 coefficients up to scale = 5 points (book p. 5); a circle is a conic through I and J, which uses 2 of the 5, so 3 more points fix it. The same counting trick returns on p. 18 (8 rays fix the absolute conic)."
+  },
+  {
+   "page": 6,
+   "kind": "section",
+   "anchor": "3D Euclidean geometry.",
+   "note": "Must read. The 3D version of the circular points is the absolute conic Ω∞. Everything about calibration later in the book is a statement about Ω∞."
+  },
+  {
+   "page": 6,
+   "kind": "define",
+   "anchor": "X2 + Y2 + Z2 = 0; T = 0",
+   "note": "DEFINE: Ω∞, a conic on π∞ with no real points. In a Euclidean frame its 3×3 matrix is I. SHAPES: a 3×3 symmetric matrix on the plane T = 0, 5 dof."
+  },
+  {
+   "page": 6,
+   "kind": "key",
+   "anchor": "we may consider 3D Euclidean space to be derived from projective space by singling out a particular plane as the plane at inﬁnity and specifying a particular conic lying in this plane to be the absolute conic",
+   "note": "WHY: this sentence is the plan of the whole book. Projective reconstruction (ch. 10) → find π∞ (affine) → find Ω∞ (metric). In VO terms: the monocular init gives you shape up to these unknowns; calibration and an IMU remove them."
+  },
+  {
+   "page": 6,
+   "kind": "derive",
+   "anchor": "respect to Ω∞if dT 1 Ω∞d2 = 0",
+   "note": "CODE: d₁ᵀ Ω∞ d₂ in card C2; its image version with ω is `ray_angle(K, x1, x2)` (T3, C8). TEST: with Ω∞ = I it equals the dot product of the two directions, so perpendicular ⇔ 0. Map everything by a random H: the test still holds with the transformed conic, and fails if you keep Ω∞ = I."
+  },
+  {
+   "page": 6,
+   "kind": "section",
+   "anchor": "1.2 Camera projections",
+   "note": "Must read, 35 min. Take P (3×4, rank 3) and the two homographies of Fig. 1.1. You use P = K[R | t] daily; this section is the projective version of it."
+  },
+  {
+   "page": 7,
+   "kind": "key",
+   "anchor": "all points (X, Y, Z, T)T for ﬁxed X, Y and Z, but varying T form a single ray passing through the point centre of projection",
+   "note": "DERIVE: [I | 0] (X, Y, Z, T)ᵀ = (X, Y, Z)ᵀ; T drops out, so every point on the ray images to one point. That is the lost depth. TEST: project (X, Y, Z, T) for several T, same normalized image point."
+  },
+  {
+   "page": 7,
+   "kind": "derive",
+   "anchor": "P = [I3×3|03]",
+   "note": "CODE: x = P @ X (card C3); `camera_centre(P)` and `depth(P, Xh)` (T3). SHAPES: P 3×4, X 4-vector, x 3-vector. ROBOT: K[R | t] with K = I and the camera at the world origin."
+  },
+  {
+   "page": 7,
+   "kind": "key",
+   "anchor": "the most general imaging projection is represented by an arbitrary 3×4 matrix of rank 3",
+   "note": "SHAPES: 12 entries up to scale = 11 dof (K has 5, R and t 6). The camera centre is the right null vector of P; rank 3 is what makes it a single point."
+  },
+  {
+   "page": 7,
+   "kind": "derive",
+   "anchor": "= H3×3",
+   "note": "DERIVE: with Z = 0, P (X, Y, 0, T)ᵀ uses only columns 1, 2, 4 of P; those three columns are H. CODE: `plane_homography(P)` (T3, C4). TEST: H (X, Y, T)ᵀ equals P (X, Y, 0, T)ᵀ for random plane points. ROBOT: the floor-to-image map of a downward camera."
+  },
+  {
+   "page": 7,
+   "kind": "section",
+   "anchor": "Cameras as points.",
+   "note": "Must read. An image is the bundle of rays through the camera centre; K and the image plane only choose coordinates on that bundle."
+  },
+  {
+   "page": 8,
+   "kind": "key",
+   "anchor": "Fig. 1.1. The camera centre is the essence.",
+   "note": "FIGURE: (a) image = rays from Xi through C cut by a plane. (b) coplanar scene: plane to image is H. (c) same C, two image planes: H′, whatever the scene. (d) C moves: no H in general. (e) C moves but the scene is planar: H again. ROBOT: (c) and (e) are the degenerate cases for an F-only VO initializer."
+  },
+  {
+   "page": 8,
+   "kind": "pitfall",
+   "anchor": "If the camera centre moves, then the images are in general not related by a projective transformation",
+   "note": "PITFALL: panel (d) is the only case that needs F. Pure rotation (gimbal pan, quadruped turning on the spot) or a flat floor gives H, and F estimated on those frames is ill-conditioned. Common practice from outside this book (ORB-SLAM's initializer, for example) fits both H and F and picks one."
+  },
+  {
+   "page": 8,
+   "kind": "key",
+   "anchor": "it is easily seen that for any constant k, the ray k(X, Y, Z)T represents the same ray",
+   "note": "WHY: rays are homogeneous 3-vectors, so the image is ℙ² before you choose pixel coordinates. A bearing vector in VIO is this ray normalized to unit length."
+  },
+  {
+   "page": 9,
+   "kind": "key",
+   "anchor": "all images acquired with the same camera centre are equivalent",
+   "note": "DERIVE: x = K R [I | −C] X and x′ = K′ R′ [I | −C] X give x′ = (K′ R′ Rᵀ K⁻¹) x, no X needed. CODE: `rotation_homography(K, R_rel)` (T3, C4). TEST: images of random 3D points from two cameras sharing C satisfy x′ ~ H′ x. ROBOT: panorama stitching, and the gyro-only image prediction in VIO."
+  },
+  {
+   "page": 9,
+   "kind": "section",
+   "anchor": "Calibrated cameras.",
+   "note": "Must read, 15 min (with Example 1.1). Calibrated means the image of Ω∞ is known. Ch. 8 turns that into ω = (K Kᵀ)⁻¹."
+  },
+  {
+   "page": 9,
+   "kind": "key",
+   "anchor": "For a camera not located on the plane at inﬁnity, the plane at inﬁnity in the world maps one-to-one onto the image plane.",
+   "note": "WHY: each pixel is a direction. The map from π∞ to the image is a homography that involves only K and R, not t (ch. 8). This is why vanishing points give rotation and not translation."
+  },
+  {
+   "page": 9,
+   "kind": "define",
+   "anchor": "If the location of the IAC is known in an image, then we say that the camera is calibrated.",
+   "note": "DEFINE: calibrated ⇔ ω known. This is a geometric definition of 'K known'. ROBOT: your Kalibr or OpenCV intrinsics are a statement about where ω sits in the image."
+  },
+  {
+   "page": 9,
+   "kind": "key",
+   "anchor": "knowing the IAC, one can measure the angle between rays by direct measurements in the image",
+   "note": "WHY: the angle between back-projected rays depends only on ω (formula in ch. 8). ROBOT: bearing-only landmark factors and field-of-view checks need exactly K, nothing more."
+  },
+  {
+   "page": 9,
+   "kind": "section",
+   "anchor": "Example 1.1. 3D reconstructions from paintings",
+   "note": "Must read, short. Single-view reconstruction: vanishing lines give affine structure, known right angles upgrade it to Euclidean. The ladder again, from one image."
+  },
+  {
+   "page": 10,
+   "kind": "key",
+   "anchor": "Knowledge (or assumptions) about angles observed in the scene, most particularly orthogonal lines or planes, can be used to upgrade the afﬁne reconstruction to Euclidean.",
+   "note": "ROBOT: Manhattan-world assumptions in indoor mapping use exactly this. Orthogonal walls and floor give three vanishing points, and from them rotation and constraints on K (ch. 8)."
+  },
+  {
+   "page": 10,
+   "kind": "key",
+   "anchor": "Fig. 1.2. Single view reconstruction.",
+   "note": "FIGURE: (a) one painting; (b)–(d) a 3D model built from it, user-guided (p. 10). The model is metric only because right angles were assumed, not measured."
+  },
+  {
+   "page": 10,
+   "kind": "section",
+   "anchor": "1.3 Reconstruction from more than one view",
+   "note": "Must read, 25 min. Take eq. (1.1): the reconstruction is defined up to a 4×4 H. Everything else in the book is about shrinking that group or estimating within it."
+  },
+  {
+   "page": 10,
+   "kind": "pitfall",
+   "anchor": "we restrict the discussion to “scenes” consisting of points only",
+   "note": "PITFALL: and noise-free ones. Noise, outliers and RANSAC are absent from this chapter (ch. 4 §4.7); every real use of the p. 12 steps needs them."
+  },
+  {
+   "page": 11,
+   "kind": "key",
+   "anchor": "We express this by saying that the reconstruction is possible at best up to a similarity transformation of the world.",
+   "note": "ROBOT: the similarity (rotation, translation, scale) is the monocular-VO gauge. The scale part is why a drone's monocular VIO needs the IMU or an altimeter for metric scale."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "equation": "1.1",
+   "note": "DERIVE: insert H⁻¹H between Pj and Xi; the projections do not change. H must be non-singular for H⁻¹ to exist. CODE: `apply_ambiguity(Ps, Xh, H)` (T3, C5). TEST: identical normalized reprojections for a random non-singular 4×4 H. SESSION: Fig 3.1b moves the whole reconstruction by an H and the images stay fixed."
+  },
+  {
+   "page": 11,
+   "kind": "key",
+   "anchor": "there must be sufﬁciently many points, at least seven",
+   "note": "DERIVE: F has 9 entries, minus 1 for scale, minus 1 for det F = 0 (p. 13) = 7. The 7-point and 8-point methods are ch. 11."
+  },
+  {
+   "page": 11,
+   "kind": "derive",
+   "anchor": "TFxi = 0",
+   "note": "CODE: `epipolar_distance_px(F, x, xp)` (T3, C6); F of the synthetic scene comes from a reference formula in `models.py` (computing F is ch. 9/11). SHAPES: F 3×3, rank 2, 7 dof. TEST: distance ~ 0 on noise-free matches; x′ᵀFx is bilinear, so linear in the 9 entries of F (step (i), p. 12)."
+  },
+  {
+   "page": 11,
+   "kind": "key",
+   "anchor": "the fundamental matrix encapsulates the complete projective geometry of the pair of cameras, and is unchanged by projective transformation of 3D",
+   "note": "WHY: F is a function of (P, P′) that is invariant under (1.1). TEST: compute F from (P, P′) and from (P H⁻¹, P′ H⁻¹); same up to scale."
+  },
+  {
+   "page": 12,
+   "kind": "pitfall",
+   "anchor": "The algorithm should not be implemented directly from this brief description.",
+   "note": "PITFALL: the book's own warning. Missing from the outline: coordinate normalization (ch. 4), the rank-2 projection of F (ch. 11), RANSAC (§4.7), and optimal rather than linear triangulation (ch. 12)."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "anchor": "Solving for X in this way is known as triangulation.",
+   "note": "CODE: `triangulate(P, P2, x, x2)`, linear (DLT, SVD of a 4×4 system) (T3). TEST: recovers the generating X to 1e-9 on noise-free data. PITFALL: linear triangulation is not projectively invariant and is biased with noise; ch. 12 does it properly."
+  },
+  {
+   "page": 12,
+   "kind": "section",
+   "anchor": "1.4 Three-view geometry",
+   "note": "Skim, 10 min. The trifocal tensor is the three-view F. Note eq. (1.2) and the counting; the tensor itself is ch. 15–16."
+  },
+  {
+   "page": 12,
+   "kind": "derive",
+   "equation": "1.2",
+   "note": "SHAPES: T is 3×3×3 (27 numbers), x a point in view 1, l′ and l″ lines in views 2 and 3. One scalar equation, linear in T. Not implemented in this package; the counting is a hand derivation (see p. 13)."
+  },
+  {
+   "page": 13,
+   "kind": "key",
+   "anchor": "one can obtain four independent equations in this way. A total of seven point correspondences are sufﬁcient to compute the trifocal tensor linearly",
+   "note": "DERIVE: 2 lines through x′ × 2 lines through x″ = 4 equations per triplet (book p. 13); 7 × 4 = 28 ≥ 26 (27 entries up to scale), so 7 triplets suffice linearly."
+  },
+  {
+   "page": 13,
+   "kind": "derive",
+   "anchor": "the elements obey det F = 0",
+   "note": "TEST: det F of the synthetic scene's F is 0 to round-off; the T3 tests check it. WHY: the epipole is the null vector of F, so F must be singular."
+  },
+  {
+   "page": 13,
+   "kind": "section",
+   "anchor": "1.5 Four view geometry and n-view reconstruction",
+   "note": "Skim, 10 min. Take the last two paragraphs on p. 14: bundle adjustment is the ML answer and needs a good start."
+  },
+  {
+   "page": 14,
+   "kind": "key",
+   "anchor": "The dominant methodology for the general reconstruction problem is bundle adjustment.",
+   "note": "LINK: this is the visual factor graph of lesson t2.8 (GTSAM projection factors). The book points to 'a lengthy appendix' on efficient bundle adjustment (p. 14): Appendix 6, Iterative Estimation Methods."
+  },
+  {
+   "page": 14,
+   "kind": "pitfall",
+   "anchor": "which can not be guaranteed to converge to the optimal solution from an arbitrary starting point",
+   "note": "ROBOT: why every VIO front end runs an initializer (F or H, then triangulation) before the sliding-window optimizer. 'Initialize then refine' is the book's preferred technique (p. 14)."
+  },
+  {
+   "page": 14,
+   "kind": "section",
+   "anchor": "1.6 Transfer",
+   "note": "Skim, 10 min. Take the three steps on p. 16 and the homography shortcut for rotation or a plane."
+  },
+  {
+   "page": 15,
+   "kind": "key",
+   "anchor": "Fig. 1.3. Reconstruction.",
+   "note": "FIGURE: (a) frames from a hand-held sequence (700 frames, book caption); (b)(c) reconstructed points and the camera path. This is 1.5's 'initialize then bundle adjust' at scale."
+  },
+  {
+   "page": 16,
+   "kind": "key",
+   "anchor": "Fig. 1.4. Projective ambiguity:",
+   "note": "FIGURE: five mugs, all exactly consistent with the same images (eq. 1.1); the centre one is true. SESSION: Fig 3.1b does the same to the cards' scene: sliders set H = [[I, 0], [vᵀ, 1]], the reconstruction distorts, the reprojections stay fixed."
+  },
+  {
+   "page": 16,
+   "kind": "derive",
+   "anchor": "Project the 3D point into the third view as x′′ = P′′X.",
+   "note": "CODE: `triangulate(Ps, xs)` (T3, C7), then x″ = P″ @ X (card C7). TEST: equals direct projection of the generating X into view 3."
+  },
+  {
+   "page": 16,
+   "kind": "key",
+   "anchor": "Suppose the camera rotates about its centre or that all the scene points of interest lie on a plane.",
+   "note": "ROBOT: one view suffices then (book p. 16). Pure gimbal rotation or a floor-only view: transfer by H, no depth needed. Fig. 1.1 (c) and (e) again."
+  },
+  {
+   "page": 16,
+   "kind": "section",
+   "anchor": "1.7 Euclidean reconstruction",
+   "note": "Must read, 15 min. Take the equivalence on p. 17: calibration known ⇔ Euclidean structure known."
+  },
+  {
+   "page": 16,
+   "kind": "key",
+   "anchor": "It is easy to see that this is sufﬁcient to determine the Euclidean structure of the scene.",
+   "note": "WHY: calibration fixes Ω∞, which fixes the projective ambiguity down to a similarity. ROBOT: with a calibrated camera the monocular map is right up to rotation, translation and scale; only the scale is left for the IMU."
+  },
+  {
+   "page": 17,
+   "kind": "key",
+   "anchor": "The back-projection of each ωi is a cone in space, and the absolute conic must lie in the intersection of all the cones.",
+   "note": "WHY: each calibrated view gives a cone of rays that must touch Ω∞; the reconstruction is Euclidean when those cones share a conic."
+  },
+  {
+   "page": 17,
+   "kind": "pitfall",
+   "anchor": "reconstruction of the absolute conic from two images is not unique – rather, there are two possible solutions in general",
+   "note": "PITFALL: two views leave a two-fold ambiguity, three views fix it (book p. 17). Ch. 9 (§9.6) shows the calibrated two-view case, the essential matrix, with its own four-fold (R, t) choice resolved by cheirality."
+  },
+  {
+   "page": 17,
+   "kind": "key",
+   "anchor": "Thus knowledge of the camera calibration is equivalent to being able to determine the Euclidean structure of the scene.",
+   "note": "WHY: the chapter's central equivalence. Calibrating the camera and finding Ω∞ in the reconstruction are the same problem seen from two sides."
+  },
+  {
+   "page": 17,
+   "kind": "section",
+   "anchor": "1.8 Auto-calibration",
+   "note": "Skim, 10 min. Calibration from constraints such as constant K. Take the two-step strategy on p. 18 (π∞ hard, then ω linear) and the square-pixel counting."
+  },
+  {
+   "page": 17,
+   "kind": "key",
+   "anchor": "There is no information in a set of feature correspondences across any number of views that can help us ﬁnd the image of the absolute conic",
+   "note": "WHY: correspondences alone fix only the projective group; some assumption on K is mandatory. ROBOT: you calibrate offline because online auto-calibration is fragile (book p. 18: 'quite a difficult problem')."
+  },
+  {
+   "page": 18,
+   "kind": "key",
+   "anchor": "auto-calibration is relatively simple, once the plane at inﬁnity has been identiﬁed",
+   "note": "WHY: the ladder as an algorithm. Projective → affine (find π∞, the hard step) → metric (find ω linearly). Ch. 19."
+  },
+  {
+   "page": 18,
+   "kind": "key",
+   "anchor": "from four images one may determine the calibration, albeit up to a ﬁnite number of possibilities",
+   "note": "DERIVE: square pixels give 2 rays per image (the circular points of the image plane); a conic is fixed by finitely many choices once 8 rays are prescribed (book p. 18), so n = 4 images."
+  },
+  {
+   "page": 18,
+   "kind": "section",
+   "anchor": "1.9 The reward I : 3D graphical models",
+   "note": "Skim, 5 min. The full pipeline in one paragraph: projective reconstruction → auto-calibration → dense matching along epipolar lines."
+  },
+  {
+   "page": 19,
+   "kind": "key",
+   "anchor": "this restricts the correspondence search for further matches to a line",
+   "note": "ROBOT: epipolar search is what stereo depth and semi-dense VO do. A point gives a line, so search is 1D instead of 2D."
+  },
+  {
+   "page": 19,
+   "kind": "section",
+   "anchor": "1.10 The reward II: video augmentation",
+   "note": "Skim, 5 min. Take one sentence on p. 21: the camera motion must be Euclidean, not projective."
+  },
+  {
+   "page": 20,
+   "kind": "key",
+   "anchor": "Fig. 1.6. Dense reconstructions.",
+   "note": "FIGURE: dense surfaces from the cameras of Fig. 1.5; untextured vs textured at three zoom levels. Dense stereo is outside this book's scope beyond the epipolar constraint."
+  },
+  {
+   "page": 21,
+   "kind": "key",
+   "anchor": "It is essential to compute the motion of the camera in a Euclidean frame.",
+   "note": "WHY: a rigid object rendered with projective cameras distorts like the mugs of Fig. 1.4. ROBOT: same reason an AR overlay or a planned footstep needs a metric map, not a projective one."
+  }
+ ]
+}

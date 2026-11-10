@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fig 3.4 Stereo rig</title>
+<link rel="stylesheet" href="../figure.css">
+<style>
+  body { margin: 0; padding: 24px 16px; background: var(--fig-tile); }
+  .fig-card { margin: 0 auto; }
+  .fig-actions { margin-top: 12px; display: flex; gap: 8px; }
+  .fig-actions button {
+    padding: 6px 12px; border-radius: 8px; border: 0.5px solid var(--fig-border-strong);
+    background: transparent; color: var(--fig-ink); font: inherit; font-size: 13px; cursor: pointer;
+  }
+</style>
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "isokit": "../isokit.js"
+  }
+}
+</script>
+</head>
+<body>
+<figure class="fig-card" id="fig" aria-label="Fig 3.4: two-camera epipolar geometry">
+  <div class="fig-head">
+    <div>
+      <div class="fig-num">Fig 3.4 · epipolar geometry</div>
+      <div class="fig-title">Stereo rig on an optical bench</div>
+    </div>
+    <div class="fig-chip" id="chip" data-state="ok">on epipolar line</div>
+  </div>
+  <div class="fig-hint">Drag the rig to turn it · tap plate 1 to aim</div>
+
+  <div class="fig-stage" id="stage">
+    <span class="fig-tag" id="tag-c1">Camera 1</span>
+    <span class="fig-tag" id="tag-c2">Camera 2</span>
+    <span class="fig-tag is-strong" id="tag-x">X</span>
+  </div>
+
+  <div class="fig-plates">
+    <div>
+      <div class="fig-plate-label">plate 1 · tap to aim</div>
+      <canvas class="fig-plate is-pickable" id="plate1" width="360" height="270"></canvas>
+    </div>
+    <div>
+      <div class="fig-plate-label">plate 2 · epipolar line</div>
+      <canvas class="fig-plate" id="plate2" width="360" height="270"></canvas>
+    </div>
+  </div>
+
+  <div class="fig-legend">
+    <span class="fig-key"><span class="fig-swatch" data-role="blue"></span>Camera 1</span>
+    <span class="fig-key"><span class="fig-swatch" data-role="coral"></span>Camera 2, epipolar line</span>
+    <span class="fig-key"><span class="fig-swatch" data-role="teal"></span>Ray, point, epipolar plane</span>
+  </div>
+
+  <div class="fig-controls">
+    <div class="fig-row"><label for="depth">Depth z</label><input type="range" id="depth" min="1" max="5" step="0.1" value="3"><output id="depth-out"></output></div>
+    <div class="fig-row"><label for="base">Baseline</label><input type="range" id="base" min="0.3" max="2" step="0.05" value="1.1"><output id="base-out"></output></div>
+    <div class="fig-row"><label for="yaw">Cam 2 yaw</label><input type="range" id="yaw" min="-35" max="35" step="1" value="-14"><output id="yaw-out"></output></div>
+  </div>
+
+  <div class="fig-tiles">
+    <div class="fig-tile"><div class="k">target X</div><div class="v" id="t-x"></div></div>
+    <div class="fig-tile"><div class="k">epipole e₂</div><div class="v" id="t-e"></div></div>
+    <div class="fig-tile"><div class="k">pixel x₁</div><div class="v" id="t-x1"></div></div>
+    <div class="fig-tile"><div class="k">pixel x₂</div><div class="v" id="t-x2"></div></div>
+    <div class="fig-tile is-wide"><div class="k">residual x₂ᵀ F x₁ (should be 0)</div><div class="v is-big" id="t-r"></div></div>
+  </div>
+
+  <div class="fig-actions">
+    <button type="button" id="reset">Reset</button>
+  </div>
+</figure>
+
+<script type="module">
+import { THREE, Stage, makeKit, readPalette, onThemeChange, animate, plate, inImage, cv, backProject, fmt } from "isokit";
+
+const intr = { W: 180, H: 135, f: 110, cx: 90, cy: 67.5 };
+const DEFAULTS = { depth: 3, base: 1.1, yaw: -14, u: 118, v: 74 };
+
+const st = { depth: DEFAULTS.depth, base: DEFAULTS.base, yaw: DEFAULTS.yaw };
+const goal = { ...st };
+let pix = [DEFAULTS.u, DEFAULTS.v];
+
+// 3x3 helpers (row-major arrays)
+const T = (M) => M[0].map((_, j) => M.map((r) => r[j]));
+const mv = (M, v) => M.map((r) => r[0] * v[0] + r[1] * v[1] + r[2] * v[2]);
+const mm = (A, B) => A.map((r) => B[0].map((_, j) => r[0] * B[0][j] + r[1] * B[1][j] + r[2] * B[2][j]));
+const sub = (a, b) => a.map((x, i) => x - b[i]);
+const scale = (a, k) => a.map((x) => x * k);
+const skew = (t) => [[0, -t[2], t[1]], [t[2], 0, -t[0]], [-t[1], t[0], 0]];
+const rotY = (a) => { const c = Math.cos(a), s = Math.sin(a); return [[c, 0, s], [0, 1, 0], [-s, 0, c]]; };
+const { f, cx, cy } = intr;
+const K = [[f, 0, cx], [0, f, cy], [0, 0, 1]];
+const Kinv = [[1 / f, 0, -cx / f], [0, 1 / f, -cy / f], [0, 0, 1]];
+
+// The model. Camera 1 is the world frame; camera 2 sits at C2 with rotation R_wc.
+function model() {
+  const Rwc = rotY((st.yaw * Math.PI) / 180);
+  const R = T(Rwc);                       // world -> camera 2
+  const C2 = [st.base, 0, 0];
+  const t = scale(mv(R, C2), -1);          // x_c2 = R X + t
+  const X = backProject(pix[0], pix[1], st.depth, intr);
+  const Xc = mv(R, sub(X, C2));
+  const x2 = Xc[2] > 1e-6 ? [f * Xc[0] / Xc[2] + cx, f * Xc[1] / Xc[2] + cy] : null;
+  const F = mm(mm(T(Kinv), mm(skew(t), R)), Kinv);   // F = K^-T [t]x R K^-1
+  let l2 = mv(F, [pix[0], pix[1], 1]);
+  l2 = scale(l2, 1 / Math.hypot(l2[0], l2[1]));      // so the residual reads in pixels
+  const e = mv(K, mv(R, scale(C2, -1)));             // image of camera 1's centre
+  const e2 = Math.abs(e[2]) > 1e-9 ? [e[0] / e[2], e[1] / e[2]] : null;
+  const r = x2 ? x2[0] * l2[0] + x2[1] * l2[1] + l2[2] : null;
+  return { C2, X, x2, l2, e2, r };
+}
+
+const stageEl = document.getElementById("stage");
+const stage = new Stage(stageEl, { span: 2.25, azimuth: 0.62 });
+let kit, P, cam1, cam2, car2, bench;
+
+function buildStatic() {
+  P = readPalette(document.getElementById("fig"));
+  kit = makeKit(P);
+  const g = stage.resetStatic();
+  cam1 = kit.cameraBody(P.blue, P.blueDeep, intr);
+  cam2 = kit.cameraBody(P.coral, P.coralDeep, intr);
+  bench = kit.bench();
+  const car1 = kit.carriage();
+  car2 = kit.carriage();
+  g.add(cam1, cam2, bench, car1, car2, kit.floor());
+}
+
+const plate1 = () => plate(document.getElementById("plate1"), intr.W, intr.H, P);
+const plate2 = () => plate(document.getElementById("plate2"), intr.W, intr.H, P);
+
+function draw() {
+  const S = model();
+
+  cam2.position.set(st.base, 0, 0);
+  cam2.rotation.y = -(st.yaw * Math.PI) / 180;
+  car2.position.x = st.base;
+  bench.setSpan(0, st.base);
+  stage.target.set(st.base / 2 + 0.2, -0.35, -1.6);
+
+  const d = stage.resetDynamic();
+  d.add(kit.line([0, 0, 0], backProject(pix[0], pix[1], 6, intr), P.teal, { opacity: 0.9 }));
+  d.add(kit.line(S.C2, S.X, P.coral, { style: "dash", opacity: 0.85 }));
+  d.add(kit.line([0, 0, 0], S.C2, P.gray, { style: "dash", opacity: 0.7 }));
+  d.add(kit.sheet([[0, 0, 0], S.C2, S.X], P.teal, 0.14));
+  d.add(kit.marker(cv(S.X), P.teal));
+  d.add(kit.point(cv(backProject(pix[0], pix[1], 0.55, intr)), P.teal));
+  stage.render();
+
+  stage.tag(document.getElementById("tag-c1"), new THREE.Vector3(0, 0.2, 0), -24, -22);
+  stage.tag(document.getElementById("tag-c2"), new THREE.Vector3(st.base, 0.2, 0), -24, -22);
+  stage.tag(document.getElementById("tag-x"), cv(S.X), 10, -18);
+
+  const p1 = plate1();
+  p1.clear({ cx, cy });
+  p1.crosshair(pix, P.teal);
+  p1.mark(pix, P.teal, "x₁");
+
+  const p2 = plate2();
+  p2.clear({ cx, cy });
+  p2.line(S.l2, P.coral);
+  if (inImage(S.e2, intr.W, intr.H)) p2.ghost(S.e2, "e₂");
+  if (inImage(S.x2, intr.W, intr.H)) p2.mark(S.x2, P.teal, "x₂");
+  else p2.note("x₂ off plate");
+
+  document.getElementById("depth-out").textContent = st.depth.toFixed(1) + " m";
+  document.getElementById("base-out").textContent = st.base.toFixed(2) + " m";
+  document.getElementById("yaw-out").textContent = fmt(Math.round(st.yaw), 0) + "°";
+  document.getElementById("t-x").textContent = `(${fmt(S.X[0])}, ${fmt(S.X[1])}, ${fmt(S.X[2])}) m`;
+  document.getElementById("t-e").textContent = inImage(S.e2, intr.W, intr.H) ? `(${fmt(S.e2[0], 1)}, ${fmt(S.e2[1], 1)}) px` : "off plate";
+  document.getElementById("t-x1").textContent = `(${pix[0].toFixed(1)}, ${pix[1].toFixed(1)}) px`;
+  document.getElementById("t-x2").textContent = S.x2 ? `(${fmt(S.x2[0], 1)}, ${fmt(S.x2[1], 1)}) px` : "behind camera 2";
+  document.getElementById("t-r").textContent = S.r === null ? "X behind camera 2" : fmt(S.r, 3) + " px";
+
+  const chip = document.getElementById("chip");
+  chip.dataset.state = S.r === null ? "warn" : "ok";
+  chip.textContent = S.r === null ? "behind camera 2" : "on epipolar line";
+}
+
+buildStatic();
+const loop = animate(st, goal, draw, { tick: () => stage.ease() });
+onThemeChange(() => { buildStatic(); loop.invalidate(); });
+
+for (const [id, key] of [["depth", "depth"], ["base", "base"], ["yaw", "yaw"]]) {
+  document.getElementById(id).addEventListener("input", (e) => { goal[key] = +e.target.value; });
+}
+
+const c1 = document.getElementById("plate1");
+let picking = false;
+c1.addEventListener("pointerdown", (e) => { picking = true; c1.setPointerCapture(e.pointerId); pix = plate1().pick(e); loop.invalidate(); });
+c1.addEventListener("pointermove", (e) => { if (picking) { pix = plate1().pick(e); loop.invalidate(); } });
+c1.addEventListener("pointerup", () => { picking = false; });
+
+document.getElementById("reset").addEventListener("click", () => {
+  Object.assign(goal, { depth: DEFAULTS.depth, base: DEFAULTS.base, yaw: DEFAULTS.yaw });
+  for (const k of ["depth", "base", "yaw"]) document.getElementById(k).value = DEFAULTS[k];
+  pix = [DEFAULTS.u, DEFAULTS.v];
+  stage.goalAz = 0.62;
+  loop.invalidate();
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+library/*.pdf
+packages/**/annotated*.pdf
+packages/**/.pages/
+packages/**/reader.html
+packages/**/exercises/data/
+examples/**/.pages/
+examples/**/reader.html
+__pycache__/
+.pytest_cache/
+.venv/
+learner.yaml.bak
+examples/**/exercises/data/
+.cache/
+packages/**/.runs/
+packages/**/slides/.eq/
+examples/**/slides/.eq/
+packages/**/slides/*.pptx
+examples/**/slides/*.pptx
+
+# Book pages are copyrighted: annotated copies stay on your machine
+**/annotated.pdf

@@ -1,0 +1,1081 @@
+{
+  "book": "thrun-pr",
+  "chapter": 3,
+  "printed_pages": [
+    39,
+    84
+  ],
+  "page_offset": 21,
+  "colors": {
+    "define": "#9FE1CB",
+    "key": "#FAC775",
+    "derive": "#F09595",
+    "pitfall": "#F5C4B3",
+    "link": "#B5D4F4",
+    "section": "#D3D1C7"
+  },
+  "items": [
+    {
+      "page": 39,
+      "kind": "section",
+      "anchor": "3.1",
+      "note": "Must read, 10 min. Sets the one assumption the whole chapter rests on: the belief is a single Gaussian."
+    },
+    {
+      "page": 39,
+      "kind": "define",
+      "anchor": "The covariance is a quadratic matrix that is symmetric and positive-semidefinite",
+      "note": "Your code must keep Sigma symmetric PSD. Round-off breaks both; see card C1 (symmetrize, Joseph form)."
+    },
+    {
+      "page": 39,
+      "kind": "key",
+      "anchor": "the number of elements in the covariance matrix depends quadratically on the number of elements in the state vector",
+      "note": "Why EKF-SLAM is O(n^2) memory and why ch. 12 moves to sparse information form."
+    },
+    {
+      "page": 39,
+      "kind": "pitfall",
+      "anchor": "Gaussians are unimodal; they possess a single maximum",
+      "note": "Fails for global localization and ambiguous data association. That is what ch. 4 (particle filters) and MHEKF are for."
+    },
+    {
+      "page": 40,
+      "kind": "define",
+      "anchor": "the canonical and the natural parameterizations are best thought of as duals",
+      "note": "Moments (mu, Sigma) vs canonical (xi, Omega). Cheap step in one is expensive in the other. Table in lecture L5."
+    },
+    {
+      "page": 40,
+      "kind": "section",
+      "anchor": "3.2",
+      "note": "Must read. Implement Table 3.1 before reading the derivation."
+    },
+    {
+      "page": 40,
+      "kind": "key",
+      "anchor": "Posteriors are Gaussian if the following three properties hold",
+      "note": "Linear motion + linear measurement + Gaussian prior. Each nonlinear robot breaks the first two; this is why 3.3 exists."
+    },
+    {
+      "page": 41,
+      "kind": "derive",
+      "equation": "3.2",
+      "note": "Motion model x_t = A x_{t-1} + B u_t + eps. Shapes: A n x n, B n x m, R_t n x n."
+    },
+    {
+      "page": 41,
+      "kind": "define",
+      "anchor": "Its mean is zero, and its covariance will be denoted",
+      "note": "R_t is process noise. Note the naming: Thrun R = process, Q = measurement. Barfoot and most of control literature swap them."
+    },
+    {
+      "page": 41,
+      "kind": "pitfall",
+      "anchor": "one may also include a constant additive term",
+      "note": "Exercise 5 asks for it; needed for gravity terms in IMU prediction and for bias states."
+    },
+    {
+      "page": 42,
+      "kind": "derive",
+      "equation": "3.5",
+      "note": "Measurement model z_t = C x_t + delta. C is k x n, Q_t is k x k."
+    },
+    {
+      "page": 42,
+      "kind": "key",
+      "anchor": "These three assumptions are sufficient to ensure that the posterior",
+      "note": "Closure under linear maps and products is the whole reason the KF has a closed form."
+    },
+    {
+      "page": 43,
+      "kind": "section",
+      "anchor": "3.2.2",
+      "note": "Must read. Table 3.1 is the thing to implement; card C1 maps every line to code."
+    },
+    {
+      "page": 43,
+      "kind": "key",
+      "anchor": "The key concept here is the innovation",
+      "note": "z - C mu_bar. Everything you will ever debug in a KF starts by plotting the innovation against its predicted covariance S = C Sigma_bar C^T + Q."
+    },
+    {
+      "page": 43,
+      "kind": "key",
+      "anchor": "is lower bounded by (approximately)",
+      "note": "Cost is driven by inverting the k x k innovation covariance, not the n x n state covariance. Keep k small per update: process measurements sequentially."
+    },
+    {
+      "page": 43,
+      "kind": "pitfall",
+      "anchor": "due to the multiplication in line 6",
+      "note": "Line 6 costs O(n²) even when the measurement is low-dimensional: K C is n×n. In large-state maps this product, not the k×k inversion, is the bottleneck. (Numerically this is also the line where Σ loses symmetry; card C1 uses the Joseph form.)"
+    },
+    {
+      "page": 45,
+      "kind": "key",
+      "anchor": "The update step decreases and the prediction step increases uncertainty",
+      "note": "Sanity test for any filter: tr(Sigma) must go up on predict and down on update. Put it in your unit tests."
+    },
+    {
+      "page": 45,
+      "kind": "section",
+      "anchor": "3.2.4",
+      "note": "Skim on first pass; return after you have implemented KF. The one idea to take: completing the square turns the integral into a constant."
+    },
+    {
+      "page": 46,
+      "kind": "key",
+      "anchor": "A key goal of this decomposition step shall be that the variables",
+      "note": "Completing the square: split L_t so the part depending on x_{t-1} integrates to a constant. Same trick appears in marginalization of factor graphs."
+    },
+    {
+      "page": 50,
+      "kind": "derive",
+      "anchor": "Inversion Lemma.",
+      "note": "Sherman-Morrison-Woodbury. This is why the update inverts a k x k matrix instead of n x n. Also the bridge between KF and information filter."
+    },
+    {
+      "page": 50,
+      "kind": "derive",
+      "equation": "3.31",
+      "note": "Proof that line 2 of Table 3.1 follows from the Bayes prediction integral."
+    },
+    {
+      "page": 52,
+      "kind": "derive",
+      "equation": "3.38",
+      "note": "Information-form covariance update: Sigma = (C^T Q^-1 C + Sigma_bar^-1)^-1. Compare with line 6; same number, different cost."
+    },
+    {
+      "page": 52,
+      "kind": "derive",
+      "equation": "3.43",
+      "note": "Kalman gain in information form, Σ_t C^T Q^-1. Table 3.1 cannot use it directly because it needs Σ_t, which line 6 computes from K_t; eq. 3.45 rewrites K_t in terms of Σ̄_t to break that circularity."
+    },
+    {
+      "page": 53,
+      "kind": "key",
+      "anchor": "The advantage of the calculation in Table 3.1 over the definition in Equation",
+      "note": "Avoid inverting the n x n state covariance. In code: never form Sigma^-1 for an update."
+    },
+    {
+      "page": 54,
+      "kind": "section",
+      "anchor": "3.3",
+      "note": "Must read. This is the filter you will actually run on the tracked robot and the drone."
+    },
+    {
+      "page": 54,
+      "kind": "key",
+      "anchor": "any linear transformation of a Gaussian random variable results in another Gaussian random variable",
+      "note": "The closure property. Nonlinear g breaks it; Fig 3.3b shows the real output density is not Gaussian at all."
+    },
+    {
+      "page": 54,
+      "kind": "pitfall",
+      "anchor": "a robot that moves with constant translational and rotational velocity typically moves on a circular trajectory",
+      "note": "Your tracked robot: the velocity motion model (ch. 5) is nonlinear in theta. EKF, not KF."
+    },
+    {
+      "page": 54,
+      "kind": "derive",
+      "equation": "3.48",
+      "note": "Nonlinear motion g(u, x) with additive noise. The additive-noise assumption matters: UKF in ch. 7 relaxes it."
+    },
+    {
+      "page": 56,
+      "kind": "section",
+      "anchor": "3.3.2",
+      "note": "Must read. Linearization is a first-order Taylor expansion at the current mean, not at the true state."
+    },
+    {
+      "page": 56,
+      "kind": "key",
+      "anchor": "Linearization approximates the nonlinear function",
+      "note": "Tangent at the mean. The error is the mismatch between the dashed and solid Gaussians in Fig 3.4."
+    },
+    {
+      "page": 58,
+      "kind": "derive",
+      "equation": "3.51",
+      "note": "G_t = dg/dx at (u_t, mu_{t-1}). Jacobian of motion. Check it by finite differences, always (scripts/fd_check.py, card C4)."
+    },
+    {
+      "page": 58,
+      "kind": "key",
+      "anchor": "The value of the Jacobian depends on ut and",
+      "note": "G and H must be recomputed every step at the current mean. A cached Jacobian is a classic bug."
+    },
+    {
+      "page": 58,
+      "kind": "derive",
+      "equation": "3.53",
+      "note": "H_t = dh/dx at mu_bar_t. Linearize the measurement at the predicted mean, not the previous posterior."
+    },
+    {
+      "page": 59,
+      "kind": "section",
+      "anchor": "3.3.3",
+      "note": "Must read. Table 3.3 = Table 3.1 with (A, B, C) replaced by (g, G, h, H). Card C2."
+    },
+    {
+      "page": 59,
+      "kind": "key",
+      "anchor": "corresponds to the matrices",
+      "note": "G_t plays the role of A_t only in the covariance line; the mean uses the full nonlinear g. Mixing these up is the second classic EKF bug."
+    },
+    {
+      "page": 61,
+      "kind": "section",
+      "anchor": "3.3.5",
+      "note": "Must read. The two factors that decide whether EKF is good enough."
+    },
+    {
+      "page": 61,
+      "kind": "key",
+      "anchor": "The degree of uncertainty and the degree of local nonlinearity",
+      "note": "Both are measurable online: tr(Sigma) and the second-derivative norm. Large either means switch to UKF or shorten the prediction interval."
+    },
+    {
+      "page": 63,
+      "kind": "pitfall",
+      "anchor": "The EKF Gaussian clearly underestimates the spread",
+      "note": "EKF is overconfident under strong nonlinearity. Symptom on the robot: NEES above its bound, innovations outside 3 sigma."
+    },
+    {
+      "page": 63,
+      "kind": "define",
+      "anchor": "A mixture of Gaussians may be of the form",
+      "note": "MHEKF. Useful for ambiguous landmark association in RoboCup rescue maps."
+    },
+    {
+      "page": 63,
+      "kind": "key",
+      "anchor": "it is therefore important to keep the uncertainty of the state estimate small",
+      "note": "Practical rule: predict at high rate (IMU), update often, never let Sigma grow before a nonlinear measurement."
+    },
+    {
+      "page": 65,
+      "kind": "section",
+      "anchor": "3.4",
+      "note": "Must read. Derivative-free alternative; implement it once and you will understand sigma points for life."
+    },
+    {
+      "page": 65,
+      "kind": "define",
+      "anchor": "deterministically extracts so-called sigma points",
+      "note": "2n+1 points: mean plus/minus scaled columns of the matrix square root of Sigma. Deterministic, unlike particles."
+    },
+    {
+      "page": 65,
+      "kind": "derive",
+      "equation": "3.66",
+      "note": "Sigma points. The square root is a Cholesky factor in code; (n+lambda) Sigma must be PD or chol fails. Card C3."
+    },
+    {
+      "page": 65,
+      "kind": "derive",
+      "equation": "3.67",
+      "note": "Weights. w_m^0 and w_c^0 differ by (1 - alpha^2 + beta)."
+    },
+    {
+      "page": 65,
+      "kind": "key",
+      "anchor": "scaling parameters that determine how far the sigma points are spread from the mean",
+      "note": "lambda = alpha^2 (n + kappa) - n. Common practice (not from the book): alpha in [1e-3, 1], kappa = 0 or 3 - n. Very small alpha gives huge negative centre weights; see card C3 trick 4."
+    },
+    {
+      "page": 67,
+      "kind": "derive",
+      "equation": "3.69",
+      "note": "Unscented transform: weighted mean and covariance of the propagated points. This is the whole UKF in two lines."
+    },
+    {
+      "page": 67,
+      "kind": "key",
+      "anchor": "the unscented transform is accurate in the first two terms of the Taylor expansion",
+      "note": "UKF captures second-order effects in the mean; EKF only first. That is the gain, at the cost of 2n+1 evaluations of g and h."
+    },
+    {
+      "page": 67,
+      "kind": "pitfall",
+      "anchor": "The prediction noise",
+      "note": "Additive noise assumed here. For non-additive noise (e.g. velocity model with noise inside g) use the augmented UKF of ch. 7."
+    },
+    {
+      "page": 68,
+      "kind": "key",
+      "anchor": "The cross-covariance",
+      "note": "Sigma^{x,z} replaces Sigma_bar H^T. No Jacobian anywhere. Card C3 line 10."
+    },
+    {
+      "page": 70,
+      "kind": "derive",
+      "anchor": "Table 3.4",
+      "note": "Implement all 14 lines. Line 6 redraws sigma points from the predicted Gaussian; skipping that is a common shortcut that loses accuracy."
+    },
+    {
+      "page": 70,
+      "kind": "key",
+      "anchor": "it does not require the computation of Jacobians",
+      "note": "Reason to prefer UKF when g is a black box (simulator, learned model) or when Jacobians are error-prone (quaternions, SE(3))."
+    },
+    {
+      "page": 71,
+      "kind": "pitfall",
+      "anchor": "If, on the other hand, the belief is highly non-Gaussian",
+      "note": "UKF is still a single Gaussian. Multimodal beliefs need ch. 4."
+    },
+    {
+      "page": 71,
+      "kind": "section",
+      "anchor": "3.5",
+      "note": "Read 3.5.1 and 3.5.2 now; skim 3.5.3 to 3.5.5. Comes back in ch. 12 (SEIF) and in every factor-graph back-end: GTSAM works in information form."
+    },
+    {
+      "page": 71,
+      "kind": "define",
+      "anchor": "is called the information matrix, or sometimes the precision matrix",
+      "note": "Omega = Sigma^-1 is the information (precision) matrix; xi = Sigma^-1 mu the information vector."
+    },
+    {
+      "page": 72,
+      "kind": "derive",
+      "equation": "3.77",
+      "note": "Canonical Gaussian: eta exp(-1/2 x^T Omega x + x^T xi). Log of this is the quadratic every least-squares SLAM back-end minimizes."
+    },
+    {
+      "page": 72,
+      "kind": "key",
+      "anchor": "A quadratic distance that is weighted by a matrix",
+      "note": "Mahalanobis distance. Used for gating in data association: d^2 = nu^T S^-1 nu, chi-square test."
+    },
+    {
+      "page": 73,
+      "kind": "derive",
+      "anchor": "Table 3.5",
+      "note": "Measurement update is a sum (lines 4-5): information adds. Prediction needs two inversions (line 2). Exact dual of Table 3.1."
+    },
+    {
+      "page": 74,
+      "kind": "key",
+      "anchor": "This illustrates the dual character of Kalman and information filters",
+      "note": "KF: cheap predict, expensive update. IF: cheap update, expensive predict. Pick by which happens more often."
+    },
+    {
+      "page": 77,
+      "kind": "pitfall",
+      "anchor": "representing global uncertainty is simple in the information filter",
+      "note": "Global uncertainty is Omega = 0 in information form; impossible in covariance form (infinite Sigma). Use IF for uninitialized states."
+    },
+    {
+      "page": 78,
+      "kind": "key",
+      "anchor": "When represented in logarithmic form, Bayes rule becomes an addition",
+      "note": "Information is additive and commutative: multi-robot fusion and delayed measurements are just sums. Relevant to the iRAP multi-robot mapping."
+    },
+    {
+      "page": 79,
+      "kind": "key",
+      "anchor": "Such sparseness does",
+      "note": "Sparse information matrix does not mean sparse covariance. Reason sparse factor graphs are cheap and dense covariances are not."
+    },
+    {
+      "page": 79,
+      "kind": "link",
+      "anchor": "Information filters can be thought of as graphs",
+      "note": "Gaussian Markov random field = factor graph with Gaussian factors. Direct bridge to Dellaert and Kaess and to your FORGE back-end."
+    },
+    {
+      "page": 79,
+      "kind": "section",
+      "anchor": "3.6",
+      "note": "Read last and compare with your own summary written from memory."
+    },
+    {
+      "page": 80,
+      "kind": "key",
+      "anchor": "The accuracy of Taylor series expansions and unscented transforms depends on two factors",
+      "note": "The one sentence to remember from this chapter."
+    },
+    {
+      "page": 81,
+      "kind": "section",
+      "anchor": "3.8",
+      "note": "Do exercises 1, 2 and 4 (they are built into the package exercises). 3 needs transforms; 5 and 6 are short."
+    },
+    {
+      "page": 66,
+      "kind": "key",
+      "anchor": "If the distribution is an exact Gaussian, then",
+      "note": "beta = 2 is optimal for a Gaussian prior. Keep it unless you know the prior's kurtosis."
+    },
+    {
+      "page": 39,
+      "kind": "key",
+      "anchor": "earliest tractable implementations of the Bayes filter for continuous spaces",
+      "note": "WHY: ch. 2 gave the Bayes filter as an integral you cannot compute. Gaussians make it closed form. ROBOT: every pose estimator you run (EKF on the tracked robot, PX4's EKF2 on the drone) is one of the four algorithms in this chapter."
+    },
+    {
+      "page": 39,
+      "kind": "define",
+      "anchor": "The mean μ is a vector that possesses the same dimensionality as the state",
+      "note": "DEFINE: mu in R^n, Sigma in R^{n x n}. Memorise the shapes now; every bug in T3 is a shape bug or a sign bug."
+    },
+    {
+      "page": 39,
+      "kind": "key",
+      "anchor": "Such a posterior is characteristic of many tracking problems",
+      "note": "WHY: tracking = you already roughly know where you are. Gaussian filters are tracking filters. The chapter's whole scope is 'already roughly localized'."
+    },
+    {
+      "page": 40,
+      "kind": "define",
+      "anchor": "first and second moments of a probability distribution; all other moments are zero",
+      "note": "DEFINE: moments parameterization. (Strictly: all higher cumulants are zero; higher moments are functions of mu and Sigma.) This is why two numbers per dimension pair suffice."
+    },
+    {
+      "page": 40,
+      "kind": "key",
+      "anchor": "It is not applicable to discrete or hybrid state spaces",
+      "note": "PITFALL: a door open/closed, a landmark ID, a gait phase: none can live in a KF state. Hybrid = ch. 4 or a bank of filters (MHEKF, p. 63)."
+    },
+    {
+      "page": 40,
+      "kind": "key",
+      "anchor": "in addition to the Markov assumptions of the Bayes filter",
+      "note": "WHY: the KF inherits ch. 2's Markov assumption. Unmodelled correlated noise (IMU bias, wheel slip that persists) violates it; the fix is to put the bias in the state (exercise 5's constant term is the first step)."
+    },
+    {
+      "page": 41,
+      "kind": "define",
+      "anchor": "At is a square matrix of size n × n",
+      "note": "SHAPES: A n x n, B n x m. CODE: card C1. ROBOT: constant-velocity model A = [[I, dt I],[0, I]], B = 0."
+    },
+    {
+      "page": 41,
+      "kind": "key",
+      "anchor": "Thus, Kalman filters assume linear system dynamics",
+      "note": "The assumption the EKF (3.3) removes. Everything with a heading angle violates it."
+    },
+    {
+      "page": 41,
+      "kind": "derive",
+      "equation": "3.4",
+      "note": "The motion model as a density: N(x_t; A x_{t-1} + B u_t, R_t). You will multiply this by bel(x_{t-1}) in 3.8. CODE: never evaluate this density numerically; the filter only needs its mean and covariance."
+    },
+    {
+      "page": 42,
+      "kind": "derive",
+      "anchor": "Table 3.1",
+      "note": "IMPLEMENT: lines 2-3 predict, 4-6 update. CODE: card C1 (naive, robust with Joseph form, Eigen). TEST: exercises/tests/test_T3.py::test_kf_update_matches_book_and_information_form. Read line 4 as 'gain = prior uncertainty projected into measurement space, divided by total uncertainty there'."
+    },
+    {
+      "page": 42,
+      "kind": "define",
+      "anchor": "Here Ct is a matrix of size k × n",
+      "note": "SHAPES: C k x n maps state to measurement, Q k x k. ROBOT: GPS on the drone: C = [I_3 0], k = 3; a single range sensor: k = 1."
+    },
+    {
+      "page": 42,
+      "kind": "derive",
+      "equation": "3.6",
+      "note": "The measurement likelihood p(z|x). Its log is the quadratic in 3.35 that the update minimises. ROBOT: this is also your outlier test: a measurement with tiny p(z|x) under the predicted belief is a candidate outlier (gate, card C5)."
+    },
+    {
+      "page": 42,
+      "kind": "derive",
+      "equation": "3.7",
+      "note": "Gaussian prior. ROBOT: on the real robot you rarely have one; a huge Sigma_0 is the usual hack and it is exactly what the information filter (3.5) handles cleanly with Omega = 0."
+    },
+    {
+      "page": 43,
+      "kind": "key",
+      "anchor": "The mean is updated using the deterministic version of the state transition function",
+      "note": "WHY: predict mean = run the model with zero noise. In the EKF this becomes g(u, mu) with the FULL nonlinear g (card C2, bug class 1)."
+    },
+    {
+      "page": 43,
+      "kind": "key",
+      "anchor": "This matrix is multiplied twice into the covariance, since the covariance is a quadratic matrix",
+      "note": "WHY: Cov(A x) = A Cov(x) A^T. Any linear map pushes a covariance through 'once per side'. Same reason Jacobians appear as G Sigma G^T in 3.3 and as the sandwich in Joseph form."
+    },
+    {
+      "page": 43,
+      "kind": "define",
+      "anchor": "It specifies the degree to which the measurement is incorporated into the new state estimate",
+      "note": "DEFINE: Kalman gain. Intuition: K -> 0 when the sensor is bad (Q large) or the prior is confident (Sigma_bar small); K -> C^+ when the sensor is perfect. SESSION: Fig 2.2a slider sigma_z^2 shows exactly this."
+    },
+    {
+      "page": 43,
+      "kind": "key",
+      "anchor": "adjusting for the information gain resulting from the measurement",
+      "note": "WHY: line 6 is where the covariance shrinks. It never depends on z itself: in a linear KF the covariance sequence can be computed offline before any data arrives (this is what makes steady-state / precomputed-gain KFs possible on microcontrollers)."
+    },
+    {
+      "page": 43,
+      "kind": "key",
+      "anchor": "the measurement space is much lower dimensional than the state space",
+      "note": "ROBOT: EKF-SLAM: n = 3 + 2N landmarks, k = 2 per observation. The O(n^2) term in line 6 is the cost you pay per landmark observation; ch. 10 shows how to keep it from being O(n^3)."
+    },
+    {
+      "page": 44,
+      "kind": "key",
+      "anchor": "Illustration of Kalman filters: (a) initial belief",
+      "note": "FIGURE: read (a)->(c) as update, (c)->(d) as predict, (d)->(f) as update again. SESSION: Fig 2.2a reproduces this in 2-D with the velocity state visible."
+    },
+    {
+      "page": 45,
+      "kind": "key",
+      "anchor": "mean lies between the two original means",
+      "note": "WHY: the posterior mean is a precision-weighted average of prior and measurement. With equal precisions it is the midpoint; the gain K is the weight."
+    },
+    {
+      "page": 45,
+      "kind": "key",
+      "anchor": "it is a general characteristic of information integration in Kalman filters",
+      "note": "PITFALL: 'always narrower' is only true when the model is right. A wrong Q makes the filter narrow its belief on garbage. That is why T5 tunes with NIS before trusting the ellipse."
+    },
+    {
+      "page": 45,
+      "kind": "define",
+      "anchor": "measurement update step",
+      "note": "DEFINE: measurement update (lines 4-6) vs prediction step (lines 2-3). Thrun's names; Bar-Shalom says 'correction' and 'time update'."
+    },
+    {
+      "page": 45,
+      "kind": "key",
+      "anchor": "When multiplying two Gaussians, for example, the exponents add",
+      "note": "THE IDEA of the whole derivation: product of Gaussians = sum of quadratics = another quadratic = another Gaussian. Everything else is bookkeeping. Same fact makes factor graphs work: a sum of quadratic factors is one big quadratic."
+    },
+    {
+      "page": 46,
+      "kind": "derive",
+      "equation": "3.8",
+      "note": "Bayes prediction (2.41) with both factors Gaussian. The integral over x_{t-1} is marginalisation; for Gaussians, marginalising = dropping rows/columns of Sigma, which is why the result is closed-form."
+    },
+    {
+      "page": 46,
+      "kind": "derive",
+      "equation": "3.11",
+      "note": "L_t: the exponent, quadratic in both x_{t-1} and x_t. Keep this picture: L_t is a paraboloid; 'integrate out x_{t-1}' = slide along one axis and keep the minimum."
+    },
+    {
+      "page": 46,
+      "kind": "derive",
+      "equation": "3.12",
+      "note": "The split L_t = L_t(x_{t-1}, x_t) + L_t(x_t). Completing the square. In factor-graph language this is marginalising x_{t-1} via the Schur complement; GTSAM does this every time it eliminates a variable."
+    },
+    {
+      "page": 47,
+      "kind": "derive",
+      "equation": "3.16",
+      "note": "Psi_t^{-1} = A^T R^{-1} A + Sigma_{t-1}^{-1}: the curvature (information) of L_t in x_{t-1}. Its inverse is the conditional covariance of x_{t-1} given x_t. This is the Schur complement in disguise."
+    },
+    {
+      "page": 47,
+      "kind": "derive",
+      "equation": "3.18",
+      "note": "Solving the first-order condition for x_{t-1}. Five lines of pure algebra; do it once by hand (T2 extension) and never again."
+    },
+    {
+      "page": 48,
+      "kind": "key",
+      "anchor": "The important thing to notice is that the value of this integral is independent",
+      "note": "WHY the trick works: the x_{t-1}-part integrates to a constant that does not depend on x_t, so it vanishes into eta. This is the one sentence to understand in 3.2.4."
+    },
+    {
+      "page": 49,
+      "kind": "derive",
+      "equation": "3.26",
+      "note": "L_t(x_t) with all x_{t-1} terms cancelled. From here: first derivative -> mean (3.31), second derivative -> inverse covariance (3.32). Pattern to remember: mean = argmin of the quadratic, covariance = inverse Hessian. Same in every least-squares estimator (Gauss-Newton gives the covariance for free)."
+    },
+    {
+      "page": 49,
+      "kind": "derive",
+      "equation": "3.28",
+      "note": "First use of the inversion lemma: (R + A Sigma A^T)^{-1} appears, which is the predicted information. Watch for the pattern 'something^{-1} + P^T Q^{-1} P' - it always means the lemma applies."
+    },
+    {
+      "page": 50,
+      "kind": "key",
+      "anchor": "The (specialized) inversion lemma, sometimes called the",
+      "note": "Sherman-Morrison-Woodbury. Memorise the shape: (R + P Q P^T)^{-1} = R^{-1} - R^{-1} P (Q^{-1} + P^T R^{-1} P)^{-1} P^T R^{-1}. It trades an n x n inversion for a k x k one. T2.1 uses it; card C5 explains why GTSAM's Marginals is expensive."
+    },
+    {
+      "page": 51,
+      "kind": "derive",
+      "equation": "3.32",
+      "note": "Second derivative of L_t(x_t) = (A Sigma A^T + R)^{-1}. Inverse Hessian = covariance. This proves line 3 of Table 3.1."
+    },
+    {
+      "page": 51,
+      "kind": "derive",
+      "equation": "3.33",
+      "note": "Bayes measurement update (2.38) with both factors Gaussian: posterior ∝ likelihood x prior. No integral this time, so the update derivation is shorter than the prediction one."
+    },
+    {
+      "page": 51,
+      "kind": "derive",
+      "equation": "3.35",
+      "note": "J_t: sum of two quadratics, measurement residual weighted by Q^{-1} plus prior residual weighted by Sigma_bar^{-1}. This is exactly a weighted least-squares cost. MHE (t7.4) minimises the same thing over a window; the KF solves it for one step."
+    },
+    {
+      "page": 52,
+      "kind": "derive",
+      "equation": "3.37",
+      "note": "Hessian of J_t = C^T Q^{-1} C + Sigma_bar^{-1}: posterior information = measurement information + prior information. Information ADDS. This single line is the entire information filter (3.5)."
+    },
+    {
+      "page": 52,
+      "kind": "derive",
+      "equation": "3.44",
+      "note": "Line 5 proved. Note the form: posterior mean = prior mean + gain x innovation. Every recursive estimator you will meet (RLS, complementary filter, PX4 EKF2) has this shape."
+    },
+    {
+      "page": 53,
+      "kind": "derive",
+      "equation": "3.45",
+      "note": "K rewritten so it uses Sigma_bar instead of Sigma_t (breaks the circularity with line 6). Eight lines of algebra with 'insert I' tricks; skim, but notice the destination: the inversion is now of the k x k matrix C Sigma_bar C^T + Q."
+    },
+    {
+      "page": 53,
+      "kind": "derive",
+      "equation": "3.46",
+      "note": "Inversion lemma applied to the posterior information. This turns 'add information, then invert n x n' into 'subtract a k-rank correction'. Line 6 of the KF is the second form."
+    },
+    {
+      "page": 53,
+      "kind": "derive",
+      "equation": "3.47",
+      "note": "Line 6 proved: Sigma = (I - K C) Sigma_bar. CODE: in floating point this form loses symmetry; the Joseph form (card C1, T2.2) is the same quantity written as a sandwich. T4 bug 4."
+    },
+    {
+      "page": 54,
+      "kind": "key",
+      "anchor": "The efficiency of the Kalman filter is then due to the fact that the parameters",
+      "note": "WHY linear is special: the output Gaussian's parameters are a closed-form function of the input's. For nonlinear g there is no such formula; the EKF and UKF are two ways to fake one."
+    },
+    {
+      "page": 54,
+      "kind": "key",
+      "anchor": "the next state update of the Kalman filter, with",
+      "note": "Fig 3.3a is exactly line 2-3 of Table 3.1 in 1-D: mean a mu + b, variance a^2 sigma^2. Keep this picture when you read 3.51."
+    },
+    {
+      "page": 54,
+      "kind": "derive",
+      "equation": "3.49",
+      "note": "Nonlinear measurement h(x) with additive noise. ROBOT: range-bearing (exercises/models.py::RangeBearing.h), camera projection, LiDAR scan matching residuals. CODE: card C2."
+    },
+    {
+      "page": 55,
+      "kind": "key",
+      "anchor": "Linear and (b) nonlinear transformation of a Gaussian random variable",
+      "note": "FIGURE 3.3: the upper-left density in (b) is the truth, computed by Monte Carlo. It is not Gaussian; it is not even unimodal. Every Gaussian filter will draw an ellipse over this. SESSION Fig 2.2b shows the 2-D version (the banana)."
+    },
+    {
+      "page": 56,
+      "kind": "key",
+      "anchor": "the Bayes filter does not possess a closed-form solution",
+      "note": "WHY the EKF exists: no closed form, so approximate. Two approximations are possible: approximate the FUNCTION (EKF: tangent) or approximate the DISTRIBUTION (UKF: sigma points; PF: samples). Keep this taxonomy."
+    },
+    {
+      "page": 56,
+      "kind": "key",
+      "anchor": "The goal of the EKF is thus shifted from computing the exact posterior",
+      "note": "DEFINE: the EKF's belief is an approximation of an approximation: a Gaussian fitted to a non-Gaussian truth, with parameters estimated via linearisation. Two error sources; 3.3.5 names the second."
+    },
+    {
+      "page": 56,
+      "kind": "key",
+      "anchor": "Projecting the Gaussian through this linear approximation results in a Gaussian density",
+      "note": "WHY linearise: a tangent is linear, linear maps keep Gaussians Gaussian, so Table 3.1 applies again with A := G. That is the entire EKF idea."
+    },
+    {
+      "page": 57,
+      "kind": "key",
+      "anchor": "Illustration of linearization applied by the EKF",
+      "note": "FIGURE 3.4: compare dashed (EKF) with solid (Monte Carlo Gaussian fit) in the upper left. The gap is linearisation error. It grows with sigma_x (Fig 3.5) and with curvature of g (Fig 3.6)."
+    },
+    {
+      "page": 57,
+      "kind": "key",
+      "anchor": "only requires determination of the linear approximation followed by the closed-form computation",
+      "note": "COST: one Jacobian + Table 3.1 per step. Versus 500,000 samples for the Monte Carlo truth. That ratio is why the EKF runs at 1 kHz on a microcontroller and the particle filter does not."
+    },
+    {
+      "page": 58,
+      "kind": "derive",
+      "equation": "3.50",
+      "note": "g' = dg/dx_{t-1}: the Jacobian, n x n. CODE: card C4 finite-difference check; scripts/fd_check.py. ROBOT: for the velocity model only column 3 (theta) is nontrivial; exercises/solutions has it."
+    },
+    {
+      "page": 58,
+      "kind": "key",
+      "anchor": "A logical choice for selecting the argument is to choose the state deemed most likely",
+      "note": "WHY linearise at the mean: it is the single best guess of the state. Consequence: a wrong mean gives a wrong tangent gives a wrong covariance update. Errors compound; this is how EKFs diverge."
+    },
+    {
+      "page": 58,
+      "kind": "derive",
+      "equation": "3.52",
+      "note": "Linearised motion density. The mean uses g(u, mu_{t-1}) exactly; only the SPREAD uses G. Keep the two apart in code (card C2)."
+    },
+    {
+      "page": 58,
+      "kind": "derive",
+      "equation": "3.54",
+      "note": "Linearised measurement density around mu_bar_t. H evaluated at the predicted mean: you must predict before you linearise the measurement."
+    },
+    {
+      "page": 59,
+      "kind": "derive",
+      "anchor": "Table 3.3",
+      "note": "IMPLEMENT: Table 3.1 with (A mu + B u) -> g(u, mu), C mu_bar -> h(mu_bar), A -> G, C -> H. CODE: card C2; T3 ekf_step reuses kf_update. TEST: test_filter_is_consistent_on_range_bearing[ekf_step]."
+    },
+    {
+      "page": 59,
+      "kind": "key",
+      "anchor": "the linear predictions in Kalman filters are replaced by their nonlinear generalizations",
+      "note": "The two-row table above this sentence is the whole EKF in one glance. Photograph it."
+    },
+    {
+      "page": 60,
+      "kind": "derive",
+      "equation": "3.58",
+      "note": "Phi_t: same as Psi_t in 3.16 with G in place of A. The EKF derivation is the KF derivation with a find-and-replace; nothing new, which is why the book only sketches it."
+    },
+    {
+      "page": 61,
+      "kind": "derive",
+      "equation": "3.64",
+      "note": "EKF gain. Note the typo-looking Sigma_{t-1}: it should read Sigma_bar_t as in Table 3.3 line 4 (compare 3.45). Trust the table."
+    },
+    {
+      "page": 61,
+      "kind": "key",
+      "anchor": "may require time exponential in",
+      "note": "COST comparison: EKF polynomial in n; particle filter exponential in n (curse of dimensionality). This is the argument for Gaussian filters in high-dimensional states (15-state IMU+pose, 1000-landmark maps)."
+    },
+    {
+      "page": 61,
+      "kind": "key",
+      "anchor": "EKFs have been applied with great success to a number of state estimation problems that violate",
+      "note": "PRACTICAL: the assumptions are sufficient, not necessary. The EKF often works anyway. The question is never 'is it linear' but 'is the linearisation error smaller than the noise'. T5 task 4 measures that."
+    },
+    {
+      "page": 62,
+      "kind": "key",
+      "anchor": "Dependency of approximation quality on uncertainty",
+      "note": "FIGURE 3.5: same g, same mean, two prior widths. Wide prior (a) -> badly non-Gaussian output and a poor EKF fit; narrow prior (b) -> nearly Gaussian output and a good fit. ROBOT: predict at IMU rate so Sigma stays narrow between corrections."
+    },
+    {
+      "page": 63,
+      "kind": "key",
+      "anchor": "The second factor for the quality of the linear Gaussian approximation is the local nonlinearity",
+      "note": "FACTOR 2: curvature of g over the width of Sigma. A measurable proxy on the robot: compare G at mu with G at mu +/- sqrt(Sigma) columns; if they differ a lot, you are in Fig 3.6a territory and should shorten dt or use the UKF."
+    },
+    {
+      "page": 63,
+      "kind": "key",
+      "anchor": "the arithmetic mean of these hypotheses is not a likely contender",
+      "note": "PITFALL: averaging two plausible poses gives an implausible one (the mean of 'door A' and 'door B' is a wall). This is the failure mode of every unimodal estimator under ambiguous data association."
+    },
+    {
+      "page": 63,
+      "kind": "derive",
+      "equation": "3.65",
+      "note": "Mixture of Gaussians: sum_l psi_l N(x; mu_l, Sigma_l). An MHEKF runs one EKF per component and reweights by measurement likelihood 3.6. ROBOT: candidate for landmark association ambiguity in RoboCup rescue maps."
+    },
+    {
+      "page": 64,
+      "kind": "key",
+      "anchor": "Dependence of the approximation quality on local nonlinearity of the",
+      "note": "FIGURE 3.6: same prior width, different mean. The mean in (a) sits where g bends; (b) where g is nearly straight. The EKF cannot tell the difference; it only sees the slope at the mean."
+    },
+    {
+      "page": 65,
+      "kind": "define",
+      "anchor": "moments matching",
+      "note": "DEFINE: moments matching / assumed density filter: choose the Gaussian whose mean and covariance equal the TRUE output moments. Optimal among Gaussians; usually needs Monte Carlo or analytic integrals. The UKF is a cheap deterministic approximation of this."
+    },
+    {
+      "page": 65,
+      "kind": "define",
+      "anchor": "which performs a stochastic linearization through the use of a weighted statistical linear regression",
+      "note": "DEFINE: statistical linearisation: fit a line through g by weighted regression over sigma points instead of taking the derivative at one point. That is why the UKF is derivative-free and why it sees curvature."
+    },
+    {
+      "page": 65,
+      "kind": "key",
+      "anchor": "these sigma points are located at the mean and symmetrically along the main axes of the covariance",
+      "note": "GEOMETRY: 2n+1 points: centre, plus/minus one scaled step along each column of a square root of Sigma. With a symmetric square root the steps lie on the ellipse's principal axes; with Cholesky they lie on a different but equally valid set of directions (card C3 trick 1). SESSION Fig 2.2b."
+    },
+    {
+      "page": 66,
+      "kind": "key",
+      "anchor": "Illustration of linearization applied by the UKF",
+      "note": "FIGURE 3.7: three sigma points (n = 1) on the lower-right Gaussian; their images (circles) on g; the fitted Gaussian (dashed, upper left) matches the Monte Carlo solid line far better than the EKF did in Fig 3.4. Same g, same prior."
+    },
+    {
+      "page": 66,
+      "kind": "key",
+      "anchor": "The parameter β can be chosen to encode additional",
+      "note": "beta encodes prior knowledge of the distribution's kurtosis. beta = 2 for Gaussian priors. alpha and kappa control spread; values are convention, not theory (card C3 trick 4 shows what small alpha does to the weights)."
+    },
+    {
+      "page": 66,
+      "kind": "derive",
+      "equation": "3.68",
+      "note": "Push each sigma point through g. 2n+1 evaluations of the real nonlinear function; no derivative anywhere. CODE: card C3 line 3."
+    },
+    {
+      "page": 67,
+      "kind": "key",
+      "anchor": "the unscented transform is more accurate than the first order Taylor series expansion",
+      "note": "RESULT: UT exact to second order in the Taylor expansion of the mean (for Gaussian priors, to third order in odd terms by symmetry); EKF exact to first. SESSION Fig 2.2b tile '2nd-order term' shows the size of what the EKF misses: -r sigma_theta^2 / 2."
+    },
+    {
+      "page": 67,
+      "kind": "key",
+      "anchor": "These points are propagated through the noise-free state prediction in line 3",
+      "note": "ALGORITHM WALK-THROUGH starts here; read it next to Table 3.4 on p. 70 line by line. Lines 2-5 = unscented transform through g; 6-9 = through h; 10-11 = gain; 12-13 = update."
+    },
+    {
+      "page": 67,
+      "kind": "key",
+      "anchor": "The prediction noise Rt is assumed to be additive",
+      "note": "PITFALL: additive noise only. The velocity motion model of ch. 5 puts noise on (v, omega) INSIDE g. For that you augment the state with the noise (ch. 7, Table 7.4) so sigma points sample the noise too."
+    },
+    {
+      "page": 68,
+      "kind": "key",
+      "anchor": "Linearization results for the UKF depending on the uncertainty",
+      "note": "FIGURE 3.8: Fig 3.5 redone with UKF columns added. The UKF dashed curve tracks the solid (truth) Gaussian even for the wide prior in (a). Compare the two dashed curves in (a) side by side: that difference is the whole argument for the UKF."
+    },
+    {
+      "page": 68,
+      "kind": "key",
+      "anchor": "which is then used in line 11 to compute the Kalman gain",
+      "note": "KEY SUBSTITUTION: Sigma_bar^{x,z} (cross-covariance of state and measurement sigma points) replaces Sigma_bar H^T. S_t replaces H Sigma_bar H^T + Q. Then K = Sigma^{xz} S^{-1} is the same gain formula as always. CODE: card C3 lines 10-11."
+    },
+    {
+      "page": 69,
+      "kind": "key",
+      "anchor": "Linearization results for the UKF depending on the mean of the original",
+      "note": "FIGURE 3.9: Fig 3.6 redone with the UKF. Same lesson as 3.8: smaller error, still one Gaussian over a non-Gaussian truth."
+    },
+    {
+      "page": 69,
+      "kind": "key",
+      "anchor": "For purely linear systems, it can be shown that the estimates generated by the UKF are identical",
+      "note": "TEST: for linear g, h the UKF equals the KF exactly. exercises/tests::test_unscented_transform_is_exact_for_linear_maps checks this; it is the first thing to verify in any UKF implementation."
+    },
+    {
+      "page": 70,
+      "kind": "key",
+      "anchor": "In many practical applications, the difference between EKF and UKF is negligible",
+      "note": "PRACTICAL: when Sigma is small and dt is short, EKF = UKF. Choose by engineering: UKF when Jacobians are painful or g is a black box; EKF when you need the Jacobian anyway (e.g. for smoothing / factor graphs later)."
+    },
+    {
+      "page": 71,
+      "kind": "key",
+      "anchor": "the sigma points of the unscented transform are determined deterministically, while particle filters draw samples randomly",
+      "note": "UKF vs PF in one sentence. 2n+1 deterministic points vs thousands of random ones. UKF wins when the truth is roughly Gaussian; PF wins when it is not. ch. 4 next."
+    },
+    {
+      "page": 71,
+      "kind": "key",
+      "anchor": "what is computationally complex in one parameterization happens to be simple in the other",
+      "note": "THE DUALITY. Table in lecture L5. Decide which filter by which operation dominates: many measurements per motion step -> IF; many motion steps per measurement -> KF."
+    },
+    {
+      "page": 71,
+      "kind": "derive",
+      "equation": "3.71",
+      "note": "xi = Sigma^{-1} mu, the information vector. Not a state: it is the mean scaled by precision. Recovering mu needs a solve (3.73). CODE: card C5, never inv(Omega) @ xi."
+    },
+    {
+      "page": 72,
+      "kind": "derive",
+      "equation": "3.75",
+      "note": "Expanding the Gaussian exponent: -1/2 x^T Sigma^{-1} x + x^T Sigma^{-1} mu + const. The quadratic term carries Omega, the linear term carries xi. This is why information form is natural for products: exponents add term by term."
+    },
+    {
+      "page": 72,
+      "kind": "derive",
+      "equation": "3.78",
+      "note": "-log p(x) = const + 1/2 x^T Omega x - x^T xi: a quadratic. Every least-squares SLAM back-end minimises a sum of these. The negative log of a Gaussian IS a least-squares cost."
+    },
+    {
+      "page": 72,
+      "kind": "derive",
+      "equation": "3.79",
+      "note": "Setting the gradient to zero: Omega x = xi. The posterior mean is the solution of a linear system; solve it with Cholesky (or sparse Cholesky, which is what GTSAM/iSAM do). Never form Omega^{-1}."
+    },
+    {
+      "page": 73,
+      "kind": "key",
+      "anchor": "The output are the parameters ξt and Ωt of the updated Gaussian",
+      "note": "Table 3.5 I/O is canonical in, canonical out; no mean is ever formed. That is only possible because the models are linear. The EIF (3.5.4) loses this."
+    },
+    {
+      "page": 73,
+      "kind": "derive",
+      "equation": "3.81",
+      "note": "Same models as 3.2 and 3.5. The information filter is not a different model, only a different coordinate system for the belief."
+    },
+    {
+      "page": 73,
+      "kind": "key",
+      "anchor": "involves the inversion of two matrices of the size",
+      "note": "COST: two n x n inversions per predict. ROBOT: a 1000-landmark map in information form would invert 2003 x 2003 twice per motion step. Ch. 12 (SEIF) avoids this by exploiting sparsity; this sentence is the motivation for that whole chapter."
+    },
+    {
+      "page": 74,
+      "kind": "key",
+      "anchor": "Measurement updates are additive in the information filter",
+      "note": "COST: update = add two matrices. ROBOT: fusing 64 beams of a LiDAR scan in one step is 64 additions in information form and 64 k x k inversions in covariance form."
+    },
+    {
+      "page": 74,
+      "kind": "derive",
+      "equation": "3.86",
+      "note": "IF prediction derived by substituting Sigma = Omega^{-1} into 3.83 and inverting back. Nothing deep; the expense is in the two inversions this substitution creates."
+    },
+    {
+      "page": 75,
+      "kind": "derive",
+      "equation": "3.90",
+      "note": "The update in exponent form: posterior Omega and xi are literally read off the brackets. Compare with the KF update derivation (3.35-3.47): twelve equations there, three here. That is the duality in action."
+    },
+    {
+      "page": 75,
+      "kind": "derive",
+      "equation": "3.92",
+      "note": "Omega_t = C^T Q^{-1} C + Omega_bar_t. Information adds. CODE: card C5 if_update. TEST: test_information_form_round_trip_and_update_equals_kf and test_information_form_accepts_total_ignorance."
+    },
+    {
+      "page": 75,
+      "kind": "key",
+      "anchor": "This mandates the recovery of a state estimate μ from the canonical parameters",
+      "note": "PITFALL of the EIF: g and h need a point to be evaluated/linearised at, so mu = Omega^{-1} xi must be recovered every step (Table 3.6 lines 2 and 5). The clean canonical-in/canonical-out property of Table 3.5 is lost."
+    },
+    {
+      "page": 76,
+      "kind": "derive",
+      "anchor": "Table 3.6",
+      "note": "EIF = EKF in information coordinates. Lines 2 and 5 recover means (two solves); 3 is the expensive prediction; 6-7 are additive updates with the linearised measurement. IMPLEMENT only if you go on to ch. 12; otherwise read for the structure."
+    },
+    {
+      "page": 76,
+      "kind": "derive",
+      "equation": "3.97",
+      "note": "G and H defined exactly as in the EKF (3.51, 3.53). One Jacobian code path serves both filters."
+    },
+    {
+      "page": 77,
+      "kind": "derive",
+      "equation": "3.106",
+      "note": "EIF measurement update. Notice the extra term H_t mu_bar_t inside the bracket of 3.107: it is the linearisation constant h(mu_bar) - H mu_bar moved to the information vector. Easy to drop by mistake."
+    },
+    {
+      "page": 78,
+      "kind": "key",
+      "anchor": "The information filter tends to be numerically more stable",
+      "note": "PRACTICAL: Omega is built by adding PSD terms, so it stays PSD; Sigma in the KF is built by subtracting (line 6), which is where round-off makes it indefinite. Another reason square-root and information-form filters exist."
+    },
+    {
+      "page": 78,
+      "kind": "key",
+      "anchor": "the integration á la Kalman filter induces severe computational problems",
+      "note": "ROBOT: a dense Sigma couples every variable to every other; one new measurement touches all n^2 entries. Information form lets you add locally. This is the seed of SEIF (ch. 12) and of every sparse SLAM solver."
+    },
+    {
+      "page": 78,
+      "kind": "key",
+      "anchor": "Addition is commutative",
+      "note": "WHY multi-robot fusion is easy in information form: each robot contributes C^T Q^{-1} C and C^T Q^{-1} z; sum them in any order, at any time. Delayed or out-of-order measurements need no reprocessing. ROBOT: iRAP multi-robot mapping."
+    },
+    {
+      "page": 78,
+      "kind": "pitfall",
+      "anchor": "the information filter is generally believed to be computationally inferior to the Kalman filter",
+      "note": "The honest verdict for DENSE problems: EIF loses because of the state recovery and the prediction inversions. The IF wins only when Omega is sparse, which is the next paragraph and the rest of the SLAM literature."
+    },
+    {
+      "page": 79,
+      "kind": "key",
+      "anchor": "the interaction of state variables is local",
+      "note": "WHY Omega is sparse in SLAM: a landmark only interacts with the poses that observed it. Zero in Omega = conditional independence. Zero in Sigma would mean marginal independence, which never holds (everything is coupled through the robot path)."
+    },
+    {
+      "page": 79,
+      "kind": "define",
+      "anchor": "loopy belief propagation",
+      "note": "DEFINE: inference on a sparse Gaussian graph by passing messages. Related to Gauss-Seidel and to iSAM's incremental updates. Not needed now; recognise the name when it appears in ch. 12."
+    },
+    {
+      "page": 80,
+      "kind": "key",
+      "anchor": "The result of this operation is a matrix known as the Jacobian",
+      "note": "SUMMARY check: can you write G for the velocity model from memory? If not, exercise T3.2 before moving on."
+    },
+    {
+      "page": 80,
+      "kind": "key",
+      "anchor": "The primary disadvantage is their confinement to unimodal Gaussian distributions",
+      "note": "The one limitation none of the four filters removes. Ch. 4 (histogram and particle filters) is the answer; the price is exponential cost in n."
+    },
+    {
+      "page": 81,
+      "kind": "key",
+      "anchor": "the Kalman filter and its nonlinear extension, the extended Kalman filter, are vastly more popular",
+      "note": "Why you will see EKFs everywhere in robotics code (PX4, ArduPilot, robot_localization) and information filters mostly inside SLAM back-ends."
+    },
+    {
+      "page": 81,
+      "kind": "key",
+      "anchor": "The unscented Kalman filter is due to Julier and Uhlmann (1997)",
+      "note": "READING: Julier & Uhlmann 1997 for the UT; van der Merwe 2004 (thesis) for the sigma-point family and the square-root UKF you would use in production."
+    },
+    {
+      "page": 82,
+      "kind": "key",
+      "anchor": "What is a minimal state vector for the Kalman filter",
+      "note": "EXERCISE 1(a) answer shape: (p, v) suffices because acceleration is white noise; adding acceleration would make the noise non-Markov in the smaller state. exercises/models.py::CarCV encodes 1(b)-(c); test_book_exercise_1c_five_steps_from_rest checks (c)."
+    },
+    {
+      "page": 82,
+      "kind": "key",
+      "anchor": "you can create those ellipses by analyzing the eigenvalues of the covariance matrix",
+      "note": "HOW: eigen-decompose Sigma; semi-axes = sqrt(eigenvalues) x n_sigma along the eigenvectors. CODE: viz.py style.cov_ellipse does this; SESSION Fig 2.2a draws 1-sigma and 2-sigma."
+    },
+    {
+      "page": 82,
+      "kind": "key",
+      "anchor": "What will happen to the correlation between",
+      "note": "EXERCISE 1(e): the p-v correlation tends to a constant below 1 (the steady state of the Riccati recursion), not to 1. Compute it from the closed form in the test, or just run CarCV for 1000 steps."
+    },
+    {
+      "page": 83,
+      "kind": "key",
+      "anchor": "Suppose we know x and y with high certainty, but the orientation θ is unknown",
+      "note": "EXERCISE 4: the canonical EKF failure. Solution in exercises/solutions/T2.md (T2.3): the true posterior is a ring, the EKF draws a vertical needle at x = 1. Do it on paper before reading."
+    },
+    {
+      "page": 84,
+      "kind": "key",
+      "anchor": "Extend this algorithm to contain such terms",
+      "note": "EXERCISE 5: x_t = A x + B u + c_t + eps. Only line 2 changes (add c_t); the covariance lines are untouched because a constant has no uncertainty. ROBOT: gravity in IMU prediction, known sensor offsets."
+    },
+    {
+      "page": 84,
+      "kind": "key",
+      "anchor": "the existence of a sparse information matrix in multivariate Gaussians",
+      "note": "EXERCISE 6: a chain x_1 - x_2 - ... - x_d with each x_{i+1} = x_i + small noise has a tridiagonal Omega (sparse) and a dense Sigma with all correlations near 1. This is a 1-D robot path, and it is the whole point of 3.5.6."
+    }
+  ]
+}

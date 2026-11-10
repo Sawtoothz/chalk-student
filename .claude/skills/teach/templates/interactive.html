@@ -1,0 +1,199 @@
+<!-- Interactive session for Thrun ch. 3, browser version of session.py. Included by build_viewer.py. Needs Plotly global. -->
+<style>
+.ix{display:flex;flex-direction:column;gap:26px;max-width:960px}
+.ix .intro{font-family:var(--serif);font-size:16px;max-width:72ch;color:var(--ink)}
+.fig-card{border:0.5px solid var(--rule);border-radius:12px;background:var(--sheet);padding:14px 14px 12px;font-family:var(--sans)}
+.fig-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fig-num{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink3)}
+.fig-title{font-size:16px;font-weight:600;margin-top:2px}
+.fig-hint{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+.fig-predict{margin:10px 0 4px;padding:8px 12px;border-left:3px solid var(--key);background:var(--code-bg);border-radius:0 6px 6px 0;font-size:13.5px}
+.fig-predict b{font-weight:600}
+.fig-chip{margin-top:2px;padding:3px 8px;border-radius:8px;font-size:11px;white-space:nowrap;background:var(--define);color:var(--accent-ink)}
+.fig-chip[data-state="warn"]{background:var(--key);color:#4a2f06}
+.fig-chip[data-state="bad"]{background:var(--derive);color:#501313}
+:root[data-theme="dark"] .fig-chip[data-state="warn"],:root[data-theme="dark"] .fig-chip[data-state="bad"]{color:#f5f4ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fig-chip[data-state="warn"],:root:not([data-theme="light"]) .fig-chip[data-state="bad"]{color:#f5f4ef}}
+.fig-plot{margin-top:8px;min-height:300px}
+.fig-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.fig-row label{min-width:150px;font-size:13px;color:var(--ink2)}
+.fig-row input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.fig-row output{min-width:64px;text-align:right;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.fig-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px;font-family:var(--mono)}
+.fig-tile{padding:8px 10px;border-radius:8px;background:var(--code-bg);min-width:0}
+.fig-tile .k{font-size:11px;color:var(--ink3)}
+.fig-tile .v{font-size:13px;font-weight:500;line-height:1.6;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fig-tile.wide{grid-column:1 / -1}
+.fig-after{margin-top:10px;font-size:13.5px;color:var(--ink2);font-family:var(--serif);font-size:15px}
+.fig-after summary{cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--accent-ink);font-weight:500}
+@media (max-width:600px){.fig-row label{min-width:110px}}
+</style>
+<div class="ix">
+<p class="intro">Four figures, one idea. Each has a <b>Predict first</b> prompt: write your guess down before you move the slider. The gap between your guess and the plot is where the learning is. Colours: blue = estimate / linear, coral = measurement / second view, teal = the quantity being taught, gray = truth and structure.</p>
+
+<figure class="fig-card" id="figA">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2a · Table 3.1</div><div class="fig-title">Kalman filter on the 1-D car (book exercises 1–2)</div></div><div class="fig-chip" id="chipA">update narrows Σ</div></div>
+  <div class="fig-hint">State (p, v), Δt = 1, random acceleration σ²ₐ = 1, position sensor with variance σ²_z.</div>
+  <div class="fig-predict"><b>Predict first.</b> With a terrible sensor (σ²_z = 100) and a good prior, will the posterior mean sit closer to the prior or to the measurement? What happens to the <i>velocity</i> estimate when only <i>position</i> is measured, and why?</div>
+  <div class="fig-row"><label for="a_sz">sensor variance σ²_z</label><input type="range" id="a_sz" min="0.1" max="100" step="0.1" value="10"><output id="a_sz_o"></output></div>
+  <div class="fig-row"><label for="a_steps">predict steps before measuring</label><input type="range" id="a_steps" min="1" max="30" step="1" value="8"><output id="a_steps_o"></output></div>
+  <div class="fig-row"><label for="a_z">measured position z</label><input type="range" id="a_z" min="-10" max="30" step="0.5" value="12"><output id="a_z_o"></output></div>
+  <div class="fig-plot" id="plotA"></div>
+  <div class="fig-tiles" id="tilesA"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>The velocity gain K_v is non-zero although only position is measured: AΣAᵀ builds a p–v correlation, so a surprise in position is partly explained by velocity. With σ²_z = 100 the mean barely moves and the posterior ellipse is almost the prior. With σ²_z = 0.1 the posterior collapses onto the measurement in p but stays wide in v. tr Σ̄ → tr Σ must always go down (p. 45).</details>
+</figure>
+
+<figure class="fig-card" id="figB">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2b · eq. 3.51 vs 3.69</div><div class="fig-title">A Gaussian through a nonlinearity (Figs 3.3–3.9)</div></div><div class="fig-chip" id="chipB">UKF closer than EKF</div></div>
+  <div class="fig-hint">Polar to Cartesian, (r, θ) ↦ (r cos θ, r sin θ): a range-bearing measurement run backwards.</div>
+  <div class="fig-predict"><b>Predict first.</b> As the bearing uncertainty σ_θ grows, which way does the <i>true</i> mean of the Cartesian point move: outward along the ray or inward toward the sensor? Which filter catches that?</div>
+  <div class="fig-row"><label for="b_sth">bearing std σ_θ [deg]</label><input type="range" id="b_sth" min="1" max="60" step="1" value="25"><output id="b_sth_o"></output></div>
+  <div class="fig-row"><label for="b_sr">range std σ_r [m]</label><input type="range" id="b_sr" min="0.01" max="1" step="0.01" value="0.1"><output id="b_sr_o"></output></div>
+  <div class="fig-row"><label for="b_alpha">UKF α</label><input type="range" id="b_alpha" min="0.1" max="1" step="0.05" value="1"><output id="b_alpha_o"></output></div>
+  <div class="fig-plot" id="plotB"></div>
+  <div class="fig-tiles" id="tilesB"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>The true mean moves inward: E[r cos θ] = r e^(−σ²_θ/2) ≈ r(1 − σ²_θ/2). The tangent has no second derivative, so the EKF mean never moves (p. 67: "the EKF captures only the first order term"). The UKF mean tracks the shift because both outer sigma points land at smaller x than the centre one. Both filters still draw an ellipse over what is really a banana (p. 63).</details>
+</figure>
+
+<figure class="fig-card" id="figC">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2c · Tables 3.3 and 3.4</div><div class="fig-title">Tracked robot, range–bearing to one landmark</div></div><div class="fig-chip" id="chipC">EKF consistent</div></div>
+  <div class="fig-hint">Velocity motion model (eq. 5.9), figure-eight controls, one landmark. EKF blue, UKF coral, truth gray, 2σ ellipses every 25 steps.</div>
+  <div class="fig-predict"><b>Predict first.</b> Move the landmark close to the path (e.g. (1.0, 0.5)). Which filter's ellipses stop containing the truth first, and at which part of the path?</div>
+  <div class="fig-row"><label for="c_lx">landmark x</label><input type="range" id="c_lx" min="-2" max="8" step="0.1" value="5"><output id="c_lx_o"></output></div>
+  <div class="fig-row"><label for="c_ly">landmark y</label><input type="range" id="c_ly" min="-2" max="6" step="0.1" value="3"><output id="c_ly_o"></output></div>
+  <div class="fig-row"><label for="c_seed">noise seed</label><input type="range" id="c_seed" min="0" max="9" step="1" value="0"><output id="c_seed_o"></output></div>
+  <div class="fig-plot" id="plotC" style="min-height:460px"></div>
+  <div class="fig-tiles" id="tilesC"></div>
+</figure>
+
+<figure class="fig-card" id="figD">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.2d · consistency</div><div class="fig-title">NEES and NIS: what the two noise knobs do</div></div><div class="fig-chip" id="chipD">consistent</div></div>
+  <div class="fig-hint">Same run as Fig 2.2c with the EKF. NEES = eᵀΣ⁻¹e ~ χ²(3) if the filter is honest; NIS = νᵀS⁻¹ν ~ χ²(2). Dashed lines are 95% quantiles.</div>
+  <div class="fig-predict"><b>Predict first.</b> Scale the filter's R_proc by 0.1 (the filter <i>thinks</i> motion is more precise than it is). Which statistic reacts first, NEES or NIS? Now scale Q_meas by 0.1 instead. Same question.</div>
+  <div class="fig-row"><label for="d_r">log₁₀ scale on filter R_proc</label><input type="range" id="d_r" min="-1" max="1" step="0.1" value="0"><output id="d_r_o"></output></div>
+  <div class="fig-row"><label for="d_q">log₁₀ scale on filter Q_meas</label><input type="range" id="d_q" min="-1" max="1" step="0.1" value="0"><output id="d_q_o"></output></div>
+  <div class="fig-plot" id="plotD" style="min-height:320px"></div>
+  <div class="fig-plot" id="plotD2" style="min-height:260px"></div>
+  <div class="fig-tiles" id="tilesD"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>Shrinking Q_meas makes S small at once, so NIS jumps on the next update; NEES follows as over-trusted measurements pull the state around. Shrinking R_proc lets Σ̄ stay small while the real motion wanders, so NEES climbs over tens of steps while NIS lags. NIS is what you can measure on the robot; NEES is what you care about. Tune Q with NIS first, then R with a ground-truth run. That is exercise T5.</details>
+</figure>
+</div>
+
+<script>
+(function(){
+// ---------- tiny dense linear algebra
+const zeros=(r,c)=>Array.from({length:r},()=>new Array(c).fill(0));
+const eye=n=>{const I=zeros(n,n);for(let i=0;i<n;i++)I[i][i]=1;return I};
+const T=A=>A[0].map((_,j)=>A.map(r=>r[j]));
+const mm=(A,B)=>A.map(r=>B[0].map((_,j)=>r.reduce((s,v,k)=>s+v*B[k][j],0)));
+const mv=(A,v)=>A.map(r=>r.reduce((s,a,k)=>s+a*v[k],0));
+const add=(A,B)=>A.map((r,i)=>r.map((v,j)=>v+B[i][j]));
+const sub=(A,B)=>A.map((r,i)=>r.map((v,j)=>v-B[i][j]));
+const sc=(A,k)=>A.map(r=>r.map(v=>v*k));
+const sym=A=>A.map((r,i)=>r.map((v,j)=>0.5*(v+A[j][i])));
+const vsub=(a,b)=>a.map((v,i)=>v-b[i]), vadd=(a,b)=>a.map((v,i)=>v+b[i]);
+const outer=(a,b)=>a.map(x=>b.map(y=>x*y));
+function chol(A){const n=A.length,L=zeros(n,n);for(let i=0;i<n;i++){for(let j=0;j<=i;j++){let s=A[i][j];for(let k=0;k<j;k++)s-=L[i][k]*L[j][k];if(i===j){if(s<=0)throw new Error('not PD');L[i][i]=Math.sqrt(s)}else L[i][j]=s/L[j][j]}}return L}
+function solve(A,B){ // A x = B (B matrix), Gaussian elimination with partial pivoting
+  const n=A.length,m=B[0].length,M=A.map((r,i)=>[...r,...B[i]]);
+  for(let c=0;c<n;c++){let p=c;for(let r=c+1;r<n;r++)if(Math.abs(M[r][c])>Math.abs(M[p][c]))p=r;[M[c],M[p]]=[M[p],M[c]];
+    for(let r=0;r<n;r++){if(r===c)continue;const f=M[r][c]/M[c][c];for(let k=c;k<n+m;k++)M[r][k]-=f*M[c][k]}}
+  return M.map((r,i)=>r.slice(n).map(v=>v/M[i][i]));
+}
+const solveV=(A,b)=>solve(A,b.map(v=>[v])).map(r=>r[0]);
+const quad=(v,A)=>v.reduce((s,x,i)=>s+x*solveV(A,v)[i],0);
+const wrap=a=>Math.atan2(Math.sin(a),Math.cos(a));
+const trace=A=>A.reduce((s,r,i)=>s+r[i],0);
+function rng(seed){let s=seed>>>0||1;return()=>{s^=s<<13;s>>>=0;s^=s>>>17;s^=s<<5;s>>>=0;return (s>>>0)/4294967296}}
+function randn(r){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function mvn(mu,Sig,r){const L=chol(Sig);const z=mu.map(()=>randn(r));return vadd(mu,mv(L,z))}
+function eig2(C){const a=C[0][0],b=C[0][1],d=C[1][1];const tr=a+d,det=a*d-b*b;const s=Math.sqrt(Math.max(tr*tr/4-det,0));const l1=tr/2+s,l2=tr/2-s;const v1=Math.abs(b)>1e-12?[l1-d,b]:[1,0];const n1=Math.hypot(...v1);return{l1,l2,v1:[v1[0]/n1,v1[1]/n1]}}
+function ellipse(m,C,n){const{l1,l2,v1}=eig2(C);const v2=[-v1[1],v1[0]];const a=n*Math.sqrt(Math.max(l1,0)),b=n*Math.sqrt(Math.max(l2,0));const x=[],y=[];for(let i=0;i<=72;i++){const t=i/72*2*Math.PI;x.push(m[0]+a*Math.cos(t)*v1[0]+b*Math.sin(t)*v2[0]);y.push(m[1]+a*Math.cos(t)*v1[1]+b*Math.sin(t)*v2[1])}return{x,y}}
+const chi2_95={1:3.841,2:5.991,3:7.815};
+
+// ---------- filters (same as exercises/solutions/T3_solution.py)
+function kf_predict(mu,S,A,B,u,R){return[vadd(mv(A,mu),mv(B,u)),sym(add(mm(mm(A,S),T(A)),R))]}
+function kf_update(mb,Sb,z,C,Q,nu){nu=nu||vsub(z,mv(C,mb));const S=sym(add(mm(mm(C,Sb),T(C)),Q));const K=T(solve(S,mm(C,Sb)));const mu=vadd(mb,mv(K,nu));const IKC=sub(eye(mb.length),mm(K,C));const Sig=sym(add(mm(mm(IKC,Sb),T(IKC)),mm(mm(K,Q),T(K))));return{mu,S:Sig,nu,Sinn:S,K}}
+function sigmaPoints(mu,Sig,alpha,beta,kappa){const n=mu.length,lam=alpha*alpha*(n+kappa)-n;const L=chol(sc(Sig,n+lam));const X=[mu];for(let i=0;i<n;i++)X.push(vadd(mu,L.map(r=>r[i])));for(let i=0;i<n;i++)X.push(vsub(mu,L.map(r=>r[i])));const wm=new Array(2*n+1).fill(1/(2*(n+lam)));const wc=[...wm];wm[0]=lam/(n+lam);wc[0]=lam/(n+lam)+(1-alpha*alpha+beta);return{X,wm,wc}}
+function ut(Y,wm,wc,noise,angleIdx){const ref=Y[0];const D=Y.map(y=>{const d=vsub(y,ref);(angleIdx||[]).forEach(i=>d[i]=wrap(d[i]));return d});const mean=vadd(ref,D[0].map((_,j)=>D.reduce((s,d,i)=>s+wm[i]*d[j],0)));const dev=Y.map(y=>{const d=vsub(y,mean);(angleIdx||[]).forEach(i=>d[i]=wrap(d[i]));return d});let cov=noise;dev.forEach((d,i)=>cov=add(cov,sc(outer(d,d),wc[i])));return{mean,cov:sym(cov),dev}}
+
+// range-bearing model
+function model(lm){return{m:lm,dt:0.1,R:[[4e-4,0,0],[0,4e-4,0],[0,0,1e-4]],Q:[[0.01,0],[0,Math.pow(Math.PI/90,2)]],
+  g(u,x){const[v,w]=u,[x_,y_,th]=x,dt=0.1;if(Math.abs(w)<1e-9)return[x_+v*dt*Math.cos(th),y_+v*dt*Math.sin(th),th];return[x_-v/w*Math.sin(th)+v/w*Math.sin(th+w*dt),y_+v/w*Math.cos(th)-v/w*Math.cos(th+w*dt),wrap(th+w*dt)]},
+  h(x){const dx=lm[0]-x[0],dy=lm[1]-x[1];return[Math.hypot(dx,dy),wrap(Math.atan2(dy,dx)-x[2])]},
+  G(u,x){const[v,w]=u,th=x[2],dt=0.1,G=eye(3);if(Math.abs(w)<1e-9){G[0][2]=-v*dt*Math.sin(th);G[1][2]=v*dt*Math.cos(th);return G}G[0][2]=-v/w*Math.cos(th)+v/w*Math.cos(th+w*dt);G[1][2]=-v/w*Math.sin(th)+v/w*Math.sin(th+w*dt);return G},
+  H(x){const dx=lm[0]-x[0],dy=lm[1]-x[1],q=dx*dx+dy*dy,r=Math.sqrt(q);return[[-dx/r,-dy/r,0],[dy/q,-dx/q,-1]]}}}
+function figureEight(n){const out=[];for(let i=0;i<n;i++){const t=i*0.1;out.push([1,0.8*Math.sin(2*Math.PI*t/(n*0.1)*2)])}return out}
+function ekfStep(mu,S,u,z,M,R,Q){const G=M.G(u,mu),mb=M.g(u,mu),Sb=sym(add(mm(mm(G,S),T(G)),R));const H=M.H(mb);const nu=vsub(z,M.h(mb));nu[1]=wrap(nu[1]);const r=kf_update(mb,Sb,z,H,Q,nu);r.mu[2]=wrap(r.mu[2]);return r}
+function ukfStep(mu,S,u,z,M,R,Q){const a=1,b=2,k=0;let{X,wm,wc}=sigmaPoints(mu,S,a,b,k);const Xs=X.map(x=>M.g(u,x));const p=ut(Xs,wm,wc,R,[2]);({X,wm,wc}=sigmaPoints(p.mean,p.cov,a,b,k));const Zb=X.map(x=>M.h(x));const m=ut(Zb,wm,wc,Q,[1]);const Dx=X.map(x=>{const d=vsub(x,p.mean);d[2]=wrap(d[2]);return d});let Sxz=zeros(3,2);Dx.forEach((d,i)=>Sxz=add(Sxz,sc(outer(d,m.dev[i]),wc[i])));const K=T(solve(m.cov,T(Sxz)));const nu=vsub(z,m.mean);nu[1]=wrap(nu[1]);const mun=vadd(p.mean,mv(K,nu));mun[2]=wrap(mun[2]);const Sn=sym(sub(p.cov,mm(mm(K,m.cov),T(K))));return{mu:mun,S:Sn,nu,Sinn:m.cov}}
+
+// ---------- style
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const COL={blue:'#378ADD',coral:'#D85A30',teal:'#1D9E75',gray:'#888780'};
+function layout(extra){const ink=css('--ink'),mut=css('--ink2'),grid=css('--rule'),bg=css('--sheet');return Object.assign({paper_bgcolor:bg,plot_bgcolor:bg,font:{family:'IBM Plex Sans, system-ui, sans-serif',color:ink,size:12},margin:{l:48,r:12,t:36,b:40},legend:{font:{color:mut,size:11},bgcolor:'rgba(0,0,0,0)'},xaxis:{gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},yaxis:{gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},title:{x:0,font:{size:13,color:ink}}},extra)}
+const cfg={displayModeBar:false,responsive:true};
+const fx=(v,d)=>(v<0?'−':'')+Math.abs(v).toFixed(d);
+function tiles(id,obj){document.getElementById(id).innerHTML=Object.entries(obj).map(([k,v])=>`<div class="fig-tile${k.startsWith('*')?' wide':''}"><div class="k">${k.replace(/^\*/,'')}</div><div class="v">${v}</div></div>`).join('')}
+function bind(ids,fn){ids.forEach(id=>{const el=document.getElementById(id),o=document.getElementById(id+'_o');const upd=()=>{o.textContent=el.value;fn()};el.addEventListener('input',upd);o.textContent=el.value});fn()}
+function ellTrace(m,C,n,color,name,dash,show){const e=ellipse(m,C,n);return{x:e.x,y:e.y,mode:'lines',name,line:{color,width:n===2?2:1,dash},showlegend:!!show,hoverinfo:'skip'}}
+
+// ---------- Fig A
+function figA(){const sz2=+document.getElementById('a_sz').value,steps=+document.getElementById('a_steps').value,z=+document.getElementById('a_z').value;
+  const A=[[1,1],[0,1]],B=[[0],[0]],R=[[0.25,0.5],[0.5,1]];let mu=[0,0],S=[[1,0],[0,0.25]];
+  for(let i=0;i<steps;i++)[mu,S]=kf_predict(mu,S,A,B,[0],R);
+  const r=kf_update(mu,S,[z],[[1,0]],[[sz2]]);
+  const tr=[ellTrace(mu,S,2,COL.gray,'prior (predicted)','dash',true),ellTrace(mu,S,1,COL.gray,'','dash'),
+    {x:[z-2*Math.sqrt(sz2),z+2*Math.sqrt(sz2),z+2*Math.sqrt(sz2),z-2*Math.sqrt(sz2)],y:[-50,-50,50,50],fill:'toself',fillcolor:'rgba(216,90,48,0.12)',line:{width:0},hoverinfo:'skip',name:'measurement ±2σ',showlegend:true},
+    {x:[z,z],y:[-50,50],mode:'lines',line:{color:COL.coral,width:2},name:'z',showlegend:false,hoverinfo:'skip'},
+    ellTrace(r.mu,r.S,2,COL.teal,'posterior',undefined,true),ellTrace(r.mu,r.S,1,COL.teal,''),
+    {x:[mu[0],r.mu[0]],y:[mu[1],r.mu[1]],mode:'lines+markers',line:{color:css('--ink'),width:1},marker:{size:6},name:'mean moves by K·ν'}];
+  const span=Math.max(3*Math.sqrt(S[0][0]),2*Math.sqrt(sz2),4);
+  Plotly.react('plotA',tr,layout({title:{text:'position–velocity belief before and after one position measurement'},xaxis:{title:'position p [m]',range:[Math.min(mu[0],z)-span,Math.max(mu[0],z)+span]},yaxis:{title:'velocity v [m/s]',scaleanchor:'x',range:[mu[1]-span*0.6,mu[1]+span*0.6]},height:400}),cfg);
+  const ok=trace(r.S)<trace(S);document.getElementById('chipA').textContent=ok?'update narrows Σ':'update widened Σ';document.getElementById('chipA').dataset.state=ok?'ok':'bad';
+  tiles('tilesA',{'innovation ν':fx(r.nu[0],2)+' m','S = CΣ̄Cᵀ+Q':fx(r.Sinn[0][0],2)+' m²','gain K (p, v)':`(${fx(r.K[0][0],2)}, ${fx(r.K[1][0],2)})`,'tr Σ̄ → tr Σ':`${trace(S).toFixed(2)} → ${trace(r.S).toFixed(2)}`})}
+
+
+// ---------- Fig B
+function figB(){const sth=+document.getElementById('b_sth').value*Math.PI/180,sr=+document.getElementById('b_sr').value,alpha=+document.getElementById('b_alpha').value;
+  const mu=[5,0],Sig=[[sr*sr,0],[0,sth*sth]],f=q=>[q[0]*Math.cos(q[1]),q[0]*Math.sin(q[1])];
+  const r=rng(7);const pts=[];for(let i=0;i<4000;i++)pts.push(f(mvn(mu,Sig,r)));
+  const mcm=[0,1].map(j=>pts.reduce((s,p)=>s+p[j],0)/pts.length);let mcC=zeros(2,2);pts.forEach(p=>mcC=add(mcC,outer(vsub(p,mcm),vsub(p,mcm))));mcC=sc(mcC,1/(pts.length-1));
+  const J=[[Math.cos(0),-5*Math.sin(0)],[Math.sin(0),5*Math.cos(0)]];const ekm=f(mu),ekC=mm(mm(J,Sig),T(J));
+  const{X,wm,wc}=sigmaPoints(mu,Sig,alpha,2,1);const u=ut(X.map(f),wm,wc,zeros(2,2));
+  const nrm=(a,b)=>Math.hypot(...vsub(a,b));const eE=nrm(ekm,mcm),eU=nrm(u.mean,mcm);const cn=(A,B)=>Math.sqrt(sub(A,B).flat().reduce((s,v)=>s+v*v,0));
+  const tr=[{x:pts.filter((_,i)=>i%2===0).map(p=>p[0]),y:pts.filter((_,i)=>i%2===0).map(p=>p[1]),mode:'markers',marker:{size:3,color:COL.gray,opacity:0.35},name:'true samples'},
+    ellTrace(mcm,mcC,2,css('--ink'),'true 2σ (Monte Carlo)',undefined,true),ellTrace(ekm,ekC,2,COL.blue,'EKF (tangent) 2σ','dash',true),ellTrace(u.mean,u.cov,2,COL.coral,'UKF (sigma points) 2σ','dot',true),
+    {x:[mcm[0]],y:[mcm[1]],mode:'markers',marker:{color:css('--ink'),size:10,symbol:'x'},name:'true mean'},{x:[ekm[0]],y:[ekm[1]],mode:'markers',marker:{color:COL.blue,size:9},name:'EKF mean'},{x:[u.mean[0]],y:[u.mean[1]],mode:'markers',marker:{color:COL.coral,size:9},name:'UKF mean'},
+    {x:[0],y:[0],mode:'markers',marker:{color:COL.teal,size:10,symbol:'square'},name:'sensor'}];
+  Plotly.react('plotB',tr,layout({title:{text:'(r, θ) → (x, y): the true cloud bends; the tangent cannot'},xaxis:{title:'x [m]',range:[-1,8]},yaxis:{title:'y [m]',scaleanchor:'x',range:[-5,5]},height:440}),cfg);
+  document.getElementById('chipB').textContent=eU<=eE?'UKF closer than EKF':'EKF closer (small σ_θ)';document.getElementById('chipB').dataset.state=eU<=eE?'ok':'warn';
+  tiles('tilesB',{'true mean x':`${mcm[0].toFixed(3)} m (EKF says ${ekm[0].toFixed(3)})`,'mean error EKF / UKF':`${eE.toFixed(3)} / ${eU.toFixed(3)} m`,'cov error ‖·‖ EKF / UKF':`${cn(ekC,mcC).toFixed(3)} / ${cn(u.cov,mcC).toFixed(3)}`,'2nd-order term −r σ²_θ/2':fx(-5*sth*sth/2,3)+' m'})}
+
+
+// ---------- Fig C and D share a simulation
+let sim=null;
+function simulate(lm,seed){const M=model(lm),N=300,U=figureEight(N),r=rng(1000+seed);const xs=[[0,0,0.3]],zs=[];for(let t=0;t<N;t++){const x=vadd(M.g(U[t],xs[t]),mvn([0,0,0],M.R,r));xs.push(x);const z=vadd(M.h(x),mvn([0,0],M.Q,r));z[1]=wrap(z[1]);zs.push(z)}const x0=vadd(xs[0],[0.05*randn(r),0.05*randn(r),0.02*randn(r)]);return{M,N,U,xs,zs,x0,S0:[[0.0025,0,0],[0,0.0025,0],[0,0,4e-4]]}}
+function run(step,R,Q){const{M,N,U,xs,zs,x0,S0}=sim;let mu=x0,S=S0;const Ms=[mu],Cs=[S],NE=[],NI=[],Z=[];for(let t=0;t<N;t++){const o=step(mu,S,U[t],zs[t],M,R,Q);mu=o.mu;S=o.S;const e=vsub(mu,xs[t+1]);e[2]=wrap(e[2]);Ms.push(mu);Cs.push(S);NE.push(quad(e,S));NI.push(quad(o.nu,o.Sinn));Z.push([o.nu[0]/Math.sqrt(o.Sinn[0][0]),o.nu[1]/Math.sqrt(o.Sinn[1][1])])}return{Ms,Cs,NE,NI,Z}}
+const mean=a=>a.reduce((s,v)=>s+v,0)/a.length;
+function figC(){const lm=[+document.getElementById('c_lx').value,+document.getElementById('c_ly').value],seed=+document.getElementById('c_seed').value;sim=simulate(lm,seed);const{M,N,xs}=sim;
+  const ek=run(ekfStep,M.R,M.Q),uk=run(ukfStep,M.R,M.Q);
+  const tr=[{x:xs.map(p=>p[0]),y:xs.map(p=>p[1]),mode:'lines',line:{color:COL.gray,width:2},name:'truth'},{x:ek.Ms.map(p=>p[0]),y:ek.Ms.map(p=>p[1]),mode:'lines',line:{color:COL.blue,width:1.5},name:'EKF'},{x:uk.Ms.map(p=>p[0]),y:uk.Ms.map(p=>p[1]),mode:'lines',line:{color:COL.coral,width:1.5,dash:'dot'},name:'UKF'}];
+  for(let t=0;t<=N;t+=25){tr.push(ellTrace(ek.Ms[t],[[ek.Cs[t][0][0],ek.Cs[t][0][1]],[ek.Cs[t][1][0],ek.Cs[t][1][1]]],2,COL.blue,'',undefined));tr.push(ellTrace(uk.Ms[t],[[uk.Cs[t][0][0],uk.Cs[t][0][1]],[uk.Cs[t][1][0],uk.Cs[t][1][1]]],2,COL.coral,'',undefined))}
+  tr.push({x:[lm[0]],y:[lm[1]],mode:'markers',marker:{color:COL.teal,size:12,symbol:'diamond'},name:'landmark'});
+  Plotly.react('plotC',tr,layout({title:{text:'figure-eight with one range-bearing landmark'},xaxis:{title:'x [m]'},yaxis:{title:'y [m]',scaleanchor:'x'},height:480}),cfg);
+  const rmin=Math.min(...xs.map(p=>Math.hypot(p[0]-lm[0],p[1]-lm[1])));const frac=ek.NE.filter(v=>v>chi2_95[3]).length/ek.NE.length;
+  const st=frac<0.15?'ok':'warn';document.getElementById('chipC').textContent=st==='ok'?'EKF consistent':'EKF overconfident';document.getElementById('chipC').dataset.state=st;
+  tiles('tilesC',{'ANEES EKF / UKF, single run (target 3)':`${mean(ek.NE).toFixed(2)} / ${mean(uk.NE).toFixed(2)}`,'ANIS EKF / UKF, single run (target 2)':`${mean(ek.NI).toFixed(2)} / ${mean(uk.NI).toFixed(2)}`,'closest approach':rmin.toFixed(2)+' m','worst NEES EKF / UKF':`${Math.max(...ek.NE).toFixed(1)} / ${Math.max(...uk.NE).toFixed(1)} (95% bound ${chi2_95[3].toFixed(1)})`,'*NEES > 95% bound, EKF':`${(100*frac).toFixed(0)}% of steps (expect ≈ 5%)`});
+  figD()}
+function figD(){if(!sim)return;const rs=Math.pow(10,+document.getElementById('d_r').value),qs=Math.pow(10,+document.getElementById('d_q').value);const{M,N}=sim;const o=run(ekfStep,sc(M.R,rs),sc(M.Q,qs));const tt=o.NE.map((_,i)=>i*M.dt);
+  Plotly.react('plotD',[{x:tt,y:o.NE,mode:'lines',line:{color:COL.blue,width:1.2},name:'NEES'},{x:tt,y:o.NI,mode:'lines',line:{color:COL.coral,width:1.2},name:'NIS'}],layout({title:{text:'NEES and NIS over time with 95% χ² bounds'},xaxis:{title:'time [s]'},yaxis:{title:'normalized squared error',range:[0,Math.max(15,Math.min(Math.max(...o.NE),60))]},height:320,shapes:[{type:'line',x0:0,x1:N*M.dt,y0:chi2_95[3],y1:chi2_95[3],line:{color:COL.blue,dash:'dash',width:1}},{type:'line',x0:0,x1:N*M.dt,y0:chi2_95[2],y1:chi2_95[2],line:{color:COL.coral,dash:'dash',width:1}}]}),cfg);
+  Plotly.react('plotD2',[{x:tt,y:o.Z.map(z=>z[0]),mode:'lines',line:{color:COL.teal,width:1},name:'ν_r / √S_rr'},{x:tt,y:o.Z.map(z=>z[1]),mode:'lines',line:{color:COL.gray,width:1},name:'ν_φ / √S_φφ'}],layout({title:{text:'Normalized innovations: the first plot to open on the real robot'},xaxis:{title:'time [s]'},yaxis:{title:'σ',range:[-5,5]},height:260,shapes:[-3,3].map(y=>({type:'line',x0:0,x1:N*M.dt,y0:y,y1:y,line:{color:css('--ink3'),dash:'dot',width:1}}))}),cfg);
+  const an=mean(o.NE),ai=mean(o.NI),frac=o.NE.filter(v=>v>chi2_95[3]).length/o.NE.length,out=o.Z.flat().filter(v=>Math.abs(v)>3).length/(2*o.Z.length);
+  const verdict=frac<0.15&&an>1.5?'consistent':(frac>=0.15?'overconfident':'conservative');const chip=document.getElementById('chipD');chip.textContent=verdict;chip.dataset.state={consistent:'ok',overconfident:'bad',conservative:'warn'}[verdict];
+  tiles('tilesD',{'ANEES, single run (target 3)':an.toFixed(2),'ANIS, single run (target 2)':ai.toFixed(2),'NEES > 95% bound':`${(100*frac).toFixed(0)}% of steps (expect ≈ 5%)`,'innovations beyond ±3σ':`${(100*out).toFixed(1)}%`})}
+let inited=false;
+function init(){if(inited)return;if(!window.Plotly){setTimeout(init,300);return}inited=true;bind(['a_sz','a_steps','a_z'],figA);bind(['b_sth','b_sr','b_alpha'],figB);bind(['c_lx','c_ly','c_seed'],figC);bind(['d_r','d_q'],figD)}
+window.__ixRedraw=()=>{if(!inited){init();return}figA();figB();figC()};
+if(!document.getElementById('panel-session').hidden)init();
+})();
+</script>

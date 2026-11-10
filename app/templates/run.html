@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% set page = 'run' %}
+{% block title %}Chalk · {{ u.title }}{% endblock %}
+{% block who %}{% if job %}job {{ job.id }} · {{ job.state }}{% endif %}{% endblock %}
+{% block body %}
+{% set running = job and job.state in ('queued','running') %}
+{% set cur = (job.stage if job and job.stage != 'next' else status.next) %}
+<div class="runhead">
+  <div>
+    <div class="crumb"><a href="/">{{ src.title }}</a>{% if src.kind != 'paper' %}, chapter {{ unit }}{% endif %}</div>
+    <h1>{{ u.title }}</h1>
+  </div>
+  <span class="track" style="grid-auto-columns:14px">{% for st in stages %}<i class="{% if st in status.done %}done{% elif running and cur == st %}run{% elif status.failed == st %}fail{% endif %}"></i>{% endfor %}</span>
+</div>
+
+<div class="runbody">
+  <ol class="stages">
+    {% for st in stages %}
+    <li class="{% if st in status.done %}done{% elif running and cur == st %}run{% elif status.failed == st %}fail{% endif %}">{{ st }}{% if running and cur == st %} <span class="d" id="clock">0:00</span>{% endif %}</li>
+    {% endfor %}
+  </ol>
+  <div>
+    <div class="log" id="log">{% if not job %}No run yet for this unit.{% endif %}</div>
+    <div class="logfoot">
+      <span id="state">{% if job %}{{ job.state }} · stage {{ cur }} · {{ job.engine }}{% if job.model %} · {{ job.model }}{% endif %}{% endif %}</span>
+      {% if running %}<span>{% if settings.auto and status.next %}<span class="autonote">Auto-run on: the next stage starts when this one finishes.</span> {% endif %}<button class="btn" id="stop">Stop this stage</button></span>{% endif %}
+    </div>
+  </div>
+</div>
+
+<div class="handoff">
+  {% if status.handoff %}
+  <h3>Last handoff</h3>
+  <pre>{{ status.handoff }}</pre>
+  {% endif %}
+  <div class="next">
+    {% if not running and status.next %}
+    <form class="inline" method="post" action="/teach/{{ source }}/{{ unit }}"><input type="hidden" name="stage" value="{{ status.failed or status.next }}"><button class="btn go">{{ 'Retry ' ~ status.failed if status.failed else 'Continue to ' ~ status.next }}</button></form>
+    {% elif running %}<button class="btn go" disabled>Continue to the next stage</button><span style="color:var(--ink3);font-size:13px">available when {{ cur }} finishes</span>
+    {% else %}<a class="btn go" href="/reader/{{ source }}/{{ unit }}">Open reader</a>{% endif %}
+    {% if 'build' in status.done and status.next %}<a class="btn" href="/reader/{{ source }}/{{ unit }}">Open reader</a>{% endif %}
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  const log=document.getElementById('log');
+  {% if job %}
+  log.textContent='';
+  const es=new EventSource('/jobs/{{ job.id }}/stream');
+  es.onmessage=e=>{const m=JSON.parse(e.data);if(!m.text)return;const d=document.createElement('div');if(m.kind)d.className=m.kind;d.textContent=m.text;log.appendChild(d);log.scrollTop=log.scrollHeight;};
+  es.addEventListener('end',e=>{es.close();const m=JSON.parse(e.data);document.getElementById('state').textContent=m.state+' · exit '+m.exit;setTimeout(()=>location.reload(),800);});
+  {% endif %}
+  const stop=document.getElementById('stop');
+  if(stop)stop.addEventListener('click',async()=>{stop.disabled=true;stop.textContent='Stopping';await fetch('/jobs/{{ job.id if job else "" }}/stop',{method:'post'});});
+  const clock=document.getElementById('clock');let t=0;if(clock)setInterval(()=>{t++;clock.textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0');},1000);
+})();
+</script>
+{% endblock %}

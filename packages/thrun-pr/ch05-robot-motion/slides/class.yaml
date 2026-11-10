@@ -1,0 +1,315 @@
+title: "Robot Motion"
+footer: "Thrun · Probabilistic Robotics · ch. 5"
+slides:
+  - layout: title
+    title: "Robot Motion"
+    subtitle: "Probabilistic Robotics, chapter 5"
+    meta: "Lesson t2.4 · Thrun, Burgard, Fox"
+    source: map.md
+  - layout: bullets
+    title: "Why a robot needs a probabilistic motion model"
+    bullets:
+      - "A filter's predict step is **p(xₜ ∣ uₜ, xₜ₋₁)** (5.3): where is the robot after a command?"
+      - "Kinematics gives one pose; real wheels, tracks and floors give a **cloud** of poses"
+      - "Cheapest fix: keep the kinematics, put **noise on what drives them**"
+      - "Models that overestimate uncertainty work better than tight ones (p. 118)"
+      - "Result: a tracked robot, a wheeled base or a walking robot can all use the same two models"
+    notes: "Start from the robot, not the formula. A tracked robot is commanded to drive one metre forward. Where does it end up? Nowhere exact: tracks slip, floors differ, encoders count wrongly. A Bayes filter needs the whole distribution over where it might be, and that is the motion model. The chapter builds it the cheap way: take the ideal kinematics and inject noise into the quantities that drive it. Point out the book's practical advice on page 118: if you must be wrong, be too uncertain, because a filter that is confident and wrong never recovers. Question for the room: what goes wrong in a filter whose motion noise is set to zero?"
+    source: lecture.md §L1
+  - layout: agenda
+    title: "Roadmap"
+    items:
+      - "Motion as a distribution: two uses of a motion model (5.1, 5.2.2)"
+      - "The velocity model: circle, noise on (v, ω), the extra rotation γ̂ (5.3)"
+      - "Error densities and samplers: normal and triangular (Tables 5.2, 5.4)"
+      - "The odometry model: rotate, translate, rotate (5.4)"
+      - "Conditioning on a map, and what it gets wrong (5.5)"
+    notes: "Tell students the shape of the next hour. Everything comes in two forms: a density that scores a given end pose, and a sampler that draws an end pose. We do that twice, once for velocity commands and once for odometry readings. Then we ask what a map adds. Mention that the velocity model is for the moment before the motion happens, such as planning, and the odometry model is for after, such as state estimation. Exercises later in the course ask you to implement all of this, so listen for the traps. Question for the room: which of the two forms would a particle filter need, and which would a grid filter need?"
+    source: map.md
+  - layout: figure
+    title: "A motion gives a cloud of poses"
+    figure: figures/L1-motion-posterior.png
+    caption: "Same distance driven straight or with turns, same noise"
+    bullets:
+      - "Straight path: major-axis standard deviation 0.481 m"
+      - "Path with four 90° turns: 0.888 m"
+      - "Every turn's heading error swings what follows"
+    takeaway: "Same distance, nearly double the spread: heading error drives the cloud"
+    notes: "Both paths are 5.4 metres long in five odometry steps with identical noise parameters. The straight path ends with a cloud whose long axis has a standard deviation of 0.481 metres; the path with four 90 degree turns ends with 0.888 metres. Same distance, nearly double the spread. The reason is heading: a small angle error early on becomes a sideways error proportional to every metre driven afterwards. We will see this again in dead reckoning. Question for the room: if you could measure only one thing more accurately on your robot, distance or heading, which would shrink the cloud faster, and why?"
+    source: lecture.md §L1
+  - layout: compare
+    title: "Two models, two uses"
+    columns:
+      - heading: "Velocity model"
+        bullets:
+          - "Input u = (v, ω): the command"
+          - "Works before the motion happens"
+          - "Planners use it"
+      - heading: "Odometry model"
+        bullets:
+          - "Input: two odometry poses"
+          - "Only exists after the motion"
+          - "More accurate, so estimators use it (p. 121)"
+      - heading: "Both"
+        bullets:
+          - "Pose is (x, y, θ) (5.1); θ = 0 along x, counterclockwise positive"
+          - "θ lives on a circle: **wrap** every angle difference"
+    takeaway: "Planners predict from commands; estimators look back at odometry"
+    notes: "The book's rule on page 121: planners need to predict what a command will do, so they use velocities; estimators look back at what the wheels reported, so they use odometry. Pose is x, y and heading, with heading zero along the x axis and counterclockwise positive, which also matches the ROS convention. The last bullet is the one that causes real bugs. Heading is not a real number but a point on a circle, so subtracting two headings can give an answer that is off by two pi. Every angular difference in this chapter has to be wrapped before it is used. Question for the room: what is the difference between 179 degrees and minus 179 degrees?"
+    source: lecture.md §L1
+  - layout: figure
+    title: "Exact motion is a circle"
+    figure: figures/L2-circle.png
+    caption: "Constant (v, ω) over Δt"
+    bullets:
+      - "Radius r = |v/ω| about a centre beside the robot"
+      - "Heading turns by exactly the angle swept"
+      - "ω = 0: the centre is at infinity"
+    takeaway: "A constant command moves a differential-drive base along an exact arc"
+    notes: "Hold the velocity and the turn rate constant and the robot drives along an arc of radius v over omega. The centre sits to one side of the robot, perpendicular to its heading, and the heading turns by exactly the angle swept along the arc. A differential-drive or skid-steer base commanded in forward speed and turn rate moves exactly like this. The weak point is straight driving: when omega is zero the radius is infinite and the formula divides by zero. We will meet that again in the algorithms. For velocities that change within the interval, the book chains short constant-velocity arcs. Question for the room: what is the circle when v is zero but omega is not?"
+    source: lecture.md §L2
+  - layout: equation
+    title: "Motion on the circle"
+    equations:
+      - {tex: 'x^\prime = x - \frac{v}{\omega}\sin\theta + \frac{v}{\omega}\sin(\theta + \omega\Delta t)', label: "(5.9)"}
+      - {tex: 'y^\prime = y + \frac{v}{\omega}\cos\theta - \frac{v}{\omega}\cos(\theta + \omega\Delta t)', label: "(5.9)"}
+      - {tex: '\theta^\prime = \theta + \omega\Delta t', label: "(5.9)"}
+    where:
+      - ["(x, y, θ)", "pose before the move"]
+      - ["(x′, y′, θ′)", "pose after Δt"]
+      - ["v, ω", "forward speed, turn rate"]
+      - ["v/ω", "radius of the circle"]
+    takeaway: "The pose after Δt is a point on a circle about the centre (5.7), (5.8)"
+    notes: "Derivation sketch for the board. The centre of the circle is a distance v over omega to the left of the robot, which gives equations 5.7 and 5.8. After time delta t the robot has moved to the point on that circle at angle theta plus omega delta t, measured from the centre. Subtracting the centre and adding it back gives the sine and cosine differences. Check the limit yourself: as omega goes to zero the differences of sines shrink in step with the division, and the answer approaches straight-line motion. A closed form and a numerical integration of the unicycle agree to 8 × 10⁻¹³. Question for the room: how would you compute this without dividing by omega?"
+    source: lecture.md §L2
+  - layout: predict
+    title: "Predict: noise on v and ω only"
+    bullets:
+      - "Perturb only v and ω, run (5.9), many times"
+    question: "Where do the samples fill in (x, y, θ), and can a sensor suggest a pose off that set?"
+    choices:
+      - "A 3-D blob; any nearby pose is possible"
+      - "A 2-D sheet; a pose off it has probability zero"
+      - "A line; only distance varies"
+      - "A 2-D sheet; sensors can still suggest off-sheet poses"
+    notes: "Give students a minute before answering. Answer: two noise variables cannot fill a three-dimensional pose space. Every sample lands on a two-dimensional sheet, and the heading theta prime is fixed once x prime and y prime are known. So the posterior has zero thickness in heading, and any pose a sensor suggests that is slightly off the sheet gets probability zero. That is a disaster for a filter, because real measurements are never exactly on the sheet. The book's repair is the next slide: add a third noise term, a small extra rotation at the end of the motion. Question for the room: the repair is not physics, so what is it doing for the robot?"
+    source: lecture.md §L3
+  - layout: figure
+    title: "The final rotation γ̂ gives the cloud thickness"
+    figure: figures/L3-final-rotation.png
+    caption: "Samples coloured by final heading θ′"
+    takeaway: "Without γ̂ the cloud is a sheet; with it the cloud has thickness"
+    notes: "On the left the sheet: heading is a function of position. On the right the cloud with the third term. The inverse model recovers gamma hat from each sample. With the third term switched off, the largest recovered value is 5.9 × 10⁻¹⁶ radians per second, which is just rounding. With it switched on, the standard deviation recovered is 0.128 radians per second, matching what the noise law puts in. So the inverse model really does see the third term. Stress that gamma hat is a modelling device. On a real tracked robot the thing it stands in for is slip during turns. Question for the room: what physical effect would you blame for a heading error that grows with turn rate?"
+    source: lecture.md §L3
+  - layout: equation
+    title: "Noisy controls and the final rotation"
+    equations:
+      - {tex: '\hat{v} = v + \varepsilon_{\alpha_1 v^2 + \alpha_2 \omega^2}, \quad \hat{\omega} = \omega + \varepsilon_{\alpha_3 v^2 + \alpha_4 \omega^2}', label: "(5.10)"}
+      - {tex: '\theta^\prime = \theta + \hat{\omega}\Delta t + \hat{\gamma}\Delta t', label: "(5.14)"}
+      - {tex: '\hat{\gamma} = \varepsilon_{\alpha_5 v^2 + \alpha_6 \omega^2}', label: "(5.15)"}
+    where:
+      - ["v̂, ω̂", "noisy speeds the robot really executes"]
+      - ["γ̂", "extra final rotation, a modelling device"]
+      - ["ε_b²", "zero-mean noise with variance b²"]
+      - ["α₁–α₆", "robot-specific noise parameters"]
+    takeaway: "Noise grows with commanded speed: a robot at rest does not drift"
+    notes: "The robot executes v hat and omega hat, not v and omega. Each is the command plus zero-mean noise whose variance grows with the squares of the commanded speeds, with six robot-specific parameters alpha one to alpha six. Substituting into 5.9 gives 5.13, and the heading gets the extra term in 5.14. Point out the units: alpha one is dimensionless, alpha two carries metres squared, alpha three one over metres squared. That is a useful check when students pick values. Note that noise proportional to command means a robot commanded to stand still gets no noise at all. Question for the room: is that a good model for a robot on a slope?"
+    source: lecture.md §L3
+  - layout: key
+    title: "Why the third noise term exists"
+    statement: "Two noise variables cannot fill three pose dimensions, so add γ̂"
+    detail: "Models that overestimate uncertainty work better than tight ones (p. 118)"
+    notes: "This is the section's single idea. The velocity model has two controls, so two noise sources, but a pose has three coordinates. Without the extra term every sample sits on a two-dimensional sheet and a filter assigns zero probability to any measurement slightly off it. The final rotation gamma hat is not physics; it is insurance that keeps the density positive in a full neighbourhood. The book's general advice on page 118 points the same way: be too uncertain rather than too confident. Question for the room: what other place in a filter would you add a small artificial noise term for the same reason?"
+    source: lecture.md §L3
+  - layout: figure
+    title: "Error densities: normal and triangular"
+    figure: figures/L4-error-densities.png
+    caption: "Both have variance b²"
+    bullets:
+      - "Normal: infinite support"
+      - "Triangular: zero beyond ±√6 b"
+      - "12-uniform sampler: not bounded by 2b"
+    takeaway: "Same variance b², very different tails: a zero density never recovers"
+    notes: "The motion models need only two primitives: evaluate a zero-mean density with variance b squared, and draw from it. The normal is the default. The triangular one is cheaper and has compact support, so it gives exactly zero beyond root six times b. That is a feature if you want hard rejection and a bug for robustness, because one outlier gives a likelihood of zero that never recovers. The book's 12-uniform sampler produces a good normal, but a statement on page 132 says its values stay within two b. They do not: 4.45 % of draws fell outside, and the support is six b. The variance claim is right. Question for the room: why does a filter hate an exact zero?"
+    source: lecture.md §L4
+  - layout: equation
+    title: "Table 5.2: the two error densities"
+    equations:
+      - {tex: 'p_{\mathrm{normal}}(a, b^2) = \frac{1}{\sqrt{2\pi b^2}}\exp\left(-\frac{a^2}{2b^2}\right)', label: "(5.11)"}
+      - {tex: 'p_{\mathrm{tri}}(a, b^2) = \max\left(0, \frac{1}{\sqrt{6}\,b} - \frac{|a|}{6b^2}\right)', label: "(5.12)"}
+    where:
+      - ["a", "error to score or draw"]
+      - ["b²", "variance of the error"]
+      - ["p_normal", "infinite support"]
+      - ["p_tri", "zero beyond ±√6 b"]
+    takeaway: "At rest b² = 0 and the normal is 0/0: put a floor on b²"
+    notes: "These are the two lines students implement first. Both take an error a and a variance b squared. Exercise 8 in the book asks you to show the variance of the two samplers is b squared. For the 12-uniform sampler each uniform contributes b squared over three, so the sum of twelve times one quarter gives b squared. Over a million draws the sample variances came out at 1.0003 and 1.0007. A practical point: when the robot is at rest, v and omega are zero, so every variance is zero and the density is zero over zero. Any real code needs a floor on the variance. Question for the room: what unit should that floor have for the speed error?"
+    source: lecture.md §L4
+  - layout: figure
+    title: "Density and sampler for the velocity model"
+    figure: figures/L5-velocity-model.png
+    caption: "Gray: Table 5.1 density summed over θ′. Blue: Table 5.3 draws"
+    bullets:
+      - "Noise on v stretches the cloud along a ray"
+      - "Noise on ω bends it into a banana"
+    notes: "Same picture, two algorithms. The sampler is a simulator: perturb the velocities, run the circle forward. That is easy. The density runs backward: given an end pose, find the circle through the start and end poses, read off the velocities that would explain it, and score how far they are from the command. Inversion is harder and has singular cases, which is why particle filters, needing only sampling, are easier to implement, as the book says on page 125. Noise on v scales the whole arc, giving a stretched ray; noise on omega bends the arc, giving a banana. Question for the room: which of the two clouds would you expect on a robot with a sticky left track?"
+    source: lecture.md §L5
+  - layout: steps
+    title: "Sampling the velocity model, Table 5.3"
+    steps:
+      - {title: "Perturb controls", text: "Draw v̂, ω̂ and γ̂ with variances from α₁–α₆ (5.10), (5.15); lines 2–4"}
+      - {title: "Run the circle", text: "Apply the arc of (5.9) with v̂ and ω̂ (5.16); lines 5–6"}
+      - {title: "Turn the heading", text: "θ′ = θ + (ω̂ + γ̂)Δt (5.14); line 7"}
+    bullets:
+      - "Lines 5–6 divide by ω̂: a straight move needs its own branch"
+    takeaway: "The sampler is a simulator: perturb the controls, run the kinematics forward"
+    notes: "Walk the three stages of Table 5.3 on the board. Lines two to four draw the three noisy quantities from the zero-mean densities of Table 5.4, with variances that grow with the squares of the commanded speeds. Lines five and six move the robot along the circle of equation 5.9 using the noisy velocities. Line seven turns the heading by the noisy turn rate plus the extra final rotation. That is all the sampler needs, which is why particle filters find it easy. The trap is straight driving, where omega hat is zero and the division fails. Question for the room: how would you keep line five finite when omega hat is tiny?"
+    source: lecture.md §L5
+  - layout: bullets
+    title: "Three traps in Table 5.1 and Table 5.3"
+    bullets:
+      - "**Line 7 drops the sign of v̂**: r* is positive, so v̂ takes the sign of the turn"
+      - "**Straight line**: Table 5.1 line 2 and Table 5.3 lines 5–6 divide by zero"
+      - "**Lines 6 and 9 are angle differences**: wrap them"
+      - "Eq. (5.32) is a density over noise variables, not over poses"
+    notes: "These traps were decided before any code was written. First, line seven computes v hat as the swept angle times the radius, but the radius is a distance, hence positive, so v hat carries the sign of the turn rather than the sign of the motion. Right turns and reversing get scored with the wrong sign. Second, a straight move has its circle centre at infinity, so those formulas divide by zero and need either a branch or a chord form that never divides. Third, two lines subtract angles and need wrapping. Finally, 5.32 multiplies densities over the noise, not over the pose, which matters for grid filters. Question for the room: how would you test for the sign bug?"
+    source: lecture.md §L5
+  - layout: predict
+    title: "Predict: a right turn through Table 5.1"
+    bullets:
+      - "Command (v, ω) = (1, −0.5), Δt = 1 s"
+      - "Density asked at the noise-free end pose"
+    question: "What does line 7 give for v̂, and how likely is the true end pose?"
+    choices:
+      - "v̂ = +1; the true pose is most likely"
+      - "v̂ = −1; the true pose is nearly impossible"
+      - "v̂ = 0; the density is undefined"
+      - "v̂ = −0.5; the pose is slightly unlikely"
+    notes: "Let students compute before you reveal. Answer: line 7 gives v hat of minus one metre per second, when the true value is plus one, because the swept angle is negative and the radius is positive. For the same example with moderate noise parameters, the book's density at the noise-free end pose is e to the minus 80 times the corrected one, so a filter would call the correct pose essentially impossible. The reviewed fix takes the sign from the displacement along the initial heading, or equivalently multiplies by a signed radius from equation 5.17. The same sign flips for reversing with a left turn. Question for the room: which robot manoeuvres would reveal this bug in a log?"
+    source: lecture.md §L5
+  - layout: figure
+    title: "Odometry: rotate, translate, rotate"
+    figure: figures/L6-odometry.png
+    caption: "The same three numbers move the robot in the world frame"
+    bullets:
+      - "Odometry frame drifts; its differences do not"
+      - "(δrot1, δtrans, δrot2) is a sufficient statistic (p. 135)"
+      - "Example: (−33.4°, 2.012 m, 83.4°)"
+    takeaway: "Three numbers (δrot1, δtrans, δrot2) carry the whole relative motion"
+    notes: "Odometry is trusted only through the relative motion between two consecutive readings. The odometry frame itself drifts against the world without limit, but the difference between consecutive poses is a good estimate of the true motion. Any planar motion can be written as a turn toward the target, a straight drive, and a turn to the final heading, and these three numbers are all the model needs. In the figure the example decomposes into minus 33.4 degrees, 2.012 metres and 83.4 degrees. Because there are three noise terms on three parameters, there is no degeneracy and no extra gamma. Question for the room: why is treating a measurement as a control legitimate here?"
+    source: lecture.md §L6
+  - layout: equation
+    title: "Decomposing the odometry pair"
+    equations:
+      - {tex: '\delta_{\mathrm{rot1}} = \mathrm{atan2}(\bar{y}^\prime - \bar{y}, \bar{x}^\prime - \bar{x}) - \bar{\theta}', label: "(5.34)"}
+      - {tex: '\delta_{\mathrm{trans}} = \sqrt{(\bar{x}^\prime - \bar{x})^2 + (\bar{y}^\prime - \bar{y})^2}', label: "(5.35)"}
+      - {tex: '\delta_{\mathrm{rot2}} = \bar{\theta}^\prime - \bar{\theta} - \delta_{\mathrm{rot1}}', label: "(5.36)"}
+    where:
+      - ["u", "pair of odometry poses (5.33)"]
+      - ["x̄, ȳ, θ̄", "odometry pose before"]
+      - ["x̄′, ȳ′, θ̄′", "odometry pose after"]
+      - ["δrot1, δrot2", "first and second rotation"]
+      - ["δtrans", "straight distance"]
+    takeaway: "Rotate toward the target, drive straight, rotate to the final heading"
+    notes: "The control is a pair of odometry poses, equation 5.33, expressed in the robot's internal frame. Equations 5.34 to 5.36 turn the pair into the three parameters. The first rotation points the robot at the target, the translation is the straight distance, and the second rotation sets the final heading. Walk through the geometry on the board with a pose at the origin and a target up and to the right. Then add noise to each of the three, which is Table 5.6. Question for the room: what happens to equation 5.34 when the robot turns on the spot and the translation is zero?"
+    source: lecture.md §L6
+  - layout: bullets
+    title: "Traps in the odometry model"
+    bullets:
+      - "**Wrap every angular difference**: p. 135 calls the bug hard to debug"
+      - "At the ±180° seam, 47.7 % of the density over θ′ is lost without wrapping"
+      - "**Rotation in place**: δtrans = 0 makes atan2(0, 0) arbitrary"
+      - "**Table 5.5 vs (5.44)–(5.46)**: the book disagrees with itself on δ̂ or δ"
+    notes: "Three bugs students will hit. First, wrapping: the book warns on page 135 that forgetting it is a common error that is difficult to debug. It is difficult because the density is only wrong for headings near plus or minus 180 degrees; in the lecture's example, 47.7 % of the density over the final heading falls on the other side of the seam and is lost. Second, a turn on the spot has zero translation, so the first rotation is arbitrary; robust code sets it to zero below a small translation threshold. Third, the table and the derivation on page 139 use different quantities in the variances, so the density and sampler describe different distributions. Question for the room: how would you test density against sampler?"
+    source: lecture.md §L6
+  - layout: figure
+    title: "Dead reckoning: uncertainty only grows"
+    figure: figures/L7-dead-reckoning.png
+    caption: "Table 5.6 sampled step by step around a rectangle"
+    takeaway: "Nothing in the motion model shrinks the cloud; only a measurement can"
+    notes: "Sample the odometry model repeatedly with no measurements and the cloud grows along the path and bends at every corner. Standard deviation along the major axis was 0.118 metres after 3 metres, 0.888 after 12 and 1.894 at the end of the 17 metre path. It grows faster than linearly in distance, because a heading error acts on every metre that follows. Nothing in the motion model ever shrinks the cloud; only a measurement update, next chapter, can. The book adds that at about 10 hertz the velocity and odometry models differ little. Question for the room: if the true path leaves the cloud, is the noise setting too large or too small?"
+    source: lecture.md §L7
+  - layout: stats
+    title: "Dead reckoning: spread along the path"
+    stats:
+      - {value: "0.118 m", label: "after 3 m"}
+      - {value: "0.888 m", label: "after 12 m"}
+      - {value: "1.894 m", label: "at the end of 17.0 m"}
+    bullets:
+      - "Major-axis standard deviation, Table 5.6 sampled with no measurements"
+    takeaway: "Spread grows faster than linearly: heading error acts on every later metre"
+    notes: "Read the three numbers off the dead-reckoning figure. The major-axis standard deviation is 0.118 metres after 3 metres of driving, 0.888 after 12 and 1.894 at the end of the 17 metre path. Distance grew by a factor of about six from the first to the last, while the spread grew by far more. The reason is heading: an angle error early on turns into a sideways error for every metre driven afterwards. This is why odometry alone is useless over long distances and why measurements are needed. Question for the room: if you drove the same path twice as fast, would the spread change?"
+    source: figures/numbers.json
+  - layout: steps
+    title: "Sampling the odometry model, Table 5.6"
+    steps:
+      - {title: "Recover", text: "Turn the odometry pair into δrot1, δtrans, δrot2 (5.34)–(5.36); lines 2–4"}
+      - {title: "Perturb", text: "Subtract noise from each δ, variances scaled by the measured δ (5.37)–(5.39)"}
+      - {title: "Compose", text: "Apply the noisy δ̂ to the particle's own pose (5.40); lines 8–10"}
+    bullets:
+      - "Each particle moves from its own θ, not the odometer's"
+    takeaway: "Noise enters in the three motion parameters, not in x and y"
+    notes: "The sampler is the forward reading of the same three equations. Lines two to four measure the three parameters from the odometry, lines five to seven subtract a noise sample from each, using variances scaled by the measured values, and lines eight to ten apply equation 5.40 to the particle's own pose. The old heading is used for the direction of travel, so the particle's heading, not the odometer's, decides where it goes. This is exactly line four of the particle filter in Table 4.3. Question for the room: why does it matter that each particle uses its own theta rather than the odometer's?"
+    source: lecture.md §L7
+  - layout: figure
+    title: "A map removes mass, but only at the end pose"
+    figure: figures/L8-motion-and-maps.png
+    caption: "Mass inside the grown obstacle is removed; mass behind it stays"
+    bullets:
+      - "82.1 % of samples land in free space"
+      - "One map check per step: 81.9 % of those crossed the wall"
+      - "Ten checks (0.3 m steps): 1.6 %"
+    takeaway: "Checking only the end pose lets particles tunnel through walls"
+    notes: "A map says where the robot cannot be. Multiplying by the probability of the pose given the map kills particles inside obstacles, grown by the robot radius, but it keeps particles behind a wall that the robot could only reach by driving through it, because the check looks only at the end pose. In the example 82.1 % of samples land in free space; of those, 81.9 % crossed the wall when the map is checked once, and only 1.6 % when it is checked ten times along the motion. The error falls sharply once the step is shorter than the wall, which is the book's argument on page 143. Question for the room: what update rate makes the error small for your robot?"
+    source: lecture.md §L8
+  - layout: equation
+    title: "Conditioning on the map"
+    equations:
+      - {tex: 'p(x_t \mid u_t, x_{t-1}, m) = \eta\,\frac{p(x_t \mid u_t, x_{t-1})\,p(x_t \mid m)}{p(x_t)}', label: "(5.48)"}
+    where:
+      - ["η", "normalizer"]
+      - ["m", "map"]
+      - ["p(xₜ ∣ m)", "zero in occupied space, constant elsewhere"]
+      - ["p(xₜ)", "pose prior, taken as uniform"]
+    bullets:
+      - "Sampler: draw until p(xₜ ∣ m) > 0 (Table 5.7); **cap the retries**"
+    takeaway: "Table 5.7 loops until the sample is free: cap the retries"
+    notes: "Bayes rule on the map gives 5.48 once you approximate the probability of the map given the whole motion by the probability of the map given the end pose. That approximation, 5.51, throws away the path. The map factor is zero inside the grown obstacles and constant elsewhere, and the prior over poses is taken as uniform and absorbed into eta. The book's sampler redraws until the sample is in free space. Its loop has no bound, and the book itself warns about termination on page 141, so real code caps the number of retries and returns a zero weight if every retry fails. Question for the room: when would every retry fail?"
+    source: lecture.md §L8
+  - layout: table
+    title: "Symptom to fix"
+    table:
+      header: [Symptom, Cause, Fix]
+      rows:
+        - ["Filter confident and wrong", "α too small", "Inflate α (p. 118)"]
+        - ["Density zero off the sheet", "α₅ = α₆ = 0", "Final-rotation noise (5.15)"]
+        - ["NaN at rest", "b² = 0 when v = ω = 0", "Floor on b²"]
+        - ["NaN on straight lines", "ω = 0 in Table 5.1 or 5.3", "Straight-line branch"]
+        - ["Right turns unlikely", "Line 7 loses sign of v̂", "Sign from displacement"]
+        - ["Likelihood collapses at ±180°", "Unwrapped difference", "Wrap every angle"]
+        - ["Particles behind a wall", "Map checked at end pose", "Shorter steps, more checks"]
+        - ["Map sampler hangs", "Unbounded do–until", "Cap retries, weight 0"]
+      widths: [3, 3, 3]
+    notes: "A table to leave on the screen during questions. Each row is a symptom a student will see on a real robot, the cause in the chapter, and the fix. Ask students to pick one symptom and say which equation or table line is responsible before you show the cause. Two rows are the most common in practice: the filter that is confident and wrong because the noise is too small, and the NaN on straight lines, because straight commands are the most common ones. Remind them that all these fixes are small, but you only find them if you have a test that compares the density with the sampler. Question for the room: which row would your own robot hit first?"
+    source: lecture.md §L10
+  - layout: bullets
+    title: "Summary: claims you should be able to defend"
+    bullets:
+      - "A motion model is kinematics plus noise on the **controls**, not on the pose"
+      - "Two noise terms leave a 2-D sheet in pose space; the third term, γ̂, fills it"
+      - "Every algorithm has a **density form** and a **sampling form**"
+      - "Wrap every angular difference; floor every variance"
+      - "Dead reckoning's uncertainty only grows; only measurements shrink it"
+      - "A map checked at the end pose lets particles through walls"
+    notes: "Read each claim and ask a student to defend it in one sentence. For the first: noise goes on the commands or the odometry parameters, which is why a robot at rest does not drift. For the second: the geometric argument about a two-dimensional sheet. For the third: the density inverts, the sampler runs forward, and a particle filter needs only the sampler. For the fourth: the two most common implementation bugs. For the fifth: nothing here ever reduces uncertainty. For the sixth: the book's own approximation, which works for short steps. Question for the room: which of the six would you test first in code, and how?"
+    source: lecture.md §L9
+  - layout: bullets
+    title: "What comes next"
+    bullets:
+      - "Chapter 6: the **update** half; same lesson, the measurement model"
+      - "Chapter 7: linearize the velocity model for EKF and UKF localization"
+      - "Chapter 8: the samplers become line 4 of Monte Carlo localization"
+      - "Chapter 13: the same samplers, per particle, in FastSLAM"
+      - "Exercises 1–3 (a robot with dynamics) are the first step toward drones"
+    notes: "Connect the chapter to the rest of the course. This chapter is the predict half of every filter; chapter 6 supplies the update half. Chapter 7 linearizes the velocity model and maps control noise into state space through a Jacobian, while the samplers here are the nonlinear truth that linearization approximates. In Monte Carlo localization the odometry sampler is line four of the algorithm and the odometry density fills the grid filter's transition. FastSLAM runs the same samplers once per particle. Legged robots and drones are outside this chapter's models; the book names dynamics and inertial sensing as not covered. Question for the room: what would you need to add for a quadruped?"
+    source: map.md feeds

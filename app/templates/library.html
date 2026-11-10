@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+{% set page = 'library' %}
+{% block bodyclass %}lib{% endblock %}
+{% block title %}Chalk · Library{% endblock %}
+{% block who %}{{ sources|length }} source{{ '' if sources|length == 1 else 's' }}{% endblock %}
+{% block body %}
+<section class="scene" id="scene" aria-label="Library">
+  <canvas id="shelf" aria-hidden="true"></canvas>
+  <div id="shelf-a11y"></div>
+  <p class="scene-hint" id="scene-hint">{% if sources %}Choose a book on the shelf or a paper in the box. The ADD tray takes a new PDF.{% else %}The library is empty: click the ADD tray on the table, or drop a PDF on the room.{% endif %}</p>
+</section>
+
+<!-- the open book (or folder): built from SOURCES by tome.open(id) -->
+<div class="tome-layer" id="tome-layer" hidden>
+  <div class="tome-dim" data-close></div>
+  <div class="tome" id="tome" role="dialog" aria-modal="true" aria-labelledby="tome-title">
+    <div class="base base-l"></div><div class="base base-r"></div>
+    <div class="leaves-wrap"><div class="leaves" id="leaves"></div></div>
+    <div class="cover" id="cover"><div class="face front" id="cover-front"></div><div class="face back"></div></div>
+    <div class="tome-nav" id="tome-nav">
+      <button type="button" class="turn" id="turn-prev" aria-label="Previous pages">‹</button>
+      <span id="spread-no"></span>
+      <button type="button" class="turn" id="turn-next" aria-label="Next pages">›</button>
+    </div>
+    <button type="button" class="tome-close" data-close aria-label="Close">×</button>
+  </div>
+</div>
+
+<!-- add a PDF: an index card that rises from the ADD tray -->
+<div class="card-layer" id="card-layer" hidden>
+  <div class="tome-dim" data-close-card></div>
+  <form class="addcard" id="addcard" method="post" action="/sources" enctype="multipart/form-data" role="dialog" aria-modal="true" aria-labelledby="addcard-h">
+    <h2 id="addcard-h">Add a PDF to the library</h2>
+    <p class="small">A book gets its chapter list from the table of contents and a guessed page offset. A paper becomes one unit.</p>
+    <label class="file" id="file-drop"><input id="f" type="file" name="file" accept="application/pdf" required><span id="file-name">Choose a PDF, or drop it here</span></label>
+    <div class="row">
+      <label for="id">Short name</label><input id="id" type="text" name="id" pattern="[a-z0-9][a-z0-9-]{1,40}" placeholder="boyd-cvx" required>
+      <label for="kind">Kind</label><select id="kind" name="kind"><option value="book">Book</option><option value="paper">Paper</option></select>
+      <label for="title">Title</label><input id="title" type="text" name="title" placeholder="from the PDF if left empty">
+      <label for="authors">Authors</label><input id="authors" type="text" name="authors">
+      <label for="year">Year</label><input id="year" type="number" name="year">
+    </div>
+    <p class="err" id="add-err" hidden></p>
+    <div class="foot"><button type="button" class="btn quiet" data-close-card>Cancel</button><button class="btn go" id="add-go">Add to library</button></div>
+  </form>
+</div>
+{% endblock %}
+{% block scripts %}
+<script src="/static/chalky.js"></script>
+<script src="/static/shelf.js"></script>
+<script>
+let SOURCES = {{ sources|tojson }};
+const STAGES = {{ stages|tojson }};
+const byId = id => SOURCES.find(s => s.id === id);
+const esc = s => String(s ?? '').replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const REDUCE = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/* ---- one chapter row, same rules as the old ledger */
+function unitRow(s, u){
+  const running = u.job && ['queued','running'].includes(u.job.state);
+  const cur = running ? (u.job.stage === 'next' ? u.next : u.job.stage) : null;
+  const track = STAGES.map(st => `<i class="${u.done.includes(st) ? 'done' : (st === cur ? 'run' : (u.failed === st ? 'fail' : ''))}" title="${st}"></i>`).join('');
+  let status, cls = '';
+  if (running) { status = `${cur}, ${u.job.state}`; cls = 'run'; }
+  else if (u.failed) { status = `${u.failed} stopped`; cls = 'fail'; }
+  else if (u.done.includes('review')) status = 'Reviewed' + (u.done.includes('slides') ? ', with slides' : '');
+  else if (u.done.length) status = `${u.done.length} of ${STAGES.length - 1} stages`;
+  else status = 'Not started';
+  const post = (stage, label, klass) => `<form class="inline" method="post" action="/teach/${s.id}/${u.unit}"><input type="hidden" name="stage" value="${stage}"><button class="btn ${klass}" ${s.pdf_present ? '' : 'disabled'}>${label}</button></form>`;
+  let acts = '';
+  if (running) acts = `<a class="btn" href="/run/${s.id}/${u.unit}">Watch</a>`;
+  else if (u.failed) acts = `<a class="btn" href="/run/${s.id}/${u.unit}">Log</a>` + post(u.failed, `Retry`, 'quiet');
+  else {
+    if (u.done.includes('build')) acts += `<a class="btn" href="/reader/${s.id}/${u.unit}">Reader</a>`;
+    const auto = window.CHALK && CHALK.auto && u.next !== 'slides';
+    if (u.next) acts += post('next', !u.done.length ? (auto ? 'Teach all stages' : 'Teach') : (u.next === 'slides' ? 'Make slides' : (auto ? `Run ${u.next} → end` : 'Continue to ' + u.next)), u.done.length ? '' : 'go');
+  }
+  const pages = u.pages ? `${s.kind !== 'paper' ? 'pp. ' : 'pp. '}${u.pages[0]}–${u.pages[1]}` : '';
+  return `<div class="toc-row"><span class="n">${s.kind === 'paper' ? '' : u.unit}</span>
+    <span class="t">${esc(u.title)}<span class="pp">${pages}</span></span>
+    <span class="dots"></span>
+    <span class="st ${cls}"><span class="track">${track}</span>${esc(status)}</span>
+    <span class="a">${acts}</span></div>`;
+}
+function tocHtml(s){
+  const meta = !s.pdf_present ? `PDF missing at ${esc(s.pdf)}.`
+    : s.kind === 'paper' ? 'Paper, taught as one unit.'
+    : s.offset == null ? `${s.units.length} chapters. Printed page offset still unknown.`
+    : `${s.units.length} chapters · printed page = PDF page − ${s.offset}`;
+  let h = `<header class="toc-head"><div class="kicker">${s.kind === 'paper' ? 'Paper' : 'Contents'}</div>
+    <h2 id="tome-title">${esc(s.title)}</h2><div class="by">${esc(s.authors || '')}${s.year ? ', ' + s.year : ''}</div>
+    <div class="meta">${meta}</div>${window.CHALK && CHALK.auto ? '<div class="autonote">Auto-run is on: a stage you start runs on through every later stage.</div>' : ''}</header>`;
+  if (s.kind === 'paper' && s.sections && s.sections.length)
+    h += `<div class="secs"><div class="kicker">Sections</div><ol>${s.sections.map(x => `<li>${esc(x)}</li>`).join('')}</ol></div>`;
+  if (s.kind !== 'paper' && s.offset == null)
+    h += `<form class="notice" onsubmit="return setOffset(event, '${s.id}')"><span>Open any page of the PDF and type its printed number; Chalk works out the offset.</span>
+      <input type="number" name="pdf" placeholder="PDF page" required><input type="number" name="printed" placeholder="printed page" required><button class="btn">Set offset</button></form>`;
+  else if (!s.units.length)
+    h += `<p class="notice">No numbered chapters found in the outline. Add them to <code>books.yaml</code> by hand, or re-add the PDF as a paper.</p>`;
+  else if (s.kind === 'paper') h += `<div class="sheet-head"><div class="kicker">Teaching package</div></div>` + s.units.map(u => unitRow(s, u)).join('');
+  else h += s.units.map(u => unitRow(s, u)).join('');
+  return h;
+}
+async function setOffset(e, id){
+  e.preventDefault(); const f = e.target; const off = (+f.pdf.value) - (+f.printed.value);
+  await fetch('/sources/' + id, {method: 'PUT', headers: {'content-type': 'application/json'}, body: JSON.stringify({offset: off})});
+  location.reload(); return false;
+}
+
+/* ---- the open book: fly the closed cover from the spine to the middle, swing it open, ink the contents */
+const layer = document.getElementById('tome-layer'), tome = document.getElementById('tome'), cover = document.getElementById('cover');
+const leaves = document.getElementById('leaves'), nav = document.getElementById('tome-nav');
+let openId = null, spread = 0, spreads = 1, lastFocus = null, busy = false;
+const wait = a => a.finished.catch(() => {});
+const step = () => leaves.parentNode.clientWidth + parseFloat(getComputedStyle(leaves).columnGap);   // one spread = two columns
+function layoutSpreads(keep){
+  spreads = Math.max(1, Math.round((leaves.scrollWidth + parseFloat(getComputedStyle(leaves).columnGap)) / step()));
+  spread = keep ? Math.min(spread, spreads - 1) : 0;
+  turn(0, true);
+}
+function turn(d, instant){
+  spread = Math.max(0, Math.min(spreads - 1, spread + d));
+  leaves.style.transition = instant || REDUCE ? 'none' : 'transform .35s ease';
+  leaves.style.transform = `translateX(${-spread * step()}px)`;
+  nav.hidden = spreads < 2;
+  document.getElementById('spread-no').textContent = `${spread + 1} / ${spreads}`;
+  document.getElementById('turn-prev').disabled = spread === 0;
+  document.getElementById('turn-next').disabled = spread === spreads - 1;
+}
+document.getElementById('turn-prev').onclick = () => turn(-1);
+document.getElementById('turn-next').onclick = () => turn(1);
+
+async function openTome(id, instant){
+  const s = byId(id); if (!s || busy) return;
+  busy = true; openId = id; lastFocus = document.activeElement;
+  const paper = s.kind === 'paper';
+  tome.classList.toggle('folder', paper);
+  tome.style.setProperty('--cover', paper ? '#c9a46a' : shelf.colorOf(id));
+  document.getElementById('cover-front').innerHTML = paper
+    ? `<div class="ftab">${esc((s.authors || '').split(/[,\s]/)[0])}</div><div class="ftitle">${esc(s.title)}</div>`
+    : `<div class="ctitle">${esc(s.title)}</div><div class="cby">${esc(s.authors || '')}</div>`;
+  leaves.innerHTML = tocHtml(s);
+  layer.hidden = false; tome.classList.remove('open', 'inked');
+  layoutSpreads(false);
+  if (history.replaceState) history.replaceState(null, '', '#' + id);
+  const from = shelf.rectOf(id), r = tome.getBoundingClientRect();
+  const dim = layer.querySelector('.tome-dim');
+  if (instant || REDUCE || !from) {
+    cover.animate([{transform: 'rotateY(-180deg)'}, {transform: 'rotateY(-180deg)'}], {duration: 1, fill: 'forwards'});
+    tome.classList.add('open', 'inked'); busy = false; tome.querySelector('.tome-close').focus(); return;
+  }
+  // 1. the closed book (cover over the right half) flies from its spine to the middle
+  const half = r.width / 2;
+  const sx = from.width / half, sy = from.height / r.height;
+  const tx = from.left - (r.left + half), ty = from.top - r.top;
+  dim.animate([{opacity: 0}, {opacity: 1}], {duration: 380, fill: 'both'});
+  await wait(tome.animate([
+    {transform: `translate(${tx}px, ${ty}px) scale(${sx}, ${sy})`, transformOrigin: '50% 0'},
+    {transform: 'none', transformOrigin: '50% 0'}], {duration: 460, easing: 'cubic-bezier(.2,.7,.2,1)'}));
+  // 2. the cover swings open about the spine
+  await wait(cover.animate([{transform: 'rotateY(0deg)'}, {transform: 'rotateY(-180deg)'}], {duration: 620, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards'}));
+  tome.classList.add('open');
+  // 3. the contents ink in
+  tome.classList.add('inked');
+  busy = false; tome.querySelector('.tome-close').focus();
+}
+async function closeTome(){
+  if (!openId || busy) return;
+  busy = true; const id = openId;
+  if (!REDUCE) {
+    tome.classList.remove('inked');
+    await new Promise(r => setTimeout(r, 160));
+    tome.classList.remove('open');
+    await wait(cover.animate([{transform: 'rotateY(-180deg)'}, {transform: 'rotateY(0deg)'}], {duration: 480, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards'}));
+    const from = shelf.rectOf(id), r = tome.getBoundingClientRect();
+    if (from) {
+      const half = r.width / 2;
+      layer.querySelector('.tome-dim').animate([{opacity: 1}, {opacity: 0}], {duration: 360, fill: 'both'});
+      await wait(tome.animate([{transform: 'none', transformOrigin: '50% 0'},
+        {transform: `translate(${from.left - (r.left + half)}px, ${from.top - r.top}px) scale(${from.width / half}, ${from.height / r.height})`, transformOrigin: '50% 0'}],
+        {duration: 380, easing: 'cubic-bezier(.6,0,.8,.4)', fill: 'forwards'}));
+    }
+  }
+  tome.getAnimations().forEach(a => a.cancel()); cover.getAnimations().forEach(a => a.cancel());
+  layer.querySelector('.tome-dim').getAnimations().forEach(a => a.cancel());
+  layer.hidden = true; openId = null; busy = false;
+  if (history.replaceState) history.replaceState(null, '', location.pathname);
+  if (lastFocus) lastFocus.focus();
+}
+layer.querySelectorAll('[data-close]').forEach(el => el.addEventListener('click', closeTome));
+addEventListener('resize', () => { if (openId) layoutSpreads(true); });
+document.addEventListener('chalk-auto', () => { const s = openId && byId(openId); if (s) { leaves.innerHTML = tocHtml(s); layoutSpreads(true); } });
+
+/* ---- add a PDF: the index card */
+const cardLayer = document.getElementById('card-layer'), card = document.getElementById('addcard');
+const fileIn = document.getElementById('f'), fileName = document.getElementById('file-name');
+function slug(name){ return name.replace(/\.pdf$/i, '').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 40) || 'new-source'; }
+function onFile(){
+  const f = fileIn.files[0]; fileName.textContent = f ? `${f.name} · ${(f.size / 1e6).toFixed(1)} MB` : 'Choose a PDF, or drop it here';
+  const id = document.getElementById('id'); if (f && !id.value) id.value = slug(f.name);
+}
+fileIn.addEventListener('change', onFile);
+function openCard(files){
+  if (openId) return;
+  lastFocus = document.activeElement; cardLayer.hidden = false; document.getElementById('add-err').hidden = true;
+  if (files && files.length) { fileIn.files = files; onFile(); }
+  if (!REDUCE) card.animate([{transform: 'translateY(40px) rotate(-2deg)', opacity: 0}, {transform: 'none', opacity: 1}], {duration: 260, easing: 'cubic-bezier(.2,.7,.2,1)'});
+  (fileIn.files.length ? document.getElementById('id') : fileIn).focus();
+}
+function closeCard(){ cardLayer.hidden = true; if (lastFocus) lastFocus.focus(); }
+cardLayer.querySelectorAll('[data-close-card]').forEach(el => el.addEventListener('click', closeCard));
+card.addEventListener('submit', async e => {
+  e.preventDefault();
+  const go = document.getElementById('add-go'), err = document.getElementById('add-err');
+  go.disabled = true; go.textContent = 'Reading the PDF…'; err.hidden = true;
+  try {
+    const res = await fetch('/sources', {method: 'POST', body: new FormData(card)});
+    if (!res.ok) { const j = await res.json().catch(() => ({})); throw new Error(j.detail || res.statusText); }
+    location.href = '/#' + document.getElementById('id').value; location.reload();
+  } catch (x) { err.textContent = String(x.message || x); err.hidden = false; go.disabled = false; go.textContent = 'Add to library'; }
+});
+
+/* ---- drop a PDF anywhere on the room */
+const scene = document.getElementById('scene');
+let dragDepth = 0;
+const isFile = e => [...(e.dataTransfer?.types || [])].includes('Files');
+scene.addEventListener('dragenter', e => { if (!isFile(e)) return; e.preventDefault(); dragDepth++; shelf.setDropping(true); });
+scene.addEventListener('dragover', e => { if (isFile(e)) e.preventDefault(); });
+scene.addEventListener('dragleave', () => { if (--dragDepth <= 0) { dragDepth = 0; shelf.setDropping(false); } });
+scene.addEventListener('drop', e => {
+  if (!isFile(e)) return; e.preventDefault(); dragDepth = 0; shelf.setDropping(false);
+  const pdfs = [...e.dataTransfer.files].filter(f => /\.pdf$/i.test(f.name));
+  if (!pdfs.length) return;
+  const dt = new DataTransfer(); dt.items.add(pdfs[0]); openCard(dt.files);
+});
+document.getElementById('file-drop').addEventListener('dragover', e => e.preventDefault());
+document.getElementById('file-drop').addEventListener('drop', e => {
+  e.preventDefault(); const f = [...e.dataTransfer.files].find(f => /\.pdf$/i.test(f.name));
+  if (f) { const dt = new DataTransfer(); dt.items.add(f); fileIn.files = dt.files; onFile(); }
+});
+
+/* ---- keys, mount, live status */
+addEventListener('keydown', e => {
+  if (e.key === 'Escape') { if (!cardLayer.hidden) closeCard(); else closeTome(); }
+  if (openId && !busy && (e.key === 'ArrowRight' || e.key === 'PageDown')) turn(1);
+  if (openId && !busy && (e.key === 'ArrowLeft' || e.key === 'PageUp')) turn(-1);
+});
+const shelf = Shelf.mount(document.getElementById('shelf'), SOURCES, {
+  a11y: document.getElementById('shelf-a11y'), onSelect: id => openTome(id), onAdd: () => openCard(),
+});
+const start = decodeURIComponent(location.hash.slice(1));
+if (start && byId(start)) openTome(start, true);
+// while a stage runs, refresh the statuses in the open book every few seconds
+const anyRunning = () => SOURCES.some(s => s.units.some(u => u.job && ['queued','running'].includes(u.job.state)));
+setInterval(async () => {
+  if (!anyRunning() || !openId || busy) return;
+  try { SOURCES = await (await fetch('/sources')).json(); const s = byId(openId); if (s) { leaves.innerHTML = tocHtml(s); layoutSpreads(true); } } catch (e) {}
+}, 4000);
+</script>
+{% endblock %}

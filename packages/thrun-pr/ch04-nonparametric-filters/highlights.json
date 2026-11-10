@@ -1,0 +1,829 @@
+{
+ "book": "thrun-pr",
+ "chapter": 4,
+ "printed_pages": [
+  85,
+  116
+ ],
+ "page_offset": 21,
+ "colors": {
+  "define": "#9FE1CB",
+  "key": "#FAC775",
+  "derive": "#F09595",
+  "pitfall": "#F5C4B3",
+  "link": "#B5D4F4",
+  "section": "#D3D1C7"
+ },
+ "items": [
+  {
+   "page": 85,
+   "kind": "section",
+   "anchor": "Nonparametric Filters",
+   "note": "Must read, 15 min. The chapter's one move: drop the Gaussian's fixed form, carry the belief as many numbers (bin probabilities in 4.1–4.2, samples in 4.3), and run the ch. 2 Bayes filter on those numbers."
+  },
+  {
+   "page": 85,
+   "kind": "define",
+   "anchor": "they approximate posteriors by a finite number of values",
+   "note": "DEFINE: nonparametric means no fixed functional form, not few parameters. With the book's example M = 1,000 (p. 97) a particle set over (x, y, θ) is 3,000 numbers against the EKF's 3 + 9."
+  },
+  {
+   "page": 85,
+   "kind": "key",
+   "anchor": "As the number of parameters goes to infinity, nonparametric techniques tend to converge uniformly to the correct posterior",
+   "note": "WHY: the guarantee is asymptotic and conditional ('under specific smoothness assumptions'). Everything in 4.3.4 is about finite M, the M your robot actually runs."
+  },
+  {
+   "page": 85,
+   "kind": "key",
+   "anchor": "they are well-suited to represent complex multimodal beliefs",
+   "note": "ROBOT: the RoboCup field is point symmetric, so after a kidnap the posterior has two modes 180° apart. A KF averages them into the centre circle; a histogram or PF keeps both. LINK: t2.3 (ch. 8, MCL)."
+  },
+  {
+   "page": 86,
+   "kind": "pitfall",
+   "anchor": "these techniques comes at the price of added computational complexity",
+   "note": "COST: a histogram's cell count is the product of bins per axis, and the M a PF needs grows with state dimension (p. 113). This is why the drone's INS stays an EKF (t2.2)."
+  },
+  {
+   "page": 86,
+   "kind": "define",
+   "anchor": "Techniques that can adapt the number of parameters to represent the posterior online are called adaptive",
+   "note": "DEFINE: adaptive = M follows the posterior's complexity; resource-adaptive = M follows the CPU budget. LINK: KLD-sampling in ch. 8 (t2.3) is the adaptive version; this chapter gives no algorithm for it."
+  },
+  {
+   "page": 86,
+   "kind": "key",
+   "anchor": "Particle filters are often implemented as a resource",
+   "note": "ROBOT: on the quadruped the estimator rate is fixed by the control loop, so M is whatever fits in the budget. CODE: the PF in C4 takes M from the incoming particle array, so it can change between steps."
+  },
+  {
+   "page": 86,
+   "kind": "section",
+   "anchor": "4.1",
+   "note": "Must read for 4.1.1–4.1.2, skim 4.1.3–4.1.4. A histogram filter is the Bayes filter with the integral replaced by a sum over bins."
+  },
+  {
+   "page": 86,
+   "kind": "section",
+   "anchor": "4.1.1",
+   "note": "Must read, 10 min. Table 4.1 is two lines: a matrix–vector product and an element-wise product with a normalizer."
+  },
+  {
+   "page": 86,
+   "kind": "define",
+   "anchor": "When applied to finite spaces, such filters are known as discrete Bayes filters",
+   "note": "DEFINE: one algorithm, two names. Discrete Bayes filter when the state is truly finite (door open or closed, which room); histogram filter when bins approximate a continuous state. Only the second carries an approximation error."
+  },
+  {
+   "page": 86,
+   "kind": "link",
+   "anchor": "We already encountered a discrete Bayes filter in Chapter 2.4.2",
+   "note": "LINK: t2.1, the door example. Run Table 4.1 on it with K = 2 and you must get the ch. 2 numbers back; a natural first oracle for C1."
+  },
+  {
+   "page": 86,
+   "kind": "link",
+   "anchor": "occupancy grid mapping algorithms assume that each location in the environment is either occupied or free",
+   "note": "LINK: t2.5 (ch. 9). The tracked robot's costmap is this: one binary filter per cell, written in log odds as Table 4.2."
+  },
+  {
+   "page": 87,
+   "kind": "derive",
+   "anchor": "Table 4.1",
+   "note": "Implement. SHAPES: p_prev (K,), transition T (K, K) with T[k, i] = p(x_k | u, x_i), likelihood (K,). Line 3 is p̄ = T @ p_prev; line 4 is p = η · lik * p̄. CODE: C1 hist_predict, hist_update. COST: line 3 is O(K²) dense; a shift-invariant motion model turns it into a convolution (C1, robust)."
+  },
+  {
+   "page": 87,
+   "kind": "key",
+   "anchor": "Line 3 calculates the prediction, the belief for the new state based on the control alone",
+   "note": "WHY: line 3 is Table 2.1 line 3 with ∫ replaced by Σ; line 4 is Bayes rule. Nothing else changed from ch. 2."
+  },
+  {
+   "page": 87,
+   "kind": "link",
+   "anchor": "the forward pass of a hidden Markov model",
+   "note": "LINK: the HMM forward algorithm (Rabiner and Juang, cited p. 114). HMM libraries commonly run it in log space; do the same once K is large or the likelihood is sharp (C1, robust)."
+  },
+  {
+   "page": 87,
+   "kind": "section",
+   "anchor": "4.1.2",
+   "note": "Must read, 20 min. (4.1)–(4.5) turn a continuous density into Table 4.1's inputs. The only approximations are (4.4) and (4.5)."
+  },
+  {
+   "page": 87,
+   "kind": "pitfall",
+   "anchor": "in two of the resulting bins the probability is so close to zero that they cannot be seen",
+   "note": "PITFALL: the bins of Y in Fig. 4.1 are a fresh grid on Y, filled by pushing points through g. A histogram filter keeps one fixed grid and re-bins every step; that re-binning is where resolution is lost."
+  },
+  {
+   "page": 87,
+   "kind": "derive",
+   "equation": "4.1",
+   "note": "Partition: bins disjoint and covering dom(X_t). SHAPES: for book ex. 1, a K_x × K_ẋ grid flattened to K. PITFALL: mass that the motion model pushes past the last bin is lost; C1 must decide (clip or renormalize), and its test checks that mass is conserved."
+  },
+  {
+   "page": 88,
+   "kind": "key",
+   "anchor": "The histogram of the transformed random variable was computed by passing multiple points from each histogram bin of X through the nonlinear function",
+   "note": "FIGURE: lower right is X and its 10-bin histogram, upper right is g, upper left is Y's true density with its histogram. The caption's last sentence is (4.5) done by sub-bin sampling instead of a centre probe. The lecture redraws 4.1 and 4.3 with the same g."
+  },
+  {
+   "page": 88,
+   "kind": "define",
+   "anchor": "describes a convex region. These regions together form a partitioning of the state space",
+   "note": "DEFINE: bins are convex and disjoint and together are dom(X_t). Convexity is what keeps the bin mean (4.3) inside its bin."
+  },
+  {
+   "page": 88,
+   "kind": "key",
+   "anchor": "Through the granularity of the decomposition, we can trade off accuracy and computational efficiency",
+   "note": "COST: cells multiply across axes. Book exercise 2(b) asks which axis (x, y or θ) deserves resolution; the motion model answers it, not the grid."
+  },
+  {
+   "page": 89,
+   "kind": "define",
+   "anchor": "the posterior becomes a piecewise constant PDF",
+   "note": "DEFINE: within a bin the filter knows nothing more than the bin's total. Everything below follows from this one modelling choice."
+  },
+  {
+   "page": 89,
+   "kind": "derive",
+   "equation": "4.2",
+   "note": "Density = bin probability / bin volume. CODE: C1 hist_density. PITFALL: p_k is a probability (sums to 1), p(x) a density (integrates to 1); plotting p_k on a non-uniform grid misleads. TEST: Σ_k p(x̂_k) |x_k| = 1."
+  },
+  {
+   "page": 89,
+   "kind": "derive",
+   "equation": "4.3",
+   "note": "Representative state: the bin mean; on a regular grid, the cell centre. CODE: C1 grid centres."
+  },
+  {
+   "page": 89,
+   "kind": "derive",
+   "equation": "4.4",
+   "note": "Implement. Likelihood of a bin ≈ likelihood at its centre; exact when p(z | x) is affine across the bin (the average of an affine function is its value at the centre), and (4.7) shows this is the only approximation in the update. PITFALL: a sensor sharper than the bin width misses its peak at every centre. Book ex. 2(c) has Q_meas = 0.01 (σ = 0.1, p. 116), so x-bins coarser than about σ fail here."
+  },
+  {
+   "page": 89,
+   "kind": "derive",
+   "equation": "4.5",
+   "note": "Implement. Transition between bins ≈ density at the centres × target-bin volume, then η per source bin. CODE: C1 builds T and normalizes each column so Σ_k T[k, i] = 1; that is the η of (4.10). PITFALL: the deterministic transition of book ex. 2 (p. 115) has no density; add a small R_proc or spread each bin's mass by sub-bin sampling, as Fig. 4.1 does."
+  },
+  {
+   "page": 89,
+   "kind": "key",
+   "anchor": "a Taylor-approximation analogous to the one used by EKFs",
+   "note": "WHY: the EKF linearizes g once at the mean; the histogram filter freezes the densities at each bin centre, a zeroth-order step per bin. Shrinking the bins shrinks this error; the EKF has no such knob."
+  },
+  {
+   "page": 89,
+   "kind": "section",
+   "anchor": "4.1.3",
+   "note": "Skim, 20 min; derive (4.7) by hand. (4.6) is exact under (4.2); the only approximation is p(z | x) ≈ p(z | x̂) inside a bin."
+  },
+  {
+   "page": 90,
+   "kind": "derive",
+   "equation": "4.7",
+   "note": "Derive by hand, five lines. The ≈ in the first line is the histogram filter's only approximation in the measurement update. READING: (4.8)–(4.10) repeat the trick for the transition; skim them."
+  },
+  {
+   "page": 90,
+   "kind": "key",
+   "anchor": "This expression is an exact description of the desired probability under the piecewise uniform distribution model",
+   "note": "WHY: the exact bin likelihood is the average of p(z | x) over the bin. CODE: C1's robust variant averages p(z | x) over a few points per bin instead of probing the centre."
+  },
+  {
+   "page": 91,
+   "kind": "key",
+   "anchor": "Note that the normalizer η becomes necessary to ensure that the approximation is a valid probability distribution",
+   "note": "WHY: this η is per source bin i, a distribution over k. As printed, Table 4.1 leaves p̄ unnormalized and line 4's η normalizes (p. 92). CODE: C1 also normalizes the columns of T so p̄ stays a distribution."
+  },
+  {
+   "page": 91,
+   "kind": "derive",
+   "equation": "4.10",
+   "note": "Skim. The result is (4.5). The factor |x_k,t| stays unless every bin has the same volume (next sentence)."
+  },
+  {
+   "page": 91,
+   "kind": "pitfall",
+   "anchor": "we can simply omit the factor",
+   "note": "PITFALL: only on a uniform grid. Density trees (4.1.4) or log-spaced range bins have unequal volumes, and dropping |x_k| biases mass toward the small bins ((4.5) multiplies by |x_k|)."
+  },
+  {
+   "page": 92,
+   "kind": "pitfall",
+   "anchor": "do not constitute a probability distribution, since they are not normalized",
+   "note": "PITFALL: Table 4.1 line 3 with (4.5) minus its η gives a p̄ that does not sum to 1; line 4 hides it. Normalize T's columns once and p̄ is a distribution, so a mass check after line 3 catches transition bugs (C1 test)."
+  },
+  {
+   "page": 92,
+   "kind": "section",
+   "anchor": "4.1.4",
+   "note": "Skim, 10 min. Static grid, density tree, selective updating, topological vs. metric. Take the ideas; nothing here is implemented in the package."
+  },
+  {
+   "page": 92,
+   "kind": "key",
+   "anchor": "Dynamic vs. static decomposition",
+   "note": "FIGURE: the same Y as Fig. 4.1 with the same number of bins; the tree puts its bins where the mass is. Not redrawn in the lecture."
+  },
+  {
+   "page": 92,
+   "kind": "define",
+   "anchor": "Density trees decompose the state space recursively",
+   "note": "DEFINE: resolution follows probability mass. LINK: an octree map (OctoMap) is the mapping cousin used on the quadruped and drone; the density tree returns as a density extractor on p. 105."
+  },
+  {
+   "page": 93,
+   "kind": "key",
+   "anchor": "Dynamic techniques like density trees can often cut the computation complexity by orders of magnitude",
+   "note": "COST: the book's claim; it gives no numbers. The price is implementation effort and unequal bin volumes (see the |x_k| note on p. 91)."
+  },
+  {
+   "page": 93,
+   "kind": "pitfall",
+   "anchor": "updates only those grid cells whose posterior probability exceeds a user-specified threshold",
+   "note": "PITFALL: cells below threshold are frozen, so a mode that should regrow from low mass (the symmetric twin on the RoboCup field) never can. It is particle deprivation (p. 112) for grids."
+  },
+  {
+   "page": 93,
+   "kind": "key",
+   "anchor": "They make it possible to use grid decompositions in spaces of three or more dimensions",
+   "note": "ROBOT: (x, y, θ) grid localization in ch. 8 (t2.3) depends on this."
+  },
+  {
+   "page": 93,
+   "kind": "define",
+   "anchor": "topological representations are often thought of as coarse graph-like representations",
+   "note": "DEFINE: topological = nodes at significant places; metric = a regular grid. The summary (p. 114) calls a decomposition topological when its granularity depends on the environment."
+  },
+  {
+   "page": 94,
+   "kind": "derive",
+   "anchor": "Table 4.2",
+   "note": "Implement. CODE: C2 logodds_update(l_prev, p_inv, p_prior). TEST: equals Table 4.1 on two states with the forward model turned into an inverse one by Bayes rule. PITFALL: the prior term is subtracted on every update, not once; forget it and l drifts under uninformative measurements unless p(x) = 0.5."
+  },
+  {
+   "page": 94,
+   "kind": "section",
+   "anchor": "Binary Bayes Filters with Static State",
+   "note": "Must read, 25 min. Log odds turn Bayes' product into a sum, and the static state is why Table 4.2 has no prediction step."
+  },
+  {
+   "page": 94,
+   "kind": "key",
+   "anchor": "a robot estimates a fixed binary quantity in the environment from a sequence of sensor measurements",
+   "note": "ROBOT: one occupancy cell on the tracked robot's map. If the quantity can change (a person walking through the cell), the static assumption breaks and the filter becomes too stubborn; practical mappers (OctoMap) clamp l for this reason; the book does not."
+  },
+  {
+   "page": 94,
+   "kind": "derive",
+   "equation": "4.13",
+   "note": "Implement. CODE: C2 prob_to_logodds as log(p) − log1p(−p) (scipy.special.logit). p ∈ {0, 1} gives ±∞; clip p at the inverse sensor model, not inside the filter."
+  },
+  {
+   "page": 95,
+   "kind": "key",
+   "anchor": "It avoids truncation problems that arise for probabilities close to 0 or 1",
+   "note": "WHY: after many agreeing hits a cell's p is 1 minus something tiny; in floating point 1 − p rounds to 0 and the odds divide by zero. In log odds it is just a large number. Clamping l is common practice (OctoMap), not in the book."
+  },
+  {
+   "page": 95,
+   "kind": "key",
+   "anchor": "any algorithm that increments and decrements a variable in response to measurements can be interpreted as a Bayes filter in log odds form",
+   "note": "WHY: the hit/miss counters in costmap code are log-odds filters with fixed increments; this sentence tells you what inverse model and prior those increments imply."
+  },
+  {
+   "page": 95,
+   "kind": "define",
+   "anchor": "This binary Bayes filter uses an inverse measurement model",
+   "note": "DEFINE: p(x | z), state given measurement, the reverse of the p(z | x) used by Table 4.1 and the PF. Table 4.2 needs it plus the prior p(x)."
+  },
+  {
+   "page": 95,
+   "kind": "key",
+   "anchor": "it is easier to implement an inverse than a forward sensor model",
+   "note": "ROBOT: a classifier that outputs P(traversable | image patch) for the tracked robot is an inverse model and plugs into Table 4.2. Its p(x) is the class prior it was trained under, not automatically 0.5."
+  },
+  {
+   "page": 95,
+   "kind": "derive",
+   "equation": "4.14",
+   "note": "Implement, but not as written: for large positive l, exp(l) overflows, and the subtraction 1 − 1/(1 + e^l) loses all precision for very negative l. CODE: C2 logodds_to_prob = expit(l), the named trick. TEST: round trip with (4.13) over a wide range of l."
+  },
+  {
+   "page": 95,
+   "kind": "derive",
+   "equation": "4.16",
+   "note": "Derive (4.15)–(4.20) by hand. This line swaps the forward model for the inverse one; the p(z_t) it brings in cancels when (4.17) is divided by its ¬x twin (4.18)."
+  },
+  {
+   "page": 96,
+   "kind": "derive",
+   "equation": "4.19",
+   "note": "Derive by hand. The ratio cancels every term that needs the measurement's marginal. The last factor is the inverse prior odds; it is where Table 4.2's subtraction comes from."
+  },
+  {
+   "page": 96,
+   "kind": "derive",
+   "equation": "4.20",
+   "note": "Derive by hand; the second line is Table 4.2 line 2. CODE: C2."
+  },
+  {
+   "page": 96,
+   "kind": "pitfall",
+   "anchor": "each measurement update involves the addition of the prior",
+   "note": "Wording: the book says 'addition of the prior (in log odds form)'. The term added is log((1 − p(x))/p(x)) = −l0, so in code it is a subtraction of l0, as the second line of (4.20) shows."
+  },
+  {
+   "page": 96,
+   "kind": "derive",
+   "equation": "4.21",
+   "note": "Implement: start from l = l0, not 0, unless p(x) = 0.5. TEST (C2): feeding p_inv = p(x) at every step leaves l at l0."
+  },
+  {
+   "page": 96,
+   "kind": "section",
+   "anchor": "Basic Algorithm",
+   "note": "Must read, 35 min. Table 4.3 has three lines of substance: sample from the motion model, weight by the likelihood, resample. Code it before reading 4.3.2."
+  },
+  {
+   "page": 96,
+   "kind": "key",
+   "anchor": "by a set of random state samples drawn from this posterior",
+   "note": "WHY: a histogram stores how much mass is in each place; a particle set stores plausible states, and density is how crowded they are (4.23). Particles go where the mass is with no grid to design."
+  },
+  {
+   "page": 97,
+   "kind": "key",
+   "anchor": "The resulting samples are distributed according to the random variable Y",
+   "note": "FIGURE: same g and Gaussian as Fig. 4.1. Push samples through g and you hold exact samples of Y: no linearization, no bins. ROBOT: skid-steer slip is propagated the same way; you only need to sample it."
+  },
+  {
+   "page": 97,
+   "kind": "derive",
+   "equation": "4.22",
+   "note": "SHAPES: the particle set is one (M, n) array; weights are a separate (M,) array. CODE: C4 stores them that way, never as a Python list of ⟨x, w⟩ pairs as Table 4.3 line 6 reads."
+  },
+  {
+   "page": 97,
+   "kind": "define",
+   "anchor": "a particle is a hypothesis as to what the true world state may be at time",
+   "note": "DEFINE: one full state vector per particle. For the drone that is the whole INS state, which is why the particle count explodes with dimension (p. 113)."
+  },
+  {
+   "page": 97,
+   "kind": "key",
+   "anchor": "the number of particles M is often a large number",
+   "note": "The book's M = 1,000 here and 'M ≥ 100' on p. 98 are orders of magnitude for low-dimensional localization, not rules. Choose your M from the sampling-variance experiment (book ex. 5, T5), not from these."
+  },
+  {
+   "page": 98,
+   "kind": "derive",
+   "anchor": "The particle filter algorithm, a variant of the Bayes filter based on importance sampling",
+   "note": "Implement Table 4.3. SHAPES: X (M, n), w (M,). Line 4: one independent motion-noise draw per particle. Line 5: compute log w, not w. Lines 8–11: draw ∝ w; the book never normalizes w, so normalize before any sampler that assumes Σ w = 1 (Table 4.4). CODE: C4 pf_step, C5 low_variance_resample."
+  },
+  {
+   "page": 98,
+   "kind": "pitfall",
+   "anchor": "holds only asymptotically for",
+   "note": "PITFALL: for finite M the particles are not samples of the posterior; 'Sampling bias' (p. 112) shows the extreme M = 1. The book's 'negligible for M ≥ 100' is a rule of thumb with no run behind it."
+  },
+  {
+   "page": 98,
+   "kind": "derive",
+   "equation": "4.23",
+   "note": "The property a PF aims at, not code. TEST idea (C4): on a linear-Gaussian system the PF's weighted mean and covariance approach the KF's as M grows; the KF from t2.2 is the oracle."
+  },
+  {
+   "page": 99,
+   "kind": "key",
+   "anchor": "Line 4 generates a hypothetical state",
+   "note": "CODE: needs a sampler for the motion model (ch. 5, t2.4); for the package systems it is g(x, u) plus noise drawn with R_proc. PITFALL: one draw shared by all particles moves the cloud rigidly and the PF degenerates to dead reckoning."
+  },
+  {
+   "page": 99,
+   "kind": "define",
+   "anchor": "Line 5 calculates for each particle",
+   "note": "DEFINE: importance factor = weight = p(z | x). With a small Q_meas the factors span many orders of magnitude; compute log p(z | x) and normalize with log-sum-exp (C4, robust). TEST: log-space weights equal direct ones wherever the direct ones do not underflow."
+  },
+  {
+   "page": 99,
+   "kind": "pitfall",
+   "anchor": "These lines implemented what is known as resampling or importance sampling",
+   "note": "Wording: the book calls lines 8–11 'resampling or importance sampling'. Most of the literature calls lines 4–5 importance sampling and lines 8–11 resampling; together, sampling importance resampling (Rubin 1988, cited p. 115). Keep them apart in code."
+  },
+  {
+   "page": 99,
+   "kind": "key",
+   "anchor": "the resulting sample set usually possesses many duplicates",
+   "note": "WHY: duplicates are the diversity loss of 'Resampling' (p. 108). Line 4 spreads them apart again only if the motion model has noise."
+  },
+  {
+   "page": 100,
+   "kind": "derive",
+   "equation": "4.24",
+   "note": "Implement as the no-resampling variant and as the bookkeeping inside (4.36). In log space: log w += log p(z | x). CODE: C4. PITFALL: resetting w to 1 belongs only after a resample (4.36), never here."
+  },
+  {
+   "page": 100,
+   "kind": "key",
+   "anchor": "The resampling step is a probabilistic implementation of the Darwinian idea of survival of the fittest",
+   "note": "WHY: without resampling the particles stay where the prediction put them and most of the weight sits on a few; resampling moves compute to where the mass is. The cost is diversity (p. 108)."
+  },
+  {
+   "page": 100,
+   "kind": "section",
+   "anchor": "4.3.2",
+   "note": "Must read, 25 min. (4.25) and its support condition are the whole theory of the PF update; 4.3.3 only applies them."
+  },
+  {
+   "page": 100,
+   "kind": "derive",
+   "equation": "4.25",
+   "note": "Implement as a self-normalized estimator, with (4.27) and (4.28). CODE: C3 is_estimate. TEST: against the exact P_f(A) for a Gaussian target and a Gaussian proposal, computed from the normal CDF."
+  },
+  {
+   "page": 100,
+   "kind": "pitfall",
+   "anchor": "For this equation to be correct, we need",
+   "note": "PITFALL: f > 0 ⇒ g > 0. A proposal with lighter tails than the target gives rare huge weights, and the estimator's variance can be infinite. In a PF, g is the motion prediction, so an under-sized R_proc is this failure."
+  },
+  {
+   "page": 101,
+   "kind": "key",
+   "anchor": "Illustration of importance factors in particle filters",
+   "note": "FIGURE: (a) target f; (b) proposal g, samples from g at the bottom; (c) the same samples with bar height f/g. Note g's flat floor across the whole axis: it is what satisfies f > 0 ⇒ g > 0 on the left. In the PF, f is bel(x_t) and g is bel‾(x_t), the prediction. The lecture redraws it."
+  },
+  {
+   "page": 102,
+   "kind": "define",
+   "anchor": "The distribution that corresponds to the density g is called",
+   "note": "DEFINE: the proposal is where samples come from. The PF's proposal is (4.29), the motion prediction, which ignores z_t. Proposals that use z_t are out of scope (map.md); FastSLAM 2.0 (t2.9) uses one."
+  },
+  {
+   "page": 102,
+   "kind": "derive",
+   "equation": "4.27",
+   "note": "Implement (C3). Only the ratio f/g matters, so unnormalized densities are fine once (4.28) normalizes; the PF relies on this with its η."
+  },
+  {
+   "page": 102,
+   "kind": "derive",
+   "equation": "4.28",
+   "note": "Implement the self-normalized estimate. TEST (C3): RMS error over seeds falls as 1/√M; fit the slope on a log-log plot against the closed-form value. PITFALL: self-normalized IS is biased at finite M (standard result, not in the book); it is the normalization effect of 'Sampling bias', p. 112."
+  },
+  {
+   "page": 102,
+   "kind": "key",
+   "anchor": "The constant factor depends on the similarity of f(x) and g(x)",
+   "note": "WHY: the 1/√M rate is fixed; the constant is what you control. A peaky likelihood puts f far from g and makes the constant large, which is why a sharp sensor needs more particles than a vague one."
+  },
+  {
+   "page": 102,
+   "kind": "derive",
+   "equation": "4.29",
+   "note": "The PF's proposal: every particle pushed through the motion model. Target over proposal is η p(z | x), derived in (4.34)."
+  },
+  {
+   "page": 103,
+   "kind": "section",
+   "anchor": "4.3.3",
+   "note": "Must read, 15 min. On whole paths, target over proposal is η p(z | x). That is why Table 4.3 line 5 is the likelihood and nothing else."
+  },
+  {
+   "page": 103,
+   "kind": "derive",
+   "equation": "4.30",
+   "note": "Path particles. Not implemented (memory grows with t). LINK: FastSLAM (t2.9) keeps this path view; smoothing (t2.11) uses the paths on purpose."
+  },
+  {
+   "page": 103,
+   "kind": "key",
+   "anchor": "Notice the absence of integral signs in this derivation",
+   "note": "WHY: on paths nothing is marginalized, so target and proposal share p(x_0:t−1 | …) exactly and it cancels in (4.34). On x_t alone that cancellation would need the integral over x_t−1."
+  },
+  {
+   "page": 103,
+   "kind": "derive",
+   "equation": "4.32",
+   "note": "Derive by hand. Bayes, then two Markov steps; each line uses one assumption from ch. 2."
+  },
+  {
+   "page": 103,
+   "kind": "derive",
+   "equation": "4.34",
+   "note": "Derive by hand: target over proposal. PRINT ERROR: on p. 104 the denominator reads z_0:t−1, u_0:t−1 where (4.33) and the numerator have z_1:t−1, u_1:t−1; the same slip is in (4.35). Same quantity; the 0 is a typo."
+  },
+  {
+   "page": 103,
+   "kind": "pitfall",
+   "anchor": "assuming that our first particle set is obtained by sampling the prior",
+   "note": "PITFALL: the induction base. Initialize particles by sampling p(x_0), not all at the initial guess. Book ex. 2 has Σ_θθ = 10000 (p. 115), i.e. θ effectively uniform on [−π, π) after wrap()."
+  },
+  {
+   "page": 104,
+   "kind": "key",
+   "anchor": "The constant η plays no role since the resampling takes place with",
+   "note": "CODE: so the likelihood never needs its Gaussian normalizer, provided the normalizer is the same for every particle. A per-particle Q_meas (range-dependent noise) must keep its log-determinant term."
+  },
+  {
+   "page": 104,
+   "kind": "pitfall",
+   "anchor": "The algorithm in Table 4.4 follows now from the simple observation",
+   "note": "PRINT ERROR: 'Table 4.4' should read Table 4.3 (the particle filter). Table 4.4 is the low-variance sampler on p. 110."
+  },
+  {
+   "page": 104,
+   "kind": "pitfall",
+   "anchor": "As we will argue below, this derivation is only correct for",
+   "note": "WHY: the η in resampling is a sum over the finite particle set, not the true normalizer. 'Sampling bias' on p. 112 is the 'below'."
+  },
+  {
+   "page": 104,
+   "kind": "section",
+   "anchor": "Density Extraction",
+   "note": "Skim, 10 min. Mean, Gaussian, k-means, histogram, kernel density: choose by what the consumer (controller, planner, another robot) needs."
+  },
+  {
+   "page": 105,
+   "kind": "key",
+   "anchor": "the mean of the particles provides enough information to control the robot",
+   "note": "ROBOT: only for a unimodal cloud. On the RoboCup field's symmetric posterior the mean sits between the two modes, where no particle is. CODE: C6 reports the weighted mean and covariance, so a bimodal cloud at least shows a large Σ."
+  },
+  {
+   "page": 105,
+   "kind": "pitfall",
+   "anchor": "the space complexity is exponential in the number of dimensions",
+   "note": "COST: the histogram curse again. Fine for 1-D readouts and for the (x, y) marginal of a pose PF."
+  },
+  {
+   "page": 105,
+   "kind": "define",
+   "anchor": "Kernel density estimation is another way of converting a particle set into a",
+   "note": "DEFINE: one kernel per particle, density = their mixture. COST: O(M) per query (this page). Used for the lecture's figures (the Fig. 4.6 redraw), not inside the filter."
+  },
+  {
+   "page": 105,
+   "kind": "section",
+   "anchor": "Sampling Variance",
+   "note": "Must read, 15 min. The PF's output is itself a random variable; Fig. 4.6 shows its spread at M = 25 and M = 250."
+  },
+  {
+   "page": 106,
+   "kind": "key",
+   "anchor": "Different ways of extracting densities from particles",
+   "note": "FIGURE: (a) samples and true density, (b) Gaussian fit, (c) histogram of weights, (d) kernel density. Same Y as Figs. 4.1 and 4.3."
+  },
+  {
+   "page": 107,
+   "kind": "key",
+   "anchor": "Variance due to random sampling",
+   "note": "FIGURE: each row is one random experiment; left column 25 samples, right 250 (caption). Read down a column: the spread between rows is the sampling variance. SESSION: a candidate card with M and seed as controls."
+  },
+  {
+   "page": 108,
+   "kind": "define",
+   "anchor": "Variability due to random sampling is called the variance of the",
+   "note": "DEFINE: run-to-run spread of the estimate, not the spread of the particles. Two identical robots (next paragraph) end up with different beliefs."
+  },
+  {
+   "page": 108,
+   "kind": "key",
+   "anchor": "Fortunately, the sampling variance decreases with the number of samples",
+   "note": "TEST: the 1/√M law of (4.28). Over many seeds the RMS error at 4M should be about half that at M (C3)."
+  },
+  {
+   "page": 108,
+   "kind": "section",
+   "anchor": "Resampling",
+   "note": "Must read, 30 min. Resampling loses diversity. Two fixes: resample less often ((4.36) with a weight-variance trigger) and resample with lower variance (Table 4.4)."
+  },
+  {
+   "page": 108,
+   "kind": "key",
+   "anchor": "it will be useful to consider the extreme case, which is that of a robot whose state does not change",
+   "note": "ROBOT: the quadruped standing at its dock, the drone hovering. TEST/SESSION: Table 4.3 with no motion noise and no sensor; count unique particles over time until one remains."
+  },
+  {
+   "page": 109,
+   "kind": "key",
+   "anchor": "M identical copies of a single particle will survive",
+   "note": "WHY: resampling is a random walk on the particle counts with an absorbing state; with no fresh randomness from line 4 it ends there. To an observer the robot looks certain with no sensor at all."
+  },
+  {
+   "page": 109,
+   "kind": "pitfall",
+   "anchor": "Even though the variance of the particle set itself decreases, the variance of the particle set as an estimator of the true belief increases",
+   "note": "PITFALL: a tight cloud is not a confident filter. Check consistency with NEES as in t2.2; a collapsed cloud sits far above the band."
+  },
+  {
+   "page": 109,
+   "kind": "pitfall",
+   "anchor": "When the robot stops, resampling should be suspended",
+   "note": "ROBOT: gate resampling (and, as the book says, measurement updates) on odometry. The tracked robot's chassis vibrates when idle and reports small odometry, so gate on a threshold, not on zero."
+  },
+  {
+   "page": 109,
+   "kind": "derive",
+   "equation": "4.36",
+   "note": "Implement. In log space: log w ← 0 after a resample, log w += log p(z | x) otherwise. CODE: C4 pf_step with a resampling trigger."
+  },
+  {
+   "page": 109,
+   "kind": "key",
+   "anchor": "A standard approach to determining whether or not resampling should be performed is to measure the variance of the importance weights",
+   "note": "CODE: C4 uses N_eff = 1/Σ w̃² on normalized weights. For normalized weights N_eff = M / (1 + M² Var(w̃)), a monotone function of the variance the book names. A threshold of N_eff < M/2 is common practice, not from the book."
+  },
+  {
+   "page": 109,
+   "kind": "define",
+   "anchor": "the selection involves a sequential stochastic process",
+   "note": "DEFINE: one random number, M evenly spaced pointers. The PF literature calls this systematic resampling."
+  },
+  {
+   "page": 110,
+   "kind": "derive",
+   "anchor": "Low variance resampling for the particle filter",
+   "note": "Implement Table 4.4. It assumes normalized weights: r ∈ [0, 1/M), pointers U up to 1, so c must reach 1; the unnormalized w of Table 4.3 breaks it. The text layer renders M⁻¹ as 'M −1'; read 1/M. CODE: C5 low_variance_resample via np.searchsorted on the cumulative sum. PITFALL: round-off leaves cumsum[-1] just below 1; set it to 1 or the last pointer runs off the end."
+  },
+  {
+   "page": 110,
+   "kind": "derive",
+   "equation": "4.37",
+   "note": "Implement as searchsorted(cumsum(w), U). TEST (C5): over many runs the mean copy count of particle i is M w_i, and with equal weights the output set equals the input (p. 111)."
+  },
+  {
+   "page": 111,
+   "kind": "key",
+   "anchor": "Principle of the low variance resampling procedure",
+   "note": "FIGURE: weights laid end to end on [0, 1], a comb of M teeth spaced 1/M with offset r. A particle of weight w gets ⌊Mw⌋ or ⌈Mw⌉ copies (a standard property of systematic resampling, not stated in the book). The lecture redraws it."
+  },
+  {
+   "page": 111,
+   "kind": "key",
+   "anchor": "if all the samples have the same importance factors, the resulting sample set",
+   "note": "TEST: equal weights in, identical set out. Multinomial resampling fails this test, which is the diversity argument in one line."
+  },
+  {
+   "page": 111,
+   "kind": "key",
+   "anchor": "the low-variance sampler has a complexity of O(M)",
+   "note": "COST: O(M) because the pointers arrive sorted, so one sweep of the cumulative sum serves all of them. Independent draws need a binary search each, O(M log M) as the book says."
+  },
+  {
+   "page": 111,
+   "kind": "define",
+   "anchor": "Another popular option is stratified sampling",
+   "note": "DEFINE: the book's stratified sampling groups particles into subsets and allocates draws by subset weight. 'Stratified resampling' in the PF literature is different: one uniform per interval [(m−1)/M, m/M). C5 implements the latter as a variant."
+  },
+  {
+   "page": 111,
+   "kind": "link",
+   "anchor": "tends to perform well when a robot tracks multiple, distinct hypotheses",
+   "note": "ROBOT: on the symmetric RoboCup field, one stratum per mode keeps the twin mode alive until a landmark breaks the tie, instead of a few unlucky draws killing it."
+  },
+  {
+   "page": 112,
+   "kind": "section",
+   "anchor": "Sampling Bias",
+   "note": "Must read, 10 min. Normalization inside resampling costs one degree of freedom; at M = 1 it costs all of them. Book exercise 3 asks for M = 2."
+  },
+  {
+   "page": 112,
+   "kind": "key",
+   "anchor": "regardless of its importance factor",
+   "note": "WHY: with one particle, line 9 picks it with probability 1 whatever z says (4.38). The PF becomes dead reckoning, sampling p(x_t | u_1:t)."
+  },
+  {
+   "page": 112,
+   "kind": "derive",
+   "equation": "4.38",
+   "note": "Derive by hand, then do book exercise 3 (M = 2). EXERCISE: the package works ex. 3 exactly on a two-state example (T2.4, session Fig 2.3e); lecture Fig L10 is the Monte Carlo version on a continuous state."
+  },
+  {
+   "page": 112,
+   "kind": "key",
+   "anchor": "but after normalization they reside in a space of dimension",
+   "note": "WHY: the same finite-M bias as self-normalized importance sampling (4.28), stated as lost degrees of freedom. It fades as M grows but never reaches zero."
+  },
+  {
+   "page": 112,
+   "kind": "section",
+   "anchor": "Particle Deprivation",
+   "note": "Must read, 10 min. No particle near the truth means the filter cannot recover. Random injection is the last resort; ch. 8 has the real fixes."
+  },
+  {
+   "page": 112,
+   "kind": "key",
+   "anchor": "an unlucky series of random numbers can wipe out all particles near the true state",
+   "note": "ROBOT: a robot picked up and moved during a RoboCup match is the deliberate version (kidnapping). SESSION: count steps until no particle lies within a radius of the true pose."
+  },
+  {
+   "page": 113,
+   "kind": "pitfall",
+   "anchor": "Eventually we will generate an estimate that is arbitrarily incorrect",
+   "note": "WHY: a per-step failure probability above zero makes eventual failure certain over an unbounded run. On a long field test this is not theoretical."
+  },
+  {
+   "page": 113,
+   "kind": "key",
+   "anchor": "add a small number of randomly generated particles into the set after each resampling process",
+   "note": "CODE: C4 option for random injection, off by default. PITFALL: injected particles are not posterior samples; the book says the estimate becomes incorrect. LINK: augmented MCL (ch. 8, t2.3) sets the rate from averaged measurement likelihoods."
+  },
+  {
+   "page": 113,
+   "kind": "key",
+   "anchor": "the number of samples strongly depends on the dimensionality of the state space",
+   "note": "ROBOT: a 3-D pose on a known map is affordable for a PF; the drone's INS state is not, so it stays an EKF (t2.2) or a Rao-Blackwellized split (t2.9)."
+  },
+  {
+   "page": 113,
+   "kind": "key",
+   "anchor": "uniform distributions require many more samples than distributions focused on a small region",
+   "note": "EXERCISE: book ex. 5 starts from a θ prior that is uniform in practice; T5 sweeps M on it."
+  },
+  {
+   "page": 113,
+   "kind": "section",
+   "anchor": "4.4",
+   "note": "Must read, 5 min. Write one line per bullet in your own words before reading the book's."
+  },
+  {
+   "page": 114,
+   "kind": "pitfall",
+   "anchor": "Particle filters are extremely easy to implement",
+   "note": "PITFALL: easy to write, easy to get silently wrong. Log weights, normalizing before Table 4.4, gating resampling, deprivation: each is a bug that still produces a plausible cloud. The T4 grader plants some of these."
+  },
+  {
+   "page": 114,
+   "kind": "link",
+   "anchor": "techniques for adapting the number of particles in accordance with the complexity of the posterior",
+   "note": "LINK: KLD-sampling, ch. 8 (t2.3)."
+  },
+  {
+   "page": 114,
+   "kind": "section",
+   "anchor": "4.5",
+   "note": "Skip. Doucet et al. (2001), cited on p. 115, is the follow-up text if you want one."
+  },
+  {
+   "page": 115,
+   "kind": "section",
+   "anchor": "4.6",
+   "note": "Package does 2, 3, 5; 1 as warm-up; 4 is 1 with particles. The exercises stage maps them to tiers."
+  },
+  {
+   "page": 115,
+   "kind": "link",
+   "anchor": "Implement a histogram filter for the dynamical system described in",
+   "note": "EXERCISE: warm-up. The system of ch. 3 ex. 1, shared with the t2.2 package's models.py. Your ch. 3 KF is the oracle: the histogram's mean and covariance approach it as bins shrink."
+  },
+  {
+   "page": 115,
+   "kind": "link",
+   "anchor": "You are now asked to implement the histogram filter for the nonlinear",
+   "note": "EXERCISE: core. The transition is deterministic: add a small R_proc or spread mass by sub-bin sampling (see (4.5), p. 89). Wrap θ with wrap(); the book does not. CODE: C1."
+  },
+  {
+   "page": 115,
+   "kind": "key",
+   "anchor": "Propose a suitable initial estimate for a histogram filter",
+   "note": "EXERCISE: Σ_θθ = 10000 means σ_θ = 100 rad, so θ is uniform on [−π, π) in practice; x and y are a narrow Gaussian. Do not try to bin a 100-rad Gaussian."
+  },
+  {
+   "page": 116,
+   "kind": "key",
+   "anchor": "What can you learn about the resolution of the",
+   "note": "EXERCISE: each step moves the robot one unit along θ (p. 115), so the prediction is a ring of radius 1. θ bins decide how smooth the ring is, x–y bins how thick. Plot one slice per θ bin, as the book's notice says."
+  },
+  {
+   "page": 116,
+   "kind": "pitfall",
+   "anchor": "with covariance Q = 0.01",
+   "note": "CONVENTION: this Q is measurement noise; package code calls it Q_meas = 0.01 (CLAUDE.md). It is a variance, so σ = 0.1."
+  },
+  {
+   "page": 116,
+   "kind": "link",
+   "anchor": "What is the effect of using",
+   "note": "EXERCISE: pen and paper (T2.4), then compare with the exact curve in session Fig 2.3e; see the (4.38) note on p. 112."
+  },
+  {
+   "page": 116,
+   "kind": "link",
+   "anchor": "Implement Exercise 1 using particle filters instead of histograms",
+   "note": "EXERCISE: optional; the T3 particle filter runs on the same system, so this falls out of it."
+  },
+  {
+   "page": 116,
+   "kind": "link",
+   "anchor": "Investigate the effect of varying numbers of par",
+   "note": "EXERCISE: T5. Sweep M and compare with the histogram filter of ex. 2 and the ch. 3 EKF. Reference numbers come from a run of the reference solution, not from this note."
+  }
+ ]
+}

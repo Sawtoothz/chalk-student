@@ -1,0 +1,254 @@
+title: "Robot Motion: review"
+footer: "Thrun · Probabilistic Robotics · ch. 5 · review"
+slides:
+  - layout: title
+    title: "Robot Motion: review"
+    subtitle: "Probabilistic Robotics, chapter 5"
+    meta: "Lesson t2.4 · Thrun, Burgard, Fox"
+    source: map.md
+  - layout: agenda
+    title: "Review map"
+    items:
+      - "5.2 Motion as a distribution"
+      - "5.3 Velocity model, Tables 5.1 to 5.4"
+      - "5.4 Odometry model, Tables 5.5 and 5.6"
+      - "5.5 Motion and maps, Table 5.7"
+      - "Cards C1 to C5, symptoms, mistakes"
+    source: map.md
+  - layout: equation
+    title: "5.2 Motion is the predict step"
+    equations:
+      - {tex: 'p(x_t \mid u_t, x_{t-1})', label: "(5.3)"}
+    bullets:
+      - "p. 118: overestimating uncertainty is more robust; p. 121: velocity for planning, odometry for estimation"
+      - "Trap: θ ∈ S¹, so every angle difference is wrapped"
+    takeaway: "Trap: every angular innovation is wrapped before it meets a gain"
+    notes: "Fig 5.2 is the 3-D density projected on x–y."
+    source: lecture.md §L1
+  - layout: equation
+    title: "5.3 Exact motion on a circle"
+    equations:
+      - {tex: 'x^\prime = x - \frac{v}{\omega}\sin\theta + \frac{v}{\omega}\sin(\theta + \omega\Delta t)', label: "(5.9)"}
+    bullets:
+      - "p. 127; agrees with RK4 of the unicycle to 8 × 10⁻¹³"
+      - "Trap: ω = 0 puts the centre at infinity; chord form avoids the division"
+    takeaway: "Trap: ω = 0 divides by zero"
+    source: lecture.md §L2
+  - layout: equation
+    title: "5.3.3 Final rotation"
+    equations:
+      - {tex: '\theta^\prime = \theta + \hat{\omega}\Delta t + \hat{\gamma}\Delta t', label: "(5.14)"}
+      - {tex: '\hat{\gamma} = \varepsilon_{\alpha_5 v^2 + \alpha_6 \omega^2}', label: "(5.15)"}
+    bullets:
+      - "p. 129; two noise variables leave a 2-D sheet in pose space"
+      - "Trap: keep γ̂ even when you think α₅ = α₆ = 0"
+    takeaway: "Trap: without γ̂ the density is zero off a 2-D sheet"
+    source: lecture.md §L3
+  - layout: bullets
+    title: "5.3.1 Table 5.1: the density"
+    bullets:
+      - "pp. 121–123: invert (5.9), score the three errors independently (5.32)"
+      - "**v̂ = (Δθ/Δt) r∗** on line 7 loses the sign of the motion"
+      - "Line 2 is 0/0 for a straight move; lines 6 and 9 need wrapping"
+      - "(5.32) is a density over (v̂, ω̂, γ̂), not over poses"
+      - "Fix: chord form `velocity_inverse`, or λ patch from (5.17)"
+    notes: "Reviewer re-ran the sign cases: v̂ = −1, +1, +1, −1."
+    source: lecture.md §L5
+  - layout: bullets
+    title: "5.3.2 Tables 5.2 and 5.4: error samplers"
+    bullets:
+      - "Both samplers have variance b²; the triangular one stops at ±√6 b"
+      - "Print error p. 132: the 12-uniform support is [−6b, 6b], not [−2b, 2b]"
+      - "Variance checks: 1.0003 and 1.0007 over 10⁶ draws"
+      - "Trap: b² = 0 at rest makes the normal density 0/0; floor b²"
+    source: lecture.md §L4
+  - layout: equation
+    title: "5.4 Odometry decomposition"
+    equations:
+      - {tex: '\delta_{\mathrm{rot1}} = \mathrm{atan2}(\bar{y}^\prime - \bar{y}, \bar{x}^\prime - \bar{x}) - \bar{\theta}', label: "(5.34)"}
+      - {tex: '\delta_{\mathrm{rot2}} = \bar{\theta}^\prime - \bar{\theta} - \delta_{\mathrm{rot1}}', label: "(5.36)"}
+    bullets:
+      - "pp. 132–135; Table 5.5. Trap: wrap δrot2 − δ̂rot2 (p. 135), and every line like it"
+      - "Trap: δtrans = 0 makes atan2(0, 0) arbitrary"
+    takeaway: "Trap: unwrapped δ differences lose density at ±180°"
+    source: lecture.md §L6
+  - layout: equation
+    title: "5.4.2 Odometry sampler"
+    equations:
+      - {tex: 'x^\prime = x + \hat{\delta}_{\mathrm{trans}}\cos(\theta + \hat{\delta}_{\mathrm{rot1}})', label: "(5.40)"}
+    bullets:
+      - "pp. 136–138; Table 5.6 uses the measured δ in the variances"
+      - "Trap: dead reckoning grows faster than linearly: 0.118 m at 3 m, 1.894 m at 17.0 m"
+    source: lecture.md §L7
+  - layout: equation
+    title: "5.5 Motion and maps"
+    equations:
+      - {tex: 'p(x_t \mid u_t, x_{t-1}, m) = \eta\,\frac{p(x_t \mid u_t, x_{t-1})\,p(x_t \mid m)}{p(x_t)}', label: "(5.48)"}
+    bullets:
+      - "pp. 140–143; Table 5.7 has two lines numbered 3"
+      - "Trap: end-pose check tunnels through walls; p. 141 warns about termination"
+    takeaway: "Trap: one end-pose check lets particles through walls"
+    source: lecture.md §L8
+  - layout: bullets
+    title: "C1 Densities and samplers: the tricks"
+    bullets:
+      - "**Log density, summed**: the naive density is exactly 0.0 beyond 38.6 b"
+      - "**Floor on b²** in each term's units: at rest the naive density is 0/0"
+      - "**Unit normals times √b²**, not normal(0, b): works for b² = 0 or an array"
+      - "Triangular density is zero beyond ±√6 b: mix in a small uniform term"
+    notes: "Code is in translate.md C1; it matches the reference solution, so it is not shown here."
+    source: translate.md C1
+  - layout: code
+    title: "C2 Velocity forward, chord form"
+    code: |
+      def velocity_forward(X, v_h, w_h, g_h, dt):
+          X = np.asarray(X, dtype=float)
+          half = 0.5 * w_h * dt
+          s = v_h * dt * np.sinc(half / np.pi)
+          th = X[..., 2]
+          return np.stack([
+              X[..., 0] + s * np.cos(th + half),
+              X[..., 1] + s * np.sin(th + half),
+              wrap(th + (w_h + g_h) * dt)], axis=-1)
+    bullets:
+      - "Nothing divides by ω̂, so no straight-line branch"
+      - "Wrap θ′; one call for all M particles"
+    source: translate.md C2
+  - layout: compare
+    title: "C3 Velocity inverse: book vs chord form"
+    columns:
+      - heading: "Table 5.1 as printed"
+        bullets:
+          - "Line 7: v̂ = (Δθ/Δt) r∗ loses the sign"
+          - "Line 2 is 0/0 for a straight move"
+          - "Lines 6 and 9 need wrapping"
+      - heading: "Chord form (C3)"
+        bullets:
+          - "Displacement along and left of heading, then atan2"
+          - "Sign of v̂ from displacement along heading"
+          - "One angle difference left, wrapped"
+          - "Valid for less than a half turn per step"
+    takeaway: "Pose density: divide by the Jacobian determinant, floor |v̂|Δt at 1 cm"
+    notes: "Code is in translate.md C3; it matches the reference solution, so it is not shown here."
+    source: translate.md C3
+  - layout: code
+    title: "C4 Odometry parameters and variances"
+    code: |
+      def odometry_params(P0, P1):
+          dx, dy = P1[..., 0] - P0[..., 0], P1[..., 1] - P0[..., 1]
+          trans = np.hypot(dx, dy)
+          rot1 = np.where(trans < TRANS_EPS, 0.0,
+                          wrap(np.arctan2(dy, dx) - P0[..., 2]))
+          rot2 = wrap(P1[..., 2] - P0[..., 2] - rot1)
+          return rot1, trans, rot2
+
+      def rot_for_noise(rot):
+          return np.minimum(np.abs(rot), np.abs(wrap(rot - np.pi)))
+    bullets:
+      - "Rotation in place: δrot1 = 0 below 1 cm"
+      - "Reversing is not a half turn: measure from the nearer of ahead and back"
+    source: translate.md C4
+  - layout: steps
+    title: "C4 Odometry sampler per step"
+    steps:
+      - {title: "Once per step", text: "Lines 2–4 depend only on u: compute δ once, not per particle"}
+      - {title: "Perturb", text: "Measured δ in the variances, as (5.44)–(5.46) do"}
+      - {title: "Move", text: "Read θ before overwriting it; each particle uses its own heading"}
+    bullets:
+      - "Keep the last odometry pose used, not a sum of 20 ms δs"
+    takeaway: "Density and sampler must describe one distribution"
+    notes: "Code is in translate.md C4; it matches the reference solution, so it is not shown here."
+    source: translate.md C4
+  - layout: code
+    title: "C5 Map-based sampler with a retry cap"
+    code: |
+      def sample_motion_model_with_map(u, X, sampler, in_free, rng,
+                                       max_tries=10):
+          Xn = sampler(u, X, rng)
+          ok = np.asarray(in_free(Xn), dtype=bool)
+          for _ in range(max_tries - 1):
+              if ok.all():
+                  break
+              bad = ~ok
+              Xn[bad] = sampler(u, X[bad], rng)
+              ok[bad] = in_free(Xn[bad])
+          return Xn, ok.astype(float)
+    bullets:
+      - "Redraw only the failures; π = 0 where every draw failed"
+      - "Configuration space grown once, at map load"
+    source: translate.md C5
+  - layout: stats
+    title: "Density vs sampler: total variation"
+    stats:
+      - {value: "0.086", label: "velocity, as printed"}
+      - {value: "0.044", label: "velocity, with Jacobian"}
+      - {value: "0.153", label: "odometry, as printed"}
+      - {value: "0.064", label: "odometry, Jacobian and measured δ"}
+    bullets:
+      - "Floors from two sample sets: 0.063 velocity, 0.091 odometry"
+    takeaway: "Dividing out the Jacobian and using measured δ closes the gap"
+    source: lecture.md §L9
+  - layout: table
+    title: "Cards: shapes and cost"
+    table:
+      header: [Card, Shapes, Cost]
+      rows:
+        - ["C1 densities, samplers", "a, b²: scalar or (M,)", "O(1) per call"]
+        - ["C2 velocity sampler", "X (M, 3); u = (v, ω)", "O(M) per step"]
+        - ["C3 velocity density", "Xp (N, 3); X (3,)", "O(1) per hypothesis"]
+        - ["C4 odometry", "u two (3,) poses; X (M, 3)", "O(M) sample, O(1) density"]
+        - ["C5 with map", "X (M, 3); π (M,)", "1/acceptance draws, capped"]
+      widths: [3, 3, 3]
+    source: translate.md cards
+  - layout: table
+    title: "Symptom to fix"
+    table:
+      header: [Symptom, Cause, Fix]
+      rows:
+        - ["Confident and wrong", "α too small", "Inflate α; fit α (T5)"]
+        - ["Density zero off the sheet", "α₅ = α₆ = 0", "Noise (5.15)"]
+        - ["NaN at rest", "b² = 0", "Floor on b²"]
+        - ["NaN on straight lines", "ω = 0", "Chord form"]
+        - ["Right turns unlikely", "Line 7 sign", "Sign from displacement"]
+        - ["Likelihood collapse at ±180°", "Unwrapped difference", "Wrap"]
+        - ["Particles behind wall", "End-pose check", "Shorter steps"]
+        - ["Density and sampler differ", "Sign, wrap or variance", "TV test of L9"]
+      widths: [3, 3, 3]
+    source: lecture.md §L10
+  - layout: table
+    title: "Mistakes already made (REVIEW.md)"
+    table:
+      header: [Where, Error, Fix]
+      rows:
+        - ["L6 trap 3", "Cards said to keep δ̂ variances", "Cards use measured δ; book disagrees with itself"]
+        - ["T2.5(c)", "Figure for exercise 4 does not exist", "Point to text on p. 146"]
+        - ["T2.4(c)", "Variance 'linear' in path length", "Double integrator T³; chapter models via heading"]
+        - ["L1 §5.2.1", "Book and Barfoot differ on chaining", "Both are SE(2) composition; wrap θ"]
+        - ["C4 trick 5", "x–y block 'a rotation scaled'", "Columns orthogonal, norms δ̂trans and 1"]
+        - ["L9", "'Jacobian 1/δ̂trans'", "Determinant is δ̂trans"]
+        - ["Tracked robot", "Odometry 'the worse source'", "Untested on the hull; see next slide"]
+      widths: [2, 3, 4]
+    notes: "Seven confirmed errors, all fixed. Do not reintroduce."
+    source: REVIEW.md
+  - layout: key
+    title: "The review in one line"
+    statement: "Noise goes on the controls; wrap every angle; floor every variance"
+    detail: "Density inverts, sampler runs forward: test one against the other"
+    source: lecture.md §L9
+  - layout: bullets
+    title: "Where the book contradicts itself"
+    bullets:
+      - "Table 5.5 lines 8–10 use δ̂; (5.44)–(5.46) on p. 139 and Table 5.6 use δ"
+      - "p. 132 says the sampler stays in [−2b, 2b]; the support is [−6b, 6b]"
+      - "Table 5.7 has two lines numbered 3 and an unbounded loop"
+      - "Book exercise 5's table numbers its last row 1"
+    source: map.md traps
+  - layout: bullets
+    title: "Tracked robot: still untested"
+    bullets:
+      - "Book says odometry is usually more accurate (pp. 121, 132); not tested on the hull"
+      - "T5 simulation log-likelihood per step: velocity 6.13, odometry 6.59, χ-corrected 7.06"
+      - "That slip model was chosen by the package; check it on logs"
+      - "Quadruped needs book exercise 7 (holonomic); drone needs dynamics"
+    notes: "Open item: books.yaml assigns t2.3 and t2.4 to two chapters each."
+    source: lecture.md §L6

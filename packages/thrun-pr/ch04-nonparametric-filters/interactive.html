@@ -1,0 +1,203 @@
+<!-- Interactive session for Thrun ch. 4, browser version of session.py. Included by build_viewer.py. Needs Plotly global. -->
+<style>
+.ix{display:flex;flex-direction:column;gap:26px;max-width:960px}
+.ix .intro{font-family:var(--serif);font-size:16px;max-width:72ch;color:var(--ink)}
+.fig-card{border:0.5px solid var(--rule);border-radius:12px;background:var(--sheet);padding:14px 14px 12px;font-family:var(--sans)}
+.fig-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fig-num{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink3)}
+.fig-title{font-size:16px;font-weight:600;margin-top:2px}
+.fig-hint{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+.fig-predict{margin:10px 0 4px;padding:8px 12px;border-left:3px solid var(--key);background:var(--code-bg);border-radius:0 6px 6px 0;font-size:13.5px}
+.fig-predict b{font-weight:600}
+.fig-chip{margin-top:2px;padding:3px 8px;border-radius:8px;font-size:11px;white-space:nowrap;background:var(--define);color:var(--accent-ink)}
+.fig-chip[data-state="warn"]{background:var(--key);color:#4a2f06}
+.fig-chip[data-state="bad"]{background:var(--derive);color:#501313}
+:root[data-theme="dark"] .fig-chip[data-state="warn"],:root[data-theme="dark"] .fig-chip[data-state="bad"]{color:#f5f4ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fig-chip[data-state="warn"],:root:not([data-theme="light"]) .fig-chip[data-state="bad"]{color:#f5f4ef}}
+.fig-plot{margin-top:8px;min-height:300px}
+.fig-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.fig-row label{min-width:150px;font-size:13px;color:var(--ink2)}
+.fig-row input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.fig-row output{min-width:64px;text-align:right;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.fig-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px;font-family:var(--mono)}
+.fig-tile{padding:8px 10px;border-radius:8px;background:var(--code-bg);min-width:0}
+.fig-tile .k{font-size:11px;color:var(--ink3)}
+.fig-tile .v{font-size:13px;font-weight:500;line-height:1.6;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fig-tile.wide{grid-column:1 / -1}
+.fig-after{margin-top:10px;font-size:13.5px;color:var(--ink2);font-family:var(--serif);font-size:15px}
+.fig-after summary{cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--accent-ink);font-weight:500}
+@media (max-width:600px){.fig-row label{min-width:110px}}
+</style>
+<div class="ix">
+<p class="intro">Five figures, all deterministic, so every readout here equals the one in <code>session.py</code>. Each has a <b>Predict first</b> prompt: write your guess down before you move the slider. Colours: blue = estimate / belief, coral = measurement / likelihood, teal = the quantity being taught, gray = structure.</p>
+
+<figure class="fig-card" id="figA">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.3a · Table 4.1</div><div class="fig-title">Line 3 is a shift and a blur; line 4 is a product</div></div><div class="fig-chip" id="chipA">one dominant mode</div></div>
+  <div class="fig-hint">10 m ring, doors at 1.5, 4.0 and 7.5 m, 100 bins of 0.1 m. Uniform prior; see a door; drive u; see a door again.</div>
+  <div class="fig-predict"><b>Predict first.</b> At u = 2.5 m only one door pair is 2.5 m apart. How much of the belief ends up within 1 m of 4.0 m: more or less than half? Now set u = 3.5 m. Which doors are 3.5 m apart, and how many modes survive?</div>
+  <div class="fig-row"><label for="a_u">drive u [m]</label><input type="range" id="a_u" min="0" max="5" step="0.1" value="2.5"><output id="a_u_o"></output></div>
+  <div class="fig-row"><label for="a_sig">motion noise σ [m]</label><input type="range" id="a_sig" min="0.05" max="1" step="0.05" value="0.3"><output id="a_sig_o"></output></div>
+  <div class="fig-row"><label for="a_pf">false-positive floor</label><input type="range" id="a_pf" min="0" max="0.4" step="0.01" value="0.1"><output id="a_pf_o"></output></div>
+  <div class="fig-plot" id="plotA"></div>
+  <div class="fig-tiles" id="tilesA"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>At u = 2.5 m the 1.5 → 4.0 m pair is the only one consistent with both sightings, and 0.53 of the mass sits within 1 m of 4.0 m; the rest is held up by the false-positive floor, which multiplies every bin by at least 0.1. At u = 3.5 m the 4.0 → 7.5 m pair lines up instead. A wider motion noise blurs line 3 and lets mismatched pairs survive. This is the HMM forward pass of p. 87 on 100 states.</details>
+</figure>
+
+<figure class="fig-card" id="figB">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.3b · Table 4.2, (4.20)</div><div class="fig-title">Add the evidence, take the prior back out</div></div><div class="fig-chip" id="chipB">same side of 0.5</div></div>
+  <div class="fig-hint">30 readings from an inverse sensor model, hit or miss in a fixed pattern. Teal: Table 4.2. Coral: the same code with "− l₀" forgotten.</div>
+  <div class="fig-predict"><b>Predict first.</b> With prior 0.5 the two curves coincide. With prior 0.3 and a 55% hit rate, does forgetting the prior make the cell look <i>more</i> or <i>less</i> occupied? Can it flip the final answer?</div>
+  <div class="fig-row"><label for="b_prior">prior p(x)</label><input type="range" id="b_prior" min="0.05" max="0.95" step="0.05" value="0.3"><output id="b_prior_o"></output></div>
+  <div class="fig-row"><label for="b_rate">hit rate</label><input type="range" id="b_rate" min="0" max="1" step="0.05" value="0.55"><output id="b_rate_o"></output></div>
+  <div class="fig-row"><label for="b_hit">p(x | hit)</label><input type="range" id="b_hit" min="0.5" max="0.95" step="0.05" value="0.6"><output id="b_hit_o"></output></div>
+  <div class="fig-row"><label for="b_miss">p(x | miss)</label><input type="range" id="b_miss" min="0.05" max="0.5" step="0.05" value="0.15"><output id="b_miss_o"></output></div>
+  <div class="fig-plot" id="plotB"></div>
+  <div class="fig-tiles" id="tilesB"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>Table 4.2 and Table 4.1 on two states agree exactly at every setting: log odds is a reparameterization, not an approximation. Forgetting − l₀ adds the prior's log odds once per reading, so with prior 0.3 the cell drifts toward free by 0.85 per reading and, at the defaults, reports 0.000 where the right answer is 0.999. With prior 0.5, l₀ = 0 and the bug is invisible: the reason it survives in grid code (p. 96 says "addition"; (4.20) subtracts).</details>
+</figure>
+
+<figure class="fig-card" id="figC">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.3c · (4.25)–(4.28)</div><div class="fig-title">The proposal decides what the samples can see</div></div><div class="fig-chip" id="chipC">proposal covers f</div></div>
+  <div class="fig-hint">Target f = 0.55 N(2, 0.6²) + 0.45 N(4.5, 1.4²); estimate P_f(0 &lt; x &lt; 3). Proposal g = N(μ_g, σ_g²); the M samples are the quantiles of g, so the figure is deterministic.</div>
+  <div class="fig-predict"><b>Predict first.</b> Put g at μ_g = 9, σ_g = 1, where the book's Fig 4.4 has it. Is the estimate too high or too low? What does N_eff/M say, and is that warning enough?</div>
+  <div class="fig-row"><label for="c_mu">proposal mean μ_g</label><input type="range" id="c_mu" min="0" max="10" step="0.1" value="3.5"><output id="c_mu_o"></output></div>
+  <div class="fig-row"><label for="c_sd">proposal std σ_g</label><input type="range" id="c_sd" min="0.3" max="4" step="0.1" value="2"><output id="c_sd_o"></output></div>
+  <div class="fig-row"><label for="c_M">samples M</label><input type="range" id="c_M" min="10" max="2000" step="10" value="200"><output id="c_M_o"></output></div>
+  <div class="fig-plot" id="plotC"></div>
+  <div class="fig-tiles" id="tilesC"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>With g covering f the estimate is within a few thousandths of 0.587 and N_eff/M is large. At μ_g = 9, σ_g = 1 almost no sample lands where f has mass; the few that do carry all the weight, the estimate is 0.000 and N_eff/M is 0.017. Narrow g around one mode of f (μ_g = 2, σ_g = 0.4) and the other mode is invisible: the estimate is 0.941 with N_eff/M of 0.498, which is why N_eff is a symptom, not a proof (support condition, p. 100; proposal, p. 102).</details>
+</figure>
+
+<figure class="fig-card" id="figD">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.3d · Table 4.4, (4.37), Fig 4.7</div><div class="fig-title">One random number, M teeth</div></div><div class="fig-chip" id="chipD">copies within ⌊Mw⌋..⌈Mw⌉</div></div>
+  <div class="fig-hint">M = 20 particles with weights wᵢ ∝ exp(−(i − 8)² / 2s²). The only random number of Table 4.4 is the offset r ∈ [0, 1/M), here a slider.</div>
+  <div class="fig-predict"><b>Predict first.</b> At s = 3, how many distinct particles survive? Independent draws (Table 4.3 lines 8–11) would keep how many on average? Then set s = 20 (almost equal weights): what does the comb return?</div>
+  <div class="fig-row"><label for="d_s">weight spread s</label><input type="range" id="d_s" min="0.5" max="20" step="0.5" value="3"><output id="d_s_o"></output></div>
+  <div class="fig-row"><label for="d_r">offset r · M</label><input type="range" id="d_r" min="0" max="0.99" step="0.01" value="0.5"><output id="d_r_o"></output></div>
+  <div class="fig-plot" id="plotD"></div>
+  <div class="fig-tiles" id="tilesD"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>Every particle gets ⌊M wᵢ⌋ or ⌈M wᵢ⌉ copies whatever r is, so the max-deviation tile never reaches 1; r only decides which particles get the extra copy. Independent draws keep fewer distinct particles on average and can give any particle anywhere from 0 to M copies. With exactly equal weights the comb returns each particle exactly once (at s = 20 all 20 survive): the second advantage on p. 111, and why the stationary robot of lecture L9 keeps its diversity.</details>
+</figure>
+
+<figure class="fig-card" id="figE">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.3e · (4.38)</div><div class="fig-title">Normalization costs one degree of freedom</div></div><div class="fig-chip" id="chipE">biased toward the prior</div></div>
+  <div class="fig-hint">Binary state {a, b}, prior P(a) = p, likelihoods L_a, L_b, one update of Table 4.3 with no motion. The curve is the exact expectation over every initial draw: Σₖ Bin(k; M, p) · k L_a / (k L_a + (M − k) L_b).</div>
+  <div class="fig-predict"><b>Predict first.</b> With p = 0.5, L_a = 0.9, L_b = 0.1 the posterior is 0.9. What does the filter give at M = 1? At M = 2 (T2.4)? How large must M be before the bias is below 0.01?</div>
+  <div class="fig-row"><label for="e_M">particles M</label><input type="range" id="e_M" min="1" max="50" step="1" value="2"><output id="e_M_o"></output></div>
+  <div class="fig-row"><label for="e_p">prior P(a)</label><input type="range" id="e_p" min="0.05" max="0.95" step="0.05" value="0.5"><output id="e_p_o"></output></div>
+  <div class="fig-row"><label for="e_La">L_a = p(z | a)</label><input type="range" id="e_La" min="0.05" max="1" step="0.05" value="0.9"><output id="e_La_o"></output></div>
+  <div class="fig-row"><label for="e_Lb">L_b = p(z | b)</label><input type="range" id="e_Lb" min="0.05" max="1" step="0.05" value="0.1"><output id="e_Lb_o"></output></div>
+  <div class="fig-plot" id="plotE"></div>
+  <div class="fig-tiles" id="tilesE"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>M = 1 returns the prior exactly, whatever the likelihoods: (4.38). M = 2 gives 0.700 at the defaults, the T2.4 answer. The bias always points toward the prior and shrinks with M; p. 112 says only that it becomes "less and less pronounced", gives no rate. The stronger the measurement (larger L_a/L_b), the more particles the filter needs before it believes it, which is the discrete face of the proposal problem in Fig 2.3c.</details>
+</figure>
+</div>
+
+<script>
+(function(){
+// ==== COMPUTE START (pure functions; same math as session.py and exercises/solutions/T3_solution.py)
+const range=n=>Array.from({length:n},(_,i)=>i);
+const sum=a=>a.reduce((s,v)=>s+v,0);
+const normalize=a=>{const s=sum(a);return a.map(v=>v/s)};
+const fx=(v,d)=>(v<0?'−':'')+Math.abs(v).toFixed(d);
+const sfx=(v,d)=>(v<0?'−':'+')+Math.abs(v).toFixed(d);
+// erf, Abramowitz–Stegun 7.1.26 (|error| < 1.5e-7)
+function erf(x){const s=Math.sign(x);x=Math.abs(x);const t=1/(1+0.3275911*x);const y=1-(((((1.061405429*t-1.453152027)*t)+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return s*y}
+const ncdf=(x,m,s)=>0.5*(1+erf((x-m)/(s*Math.SQRT2)));
+const nlogpdf=(x,m,s)=>-0.5*((x-m)/s)**2-Math.log(s*Math.sqrt(2*Math.PI));
+const logaddexp=(a,b)=>{const m=Math.max(a,b);return m+Math.log(Math.exp(a-m)+Math.exp(b-m))};
+// inverse normal CDF, Acklam (relative error < 1.2e-9)
+function ndtri(p){const a=[-39.69683028665376,220.9460984245205,-275.9285104469687,138.3577518672690,-30.66479806614716,2.506628277459239],b=[-54.47609879822406,161.5858368580409,-155.6989798598866,66.80131188771972,-13.28068155288572],c=[-0.007784894002430293,-0.3223964580411365,-2.400758277161838,-2.549732539343734,4.374664141464968,2.938163982698783],d=[0.007784695709041462,0.3224671290700398,2.445134137142996,3.754408661907416],pl=0.02425;let q,r;
+  if(p<pl){q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+  if(p>1-pl){q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1)}
+  q=p-0.5;r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1)}
+const logit=p=>Math.log(p/(1-p));
+const expit=l=>l>=0?1/(1+Math.exp(-l)):Math.exp(l)/(1+Math.exp(l));
+
+// Fig A: Table 4.1 on the ring corridor
+const L=10,DOORS=[1.5,4.0,7.5];
+const ringD=(a,b)=>{const d=((Math.abs(a-b))%L);return Math.min(d,L-d)};
+function computeA(u,sig,pf){const K=100,c=range(K).map(k=>(k+0.5)*0.1);
+  const lik=c.map(x=>pf+0.8*Math.exp(-0.5*(Math.min(...DOORS.map(d=>ringD(x,d)))/0.25)**2));
+  const b1=normalize(lik.map(v=>v/K));
+  const T=c.map(xk=>c.map(xi=>Math.exp(-0.5*(ringD(xk,xi+u)/sig)**2)));   // T[k][i], (4.5)
+  const colsum=range(K).map(i=>sum(range(K).map(k=>T[k][i])));
+  const b2=range(K).map(k=>sum(range(K).map(i=>T[k][i]/colsum[i]*b1[i])));  // line 3
+  const b3=normalize(b2.map((v,k)=>v*lik[k]));                               // line 4
+  let km=0;b3.forEach((v,k)=>{if(v>b3[km])km=k});
+  const near=(x,r)=>sum(b3.filter((_,k)=>ringD(c[k],x)<r));
+  const mass=near(c[km],1.0);
+  return{c,lik,b1,b2,b3,mass,tiles:{'mode of bel(x)':c[km].toFixed(2)+' m','mass within 1 m of the mode':mass.toFixed(2),'Σ p_k (must be 1)':sum(b3).toFixed(3),'mass at 1.5 / 4.0 / 7.5 m (±0.5 m)':DOORS.map(d=>near(d,0.5).toFixed(2)).join(' / ')},chip:mass>0.5?['one dominant mode','ok']:['still ambiguous','warn']}}
+
+// Fig B: Table 4.2
+function computeB(prior,rate,phit,pmiss){const T=30,phi=0.6180339887498949;
+  const hits=range(T).map(t=>(((t+1)*phi)%1)<rate);const pinv=hits.map(h=>h?phit:pmiss);
+  const l0=logit(prior);const lok=[l0],lbad=[l0];
+  pinv.forEach(pz=>{lok.push(lok[lok.length-1]+logit(pz)-l0);lbad.push(lbad[lbad.length-1]+logit(pz))});
+  let two=[prior,1-prior];pinv.forEach(pz=>{two=normalize([pz/prior*two[0],(1-pz)/(1-prior)*two[1]])});
+  const ok=expit(lok[T]),bad=expit(lbad[T]);const flipped=(ok>0.5)!==(bad>0.5);
+  return{hits,lok,lbad,tiles:{'bel_T, Table 4.2':ok.toFixed(3),'bel_T, Table 4.1 on two states':two[0].toFixed(3),'|difference| (must be 0)':Math.abs(ok-two[0]).toFixed(3),'bel_T with − l₀ forgotten':bad.toFixed(3)},chip:flipped?['forgetting l₀ flips the answer','warn']:['same side of 0.5','ok']}}
+
+// Fig C: importance sampling with quantile samples
+const flog=x=>logaddexp(Math.log(0.55)+nlogpdf(x,2,0.6),Math.log(0.45)+nlogpdf(x,4.5,1.4));
+function computeC(mu,sd,M){const xs=range(M).map(m=>mu+sd*ndtri((m+0.5)/M));
+  const lw=xs.map(x=>flog(x)-nlogpdf(x,mu,sd));const mx=Math.max(...lw);const w=lw.map(v=>Math.exp(v-mx));const wn=normalize(w);
+  const est=sum(wn.map((v,i)=>(xs[i]>0&&xs[i]<3)?v:0));const neff=1/sum(wn.map(v=>v*v));
+  const Pt=0.55*(ncdf(3,2,0.6)-ncdf(0,2,0.6))+0.45*(ncdf(3,4.5,1.4)-ncdf(0,4.5,1.4));
+  const bad=neff/M<0.1;
+  return{xs,w,tiles:{'IS estimate (4.28)':est.toFixed(3),'exact P_f(0 < x < 3)':Pt.toFixed(3),'error':sfx(est-Pt,3),'N_eff / M':(neff/M).toFixed(3)},chip:bad?['proposal misses the target','warn']:['proposal covers f','ok']}}
+
+// Fig D: Table 4.4 with the offset as input
+function computeD(s,rM){const M=20;const w=normalize(range(M).map(i=>Math.exp(-((i-8)**2)/(2*s*s))));
+  const cw=[];w.reduce((a,v,i)=>(cw[i]=a+v),0);const tot=cw[M-1];
+  const cnt=new Array(M).fill(0);let i=0;
+  for(let m=0;m<M;m++){const U=rM/M+m/M;while(i<M-1&&cw[i]/tot<U)i++;cnt[i]++}       // (4.37)
+  const neff=1/sum(w.map(v=>v*v));const surv=sum(w.map(v=>1-Math.pow(1-v,M)));const dev=Math.max(...cnt.map((c,k)=>Math.abs(c-M*w[k])));
+  return{w,cnt,M,tiles:{'N_eff':neff.toFixed(2),'distinct survivors, comb':String(cnt.filter(c=>c>0).length),'E[distinct], independent draws':surv.toFixed(2),'max |copies − M·wᵢ| (must be < 1)':dev.toFixed(2)},chip:dev<1?['copies within ⌊Mw⌋..⌈Mw⌉','ok']:['copy count off by ≥ 1 (bug)','bad']}}
+
+// Fig E: exact bias of a one-step PF on a binary state
+function binomPmf(k,M,p){let c=1;for(let j=1;j<=k;j++)c=c*(M-k+j)/j;return c*Math.pow(p,k)*Math.pow(1-p,M-k)}
+function pfProbA(M,p,La,Lb){let s=0;for(let k=0;k<=M;k++){const fr=k===0?0:k*La/Math.max(k*La+(M-k)*Lb,1e-300);s+=binomPmf(k,M,p)*fr}return s}
+function computeE(M,p,La,Lb){const exact=p*La/(p*La+(1-p)*Lb);const Ms=range(50).map(m=>m+1);const curve=Ms.map(m=>pfProbA(m,p,La,Lb));const pf=curve[M-1];
+  const mok=Ms.find((m,i)=>Math.abs(curve[i]-exact)<0.01);const ok=Math.abs(pf-exact)<0.01;
+  return{Ms,curve,exact,pf,tiles:{'exact posterior P(a | z)':exact.toFixed(3),'PF expectation at this M':pf.toFixed(3),'bias':sfx(pf-exact,3),'smallest M with |bias| < 0.01':mok?String(mok):'> 50'},chip:ok?['bias below 0.01','ok']:['biased toward the prior','warn']}}
+// ==== COMPUTE END
+
+if(typeof document==='undefined')return;
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const COL={blue:'#378ADD',coral:'#D85A30',teal:'#1D9E75',gray:'#888780'};
+function layout(extra){const ink=css('--ink'),mut=css('--ink2'),grid=css('--rule'),bg=css('--sheet');return Object.assign({paper_bgcolor:bg,plot_bgcolor:bg,font:{family:'IBM Plex Sans, system-ui, sans-serif',color:ink,size:12},margin:{l:48,r:12,t:36,b:40},legend:{font:{color:mut,size:11},bgcolor:'rgba(0,0,0,0)'},xaxis:{gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},yaxis:{gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},title:{x:0,font:{size:13,color:ink}}},extra)}
+const cfg={displayModeBar:false,responsive:true};
+const val=id=>+document.getElementById(id).value;
+function tiles(id,obj){document.getElementById(id).innerHTML=Object.entries(obj).map(([k,v])=>`<div class="fig-tile"><div class="k">${k}</div><div class="v">${v}</div></div>`).join('')}
+function chip(id,[text,state]){const el=document.getElementById(id);el.textContent=text;el.dataset.state=state}
+function bind(ids,fn){ids.forEach(id=>{const el=document.getElementById(id),o=document.getElementById(id+'_o');const upd=()=>{o.textContent=el.value;fn()};el.addEventListener('input',upd);o.textContent=el.value});fn()}
+
+function figA(){const r=computeA(val('a_u'),val('a_sig'),val('a_pf'));const mx=Math.max(...r.b3),lm=Math.max(...r.lik);
+  Plotly.react('plotA',[{type:'bar',x:r.c,y:r.b1,marker:{color:COL.gray},opacity:0.45,name:'after first door'},{type:'bar',x:r.c,y:r.b2,marker:{color:COL.blue},opacity:0.35,name:'after drive (line 3)'},{type:'bar',x:r.c,y:r.b3,marker:{color:COL.teal},opacity:0.8,name:'after second door (line 4)'},{x:r.c,y:r.lik.map(v=>v/lm*mx),mode:'lines',line:{color:COL.coral,width:1.5},name:'p(door | x), scaled'}],
+    layout({barmode:'overlay',bargap:0,title:{text:'belief after door, drive, door'},xaxis:{title:'x along the ring [m]'},yaxis:{title:'p_k'},height:380}),cfg);
+  tiles('tilesA',r.tiles);chip('chipA',r.chip)}
+function figB(){const r=computeB(val('b_prior'),val('b_rate'),val('b_hit'),val('b_miss'));const t=range(31);
+  Plotly.react('plotB',[{x:t,y:r.lok,mode:'lines',line:{color:COL.teal,width:2,shape:'hv'},name:'l_t, Table 4.2'},{x:t,y:r.lbad,mode:'lines',line:{color:COL.coral,width:1.5,dash:'dash',shape:'hv'},name:'l_t, forgot − l₀'},{x:range(30).filter(i=>r.hits[i]).map(i=>i+1),y:r.hits.filter(h=>h).map(()=>0),mode:'markers',marker:{color:COL.gray,size:6,symbol:'line-ns-open'},name:'hit'}],
+    layout({title:{text:'log odds over 30 readings'},xaxis:{title:'reading t'},yaxis:{title:'log odds l_t'},height:360}),cfg);
+  tiles('tilesB',r.tiles);chip('chipB',r.chip)}
+function figC(){const mu=val('c_mu'),sd=val('c_sd'),M=val('c_M');const r=computeC(mu,sd,M);const xx=range(500).map(i=>-1+13*i/499);
+  const sx=[],sy=[];r.xs.forEach((x,i)=>{sx.push(x,x,null);sy.push(0,-0.15*r.w[i],null)});
+  Plotly.react('plotC',[{x:xx,y:xx.map(x=>Math.exp(flog(x))),mode:'lines',line:{color:COL.blue,width:2},name:'target f'},{x:xx,y:xx.map(x=>Math.exp(nlogpdf(x,mu,sd))),mode:'lines',line:{color:COL.gray,width:2},name:'proposal g'},{x:sx,y:sy,mode:'lines',line:{color:COL.teal,width:1},name:'weight f/g (down)'}],
+    layout({title:{text:'samples of g, weighted toward f'},xaxis:{title:'x'},yaxis:{title:'density / weight'},height:360,shapes:[{type:'rect',x0:0,x1:3,y0:0,y1:1,yref:'paper',fillcolor:COL.teal,opacity:0.06,line:{width:0}}]}),cfg);
+  tiles('tilesC',r.tiles);chip('chipC',r.chip)}
+function figD(){const r=computeD(val('d_s'),val('d_r'));const x=range(r.M).map(i=>i+1);
+  Plotly.react('plotD',[{type:'bar',x,y:r.w.map(v=>r.M*v),marker:{color:COL.blue},opacity:0.35,name:'expected copies M·wᵢ'},{type:'bar',x,y:r.cnt,marker:{color:COL.teal},opacity:0.85,name:'copies from the comb'}],
+    layout({barmode:'overlay',title:{text:'copies per particle'},xaxis:{title:'particle i'},yaxis:{title:'copies'},height:340}),cfg);
+  tiles('tilesD',r.tiles);chip('chipD',r.chip)}
+function figE(){const M=val('e_M'),p=val('e_p');const r=computeE(M,p,val('e_La'),val('e_Lb'));
+  Plotly.react('plotE',[{x:r.Ms,y:r.curve,mode:'lines+markers',line:{color:COL.teal,width:2},marker:{size:4},name:'E[P(a)] after one PF update'},{x:[M],y:[r.pf],mode:'markers',marker:{color:COL.coral,size:11},name:'your M'}],
+    layout({title:{text:'the filter under-uses the measurement at small M'},xaxis:{title:'M',type:'log'},yaxis:{title:'P(a)'},height:360,shapes:[{type:'line',xref:'paper',x0:0,x1:1,y0:r.exact,y1:r.exact,line:{color:COL.blue,dash:'dash'}},{type:'line',xref:'paper',x0:0,x1:1,y0:p,y1:p,line:{color:COL.gray,dash:'dot'}}]}),cfg);
+  tiles('tilesE',r.tiles);chip('chipE',r.chip)}
+
+let inited=false;
+function init(){if(inited)return;if(!window.Plotly){setTimeout(init,300);return}inited=true;bind(['a_u','a_sig','a_pf'],figA);bind(['b_prior','b_rate','b_hit','b_miss'],figB);bind(['c_mu','c_sd','c_M'],figC);bind(['d_s','d_r'],figD);bind(['e_M','e_p','e_La','e_Lb'],figE)}
+window.__ixRedraw=()=>{if(!inited){init();return}figA();figB();figC();figD();figE()};
+const panel=document.getElementById('panel-session');if(!panel||!panel.hidden)init();
+})();
+</script>

@@ -1,0 +1,119 @@
+{
+ "L1": {
+  "mean_y": 2.122,
+  "density_at_mean_rel_peak": 0.097
+ },
+ "L2": {
+  "mass_within_1m_of_4.0_after_two_doors": 0.526,
+  "K": 100,
+  "bin_m": 0.1
+ },
+ "L3": {
+  "TV_K5": 0.066,
+  "TV_K10": 0.021,
+  "TV_K40": 0.006
+ },
+ "L4": {
+  "bel_logodds_T": 0.9904,
+  "bel_two_state_T": 0.9904,
+  "bel_forgot_prior_T": 0.0,
+  "T": 30,
+  "hits": 15,
+  "prior": 0.3
+ },
+ "L5": {
+  "M": 60,
+  "distinct_after_resample": 20,
+  "pf_mean": 2.678,
+  "kf_mean": 2.709,
+  "kf_std": 0.377,
+  "pf_std": 0.378
+ },
+ "L6": {
+  "P_true": 0.5871,
+  "M": [
+   10,
+   30,
+   100,
+   300,
+   1000,
+   3000
+  ],
+  "rmse_good": [
+   0.1953,
+   0.099,
+   0.0542,
+   0.0332,
+   0.0169,
+   0.0097
+  ],
+  "rmse_book": [
+   0.5399,
+   0.4444,
+   0.2544,
+   0.132,
+   0.0677,
+   0.0398
+  ],
+  "rmse_bad": [
+   0.5871,
+   0.5871,
+   0.5871,
+   0.5871,
+   0.5871,
+   0.5871
+  ]
+ },
+ "L7": {
+  "M": 40,
+  "T": 30,
+  "ancestors_at_t0": 2,
+  "distinct_at_T_minus_10": 4
+ },
+ "L8": {
+  "sd_of_mean_M25": 0.1464,
+  "sd_of_mean_M250": 0.0459,
+  "sd_of_mean_M2500": 0.0147,
+  "ratio_25_250": 3.19
+ },
+ "L9": {
+  "M": 100,
+  "runs": 40,
+  "distinct_multinomial_t10": 16.7,
+  "distinct_multinomial_t100": 2.3,
+  "distinct_multinomial_t200": 1.3,
+  "distinct_lowvar_t200": 100.0
+ },
+ "L10": {
+  "exact_mean": 1.0,
+  "M": [
+   1,
+   2,
+   3,
+   5,
+   10,
+   30,
+   100
+  ],
+  "E_estimate": [
+   -0.003,
+   0.464,
+   0.647,
+   0.8,
+   0.911,
+   0.973,
+   0.992
+  ],
+  "runs": 40000
+ },
+ "L11": {
+  "runs": 20,
+  "M": 300,
+  "inject_frac": 0.02,
+  "kidnap_m": 5.0,
+  "recovered_no_injection": 0,
+  "recovered_injection": 20,
+  "median_steps_to_recover_injection": 4.0,
+  "median_err_before_kidnap": 0.029
+ }
+}

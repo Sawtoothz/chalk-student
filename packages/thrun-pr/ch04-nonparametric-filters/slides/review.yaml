@@ -1,0 +1,260 @@
+title: "Nonparametric Filters: review"
+footer: "Thrun · Probabilistic Robotics · ch. 4 · review"
+slides:
+  - layout: title
+    title: "Nonparametric Filters: review"
+    subtitle: "Probabilistic Robotics, chapter 4"
+    meta: "Lesson t2.3 · Thrun, Burgard, Fox"
+    source: map.md
+  - layout: agenda
+    title: "Six results to hold"
+    items:
+      - "4.1 Histogram filter: T p, then multiply and normalize"
+      - "4.2 Binary Bayes filter: add evidence, subtract the prior"
+      - "4.3.1 Particle filter: sample, weight, resample"
+      - "4.3.2 Importance sampling: w = f/g, needs f > 0 ⇒ g > 0"
+      - "4.3.3 Path space: the weight is p(zₜ ∣ xₜ)"
+      - "4.3.4 Variance, bias, diversity, deprivation"
+    source: map.md
+  - layout: equation
+    title: "4.1 Histogram filter (pp. 86–89)"
+    equations:
+      - {tex: 'p_{k,t} = \eta\, p(z_t \mid x_k) \sum_i p(x_k \mid u_t, x_i)\, p_{i,t-1}', label: "Table 4.1"}
+    bullets:
+      - "Predict is T p; update is element-wise, then normalize"
+    takeaway: "Trap: unnormalized columns of T leak mass; normalize per source bin"
+    source: lecture.md §L2
+    notes: "Table 4.1 lines 3 and 4 combined. Only approximation: probe at the bin mean."
+  - layout: equation
+    title: "4.2 Binary Bayes filter (pp. 94–96)"
+    equations:
+      - {tex: 'l_t = l_{t-1} + \log \frac{p(x \mid z_t)}{1 - p(x \mid z_t)} - l_0', label: "Table 4.2"}
+    bullets:
+      - "Inverse measurement model; evidence is added, prior subtracted"
+    takeaway: "Trap: p. 96 says addition; (4.20) subtracts. Silent at prior 0.5"
+    source: lecture.md §L4
+    notes: "Use expit for (4.14). Clamping l is common practice, not in the book."
+  - layout: steps
+    title: "4.3.1 Particle filter (pp. 96–100)"
+    steps:
+      - {title: "Line 4", text: "Sample xₜ^[m] from the motion model"}
+      - {title: "Line 5", text: "Weight w = p(zₜ ∣ xₜ^[m])"}
+      - {title: "Lines 8–11", text: "Resample in proportion to w"}
+    bullets:
+      - "(4.23) holds only as M → ∞; (4.24) carries weights without resampling"
+    takeaway: "Trap: Table 4.3 never normalizes; Table 4.4 needs normalized weights"
+    source: lecture.md §L5
+    notes: "p. 99 calls resampling 'resampling or importance sampling'. Keep names apart."
+  - layout: equation
+    title: "4.3.2 Importance sampling (pp. 100–102)"
+    equations:
+      - {tex: 'w^{[m]} = \frac{f(x^{[m]})}{g(x^{[m]})}', label: "(4.27)"}
+    bullets:
+      - "Self-normalized (4.28), error O(1/√M); needs f > 0 ⇒ g > 0"
+    takeaway: "Trap: a proposal that misses f returns 0 at every M, no warning"
+    source: lecture.md §L6
+    notes: "Good proposal RMSE 0.017 at M = 1000; the book's proposal 0.068."
+  - layout: equation
+    title: "4.3.3 Path-space derivation (pp. 103–104)"
+    equations:
+      - {tex: 'w_t^{[m]} = \eta\, p(z_t \mid x_t)', label: "(4.34)"}
+    bullets:
+      - "Motion term cancels between target and proposal"
+    takeaway: "Trap: the text says Table 4.4 on p. 104; it means Table 4.3"
+    source: lecture.md §L7
+    notes: "Indices in (4.34), (4.35) should start at 1, as in (4.32)."
+  - layout: stats
+    title: "4.3.4 Variance, bias, deprivation (pp. 105–113)"
+    stats:
+      - {value: "0.146", label: "variance: std of the mean at M = 25"}
+      - {value: "0.046", label: "the same at M = 250"}
+      - {value: "0.464", label: "bias (4.38): expected mean at M = 2"}
+    bullets:
+      - "M = 1 ignores every measurement; deprivation: no particle near the truth"
+    takeaway: "Trap: injection makes the posterior incorrect; keep off by default"
+    source: lecture.md §L8, §L10, §L11
+    notes: "Exact M = 2 value is the check for book exercise 3."
+  - layout: equation
+    title: "4.3.4 Resampling (pp. 108–111)"
+    equations:
+      - {tex: 'i = \operatorname{argmin}_j \sum_{m=1}^{j} w_t^{[m]} \geq U', label: "(4.37)"}
+    bullets:
+      - "Table 4.4: one random r, teeth U = r + (m − 1)/M, O(M)"
+    takeaway: "Trap: unnormalized weights send the while loop past the end"
+    source: lecture.md §L9
+    notes: "Multinomial: 16.7 distinct of 100 after 10 steps; low-variance keeps all 100."
+  - layout: code
+    title: "C1 Histogram filter, robust"
+    code: |
+      def hist_predict(p, T):
+          return T @ p                                     # line 3
+
+      def hist_predict_conv(p, kernel):
+          # shift-invariant motion on a ring: circular convolution
+          return np.real(np.fft.ifft(np.fft.fft(p) * np.fft.fft(kernel)))
+
+      def hist_update(log_p_bar, log_lik):
+          a = log_lik + log_p_bar                          # line 4, log
+          return a - logsumexp(a)                          # eta
+    bullets:
+      - "Normalize T by column; convolution when motion is shift-invariant"
+      - "Update in log space; probe T and the likelihood at the same x̂"
+    source: translate.md C1
+    notes: "Dense line 3 is O(K²); convolution O(K log K)."
+  - layout: code
+    title: "C2 Log-odds update, robust"
+    code: |
+      def logodds_update(l, p_inv, l0, l_min=None, l_max=None):
+          l = l + logit(p_inv) - l0       # add evidence, subtract prior
+          if l_min is not None:
+              l = np.clip(l, l_min, l_max)   # practice, not the book
+          return l
+
+      def logodds_to_prob(l):
+          return expit(l)                 # (4.14), no overflow
+    bullets:
+      - "Subtract l₀ every update; expit instead of (4.14) as printed"
+      - "Clip p before logit; clamp l only as a named choice"
+    source: translate.md C2
+    notes: "Store l, never p: one add per cell."
+  - layout: code
+    title: "C3 Self-normalized importance sampling"
+    code: |
+      def is_estimate(xs, log_f, log_g, h):
+          logw = log_f(xs) - log_g(xs)               # (4.27), log space
+          if np.any(np.isposinf(logw)):
+              raise ValueError("g = 0 where f > 0: (4.25) violated")
+          wn = np.exp(logw - logsumexp(logw))        # (4.28)
+          n_eff = 1.0 / np.sum(wn ** 2)
+          return float(np.sum(wn * h(xs))), n_eff
+    bullets:
+      - "Log densities; logsumexp; return N_eff (outside the book)"
+      - "Bias of order 1/M from the normalization"
+    source: translate.md C3
+    notes: "N_eff cannot warn about a mode of f the proposal never visits."
+  - layout: code
+    title: "C4 Particle filter step, naive"
+    code: |
+      def pf_step_naive(X, u, z, sample_motion, likelihood, rng):
+          M = len(X)
+          X_bar = np.array([sample_motion(u, X[m], rng)
+                            for m in range(M)])            # line 4
+          w = np.array([likelihood(z, X_bar[m])
+                        for m in range(M)])                # line 5
+          idx = rng.choice(M, size=M, p=w / w.sum())       # lines 8-11
+          return X_bar[idx]                                # line 12
+    bullets:
+      - "Robust form: vectorize, log weights, carry weights (4.36)"
+      - "Resample on N_eff < M/2 (folklore); wrap angles after line 4"
+    source: translate.md C4
+    notes: "Gate the whole step on odometry: no motion, no step."
+  - layout: code
+    title: "C5 Table 4.4, zero-based"
+    code: |
+      def low_variance_naive(X, w, rng):
+          M = len(w)
+          out = []
+          r = rng.uniform(0, 1 / M)            # line 3
+          c = w[0]                             # line 4
+          i = 0                                # line 5
+          for m in range(M):                   # line 6
+              U = r + m / M                    # line 7
+              while U > c:                     # line 8
+                  i += 1                       # line 9
+                  c += w[i]                    # line 10
+              out.append(X[i])                 # line 12
+          return np.array(out)
+    bullets:
+      - "searchsorted on the cumulative sum is (4.37); clip to M − 1"
+      - "Normalize inside the resampler; return indices in real code"
+      - "Name the book's stratified apart from the literature's"
+    source: translate.md C5
+    notes: "Equal weights in, same set out: a one-line test."
+  - layout: compare
+    title: "4.3.4 Density extraction (pp. 104–106)"
+    columns:
+      - {heading: "One Gaussian", bullets: ["Weighted mean and covariance (C6)", "Unimodal beliefs only"]}
+      - {heading: "Multimodal", bullets: ["k-means mixture", "Histogram: lookup independent of M", "Kernel density"]}
+    bullets: ["Pick by what the consumer needs (p. 105)"]
+    takeaway: "Trap: report the heaviest cluster's mean, never the mean of all particles"
+    source: lecture.md §L7
+    notes: "Skim section. Cards: C6."
+  - layout: bullets
+    title: "4.1.3 and 4.1.4: skim notes"
+    bullets:
+      - "(4.6) is exact under (4.2); only p(z ∣ x) ≈ p(z ∣ x̂) is approximate"
+      - "Line 3's p̄ are unnormalized; line 4's η normalizes (p. 92)"
+      - "Static vs dynamic decomposition, density trees, selective updating"
+    source: lecture.md §L3
+    notes: "Derive (4.7) from (4.6) once by hand."
+  - layout: bullets
+    title: "What this chapter feeds"
+    bullets:
+      - "Ch. 8: Table 4.1 becomes grid localization, Table 4.3 becomes MCL"
+      - "Ch. 5–6: line 4 is the motion model, line 5 the beam model"
+      - "Ch. 9: Table 4.2 once per cell with an inverse sensor model"
+      - "Ch. 13: particles carry a map; the path view of 4.3.3 is why"
+    source: map.md feeds
+    notes: "Not covered here: better proposals (Doucet et al. 2001), particle smoothing."
+  - layout: code
+    title: "C6 Weighted mean and covariance"
+    code: |
+      def weighted_mean_cov(X, w, angle_idx=()):
+          w = w / w.sum()
+          mu = w @ X
+          for j in angle_idx:                       # circular mean
+              mu[j] = np.arctan2(w @ np.sin(X[:, j]), w @ np.cos(X[:, j]))
+          D = X - mu
+          for j in angle_idx:
+              D[:, j] = wrap(D[:, j])               # wrap before squaring
+          cov = (D * w[:, None]).T @ D / (1.0 - np.sum(w ** 2))
+          return mu, cov
+    bullets:
+      - "Circular mean for θ; divide by 1 − Σw̃² for unbiased covariance"
+      - "One Gaussian only for one mode: cluster first"
+    source: translate.md C6
+    notes: "Always pass the weights, whether or not the step resampled."
+  - layout: table
+    title: "Shapes and cost per card"
+    table:
+      header: [Card, Shapes, Cost]
+      rows:
+        - ["C1 histogram", "p (K,), T (K,K)", "O(K²); O(K log K) conv."]
+        - ["C2 log odds", "scalar per cell", "O(1) per cell"]
+        - ["C3 IS", "xs (M,n), w (M,)", "O(M) evaluations"]
+        - ["C4 PF step", "X (M,n), logw (M,)", "O(M · beams)"]
+        - ["C5 resample", "w (M,), idx (M,)", "O(M); multinomial O(M log M)"]
+        - ["C6 density", "X (M,n) to μ, Σ", "O(M n²); KDE O(M) per query"]
+      widths: [2, 3, 4]
+    source: translate.md C1–C6
+    notes: "Memory for C1 is O(K), and K grows exponentially with state dimension."
+  - layout: table
+    title: "Symptom to fix"
+    table:
+      header: [Symptom, Cause, Fix]
+      rows:
+        - ["Mean between poses", "Multimodal belief", "Histogram or PF"]
+        - ["Map drifts, no evidence", "Prior not subtracted", "Subtract l₀"]
+        - ["Weights zero or NaN", "Underflow", "Log weights"]
+        - ["N_eff ≪ M each update", "Proposal too wide", "Better proposal"]
+        - ["Stationary robot certain", "Resampling blind", "Suspend resampling"]
+        - ["Index out of range", "Unnormalized weights", "Normalize first"]
+        - ["Wrong after kidnap", "Deprivation", "Injection, ch. 8"]
+      widths: [3, 3, 3]
+    source: lecture.md §L12
+  - layout: table
+    title: "Mistakes already made (REVIEW.md)"
+    table:
+      header: [Where, Error, Fix]
+      rows:
+        - ["L4, C2, map", "Clamp attributed to ch. 9", "Common practice, not in the book"]
+        - ["L3 4.1.3", "η of line 3 claimed from (4.10)", "p. 92: line 4's η normalizes"]
+        - ["Highlight p. 91", "Bias direction of dropping |xₖ|", "Favours small bins"]
+        - ["T1 answer 6", "Kidnap breaks f > 0 ⇒ g > 0", "Holds by construction"]
+        - ["Session Fig 2.3e", "Rate 1/M credited to p. 112", "Page gives no rate"]
+        - ["Exercises README", "Book exercises said to be tests", "Adapted, not reproduced"]
+        - ["T2.4 notes", "Monte Carlo check claimed", "No such check exists"]
+        - ["(4.4), C4", "Flat vs affine; interval", "Affine; [−π, π)"]
+      widths: [2, 3, 3]
+    source: REVIEW.md
+    notes: "Eight confirmed errors, all fixed. Do not reintroduce them."

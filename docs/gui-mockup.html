@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Chalk desk mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;1,8..60,400&family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400&display=swap">
+<style>
+:root{
+  --paper:#f7f5ef; --sheet:#fffdf8; --ink:#1f1e1d; --ink2:#5b5952; --ink3:#8a877d; --rule:#dedbd1;
+  --chalk:#1d9e75; --chalk-ink:#0b5c43; --chalk-wash:#e3f3ec; --fault:#a32d2d; --fault-wash:#fcebeb;
+  --s-highlight:#f1b43c;
+  --serif:"Source Serif 4",Georgia,serif; --sans:"IBM Plex Sans",system-ui,sans-serif; --mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#1c1c1a;--sheet:#262624;--ink:#f1efe8;--ink2:#b8b5aa;--ink3:#86837a;--rule:#3b3a36;--chalk:#3ec294;--chalk-ink:#bdf0da;--chalk-wash:#1f3a30;--fault:#f0a2a2;--fault-wash:#4a2323;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#1c1c1a;--sheet:#262624;--ink:#f1efe8;--ink2:#b8b5aa;--ink3:#86837a;--rule:#3b3a36;--chalk:#3ec294;--chalk-ink:#bdf0da;--chalk-wash:#1f3a30;--fault:#f0a2a2;--fault-wash:#4a2323;color-scheme:dark}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:14.5px/1.5 var(--sans);font-feature-settings:"tnum"}
+a{color:inherit}
+button{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--chalk);outline-offset:2px}
+
+/* frame */
+.bar{position:sticky;top:0;z-index:5;background:var(--paper);border-bottom:1px solid var(--rule)}
+.bar .in{max-width:1040px;margin:0 auto;padding:0 24px;display:flex;align-items:center;gap:28px;min-height:52px}
+.word{font:600 17px var(--serif);letter-spacing:-.01em}
+.word i{display:inline-block;width:14px;height:3px;background:var(--chalk);border-radius:2px;vertical-align:middle;margin-left:6px;transform:rotate(-8deg)}
+.nav{display:flex;gap:4px}
+.nav button{appearance:none;border:0;background:none;padding:15px 10px;color:var(--ink2);border-bottom:2px solid transparent;cursor:pointer}
+.nav button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--chalk)}
+.who{margin-left:auto;color:var(--ink3);font-size:13px}
+.who b{font-weight:600;color:var(--ink2)}
+main{max-width:1040px;margin:0 auto;padding:28px 24px 80px}
+.page{display:none}.page[data-on]{display:block}
+
+/* type */
+h1{font:600 30px/1.15 var(--serif);margin:0;text-wrap:balance;letter-spacing:-.01em}
+h2{font:600 22px/1.2 var(--serif);margin:0}
+.by{color:var(--ink2);margin-top:4px}
+.by span+span::before{content:", "}
+.meta{color:var(--ink3);font-size:13px;margin-top:2px}
+
+/* buttons */
+.btn{appearance:none;border:1px solid var(--rule);background:var(--sheet);border-radius:6px;padding:6px 12px;cursor:pointer;white-space:nowrap;line-height:1.3}
+.btn:hover{border-color:var(--ink3)}
+.btn.go{background:var(--chalk);border-color:var(--chalk);color:#fff;font-weight:600}
+.btn.go:hover{background:var(--chalk-ink);border-color:var(--chalk-ink)}
+.btn.quiet{border-color:transparent;background:none;color:var(--ink2)}
+.btn.quiet:hover{border-color:var(--rule)}
+.btn:disabled{opacity:.45;cursor:default}
+
+/* stage track — the one memorable element */
+.track{display:inline-grid;grid-template-columns:repeat(8,10px);gap:3px;vertical-align:middle}
+.track i{display:block;height:14px;border-radius:2px;background:var(--rule)}
+.track i.done{background:var(--ink)}
+.track i.run{background:var(--chalk);animation:pulse 1.6s ease-in-out infinite}
+.track i.fail{background:var(--fault)}
+@keyframes pulse{50%{opacity:.45}}
+@media (prefers-reduced-motion:reduce){.track i.run,.stages li.run::before{animation:none}}
+
+/* ledger */
+.source{margin-top:40px}
+.source:first-child{margin-top:8px}
+.head{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:10px;border-bottom:1px solid var(--ink)}
+.head .kind{color:var(--ink3);font-size:13px;padding-bottom:4px}
+table{width:100%;border-collapse:collapse;margin-top:4px}
+td{padding:11px 10px 11px 0;border-bottom:1px solid var(--rule);vertical-align:middle}
+td.n{width:36px;color:var(--ink3);text-align:right;padding-right:16px}
+td.t{font:400 17px/1.3 var(--serif)}
+td.p{width:120px;color:var(--ink2);white-space:nowrap}
+td.s{width:120px}
+td.st{color:var(--ink2);white-space:nowrap;width:190px}
+td.st.run{color:var(--chalk-ink)}
+td.st.fail{color:var(--fault)}
+td.a{text-align:right;white-space:nowrap;width:190px;padding-right:0}
+td.a .btn+.btn{margin-left:6px}
+.notice{margin-top:12px;padding:12px 14px;background:var(--sheet);border:1px solid var(--rule);border-radius:6px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
+.notice.fail{border-color:var(--fault);background:var(--fault-wash)}
+
+/* drop slot */
+.drop{margin-top:48px;border:1.5px dashed var(--ink3);border-radius:8px;padding:28px 24px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;cursor:pointer;transition:background .15s,border-color .15s}
+.drop:hover,.drop.over{border-color:var(--chalk);background:var(--chalk-wash)}
+.drop p{margin:0;font:400 17px/1.4 var(--serif)}
+.drop small{display:block;color:var(--ink2);font:13px var(--sans);margin-top:4px}
+.drop input{position:absolute;opacity:0;width:0;height:0}
+
+/* ingest sheet */
+.ingest{margin-top:16px;background:var(--sheet);border:1px solid var(--rule);border-radius:8px;padding:18px 20px}
+.ingest .row{display:grid;grid-template-columns:140px 1fr;gap:10px 16px;align-items:center;margin-top:10px}
+.ingest label{color:var(--ink2)}
+.ingest input[type=text],.ingest input[type=number]{font:inherit;color:inherit;background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:6px 9px;max-width:360px}
+.ingest .radios{display:flex;gap:18px}
+.ingest .foot{display:flex;gap:8px;justify-content:flex-end;margin-top:16px}
+.probe{color:var(--ink2);font-size:13px}
+.probe b{color:var(--chalk-ink);font-weight:600}
+
+/* run page */
+.runhead{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;padding-bottom:14px;border-bottom:1px solid var(--ink)}
+.runhead .crumb{color:var(--ink2)}
+.runhead .crumb a{text-decoration:none;color:var(--ink2);border-bottom:1px solid var(--rule)}
+.runbody{display:grid;grid-template-columns:220px 1fr;gap:28px;margin-top:22px}
+ol.stages{list-style:none;margin:0;padding:0;counter-reset:s}
+ol.stages li{display:grid;grid-template-columns:18px 1fr auto;gap:8px;padding:8px 0;border-bottom:1px solid var(--rule);align-items:baseline;color:var(--ink3)}
+ol.stages li::before{counter-increment:s;content:counter(s);font-size:12px;color:var(--ink3)}
+ol.stages li.done{color:var(--ink)}
+ol.stages li.done::before{color:var(--ink)}
+ol.stages li.run{color:var(--chalk-ink);font-weight:600}
+ol.stages li.run::before{content:"";width:10px;height:10px;border-radius:2px;background:var(--chalk);align-self:center;animation:pulse 1.6s ease-in-out infinite}
+ol.stages li.fail{color:var(--fault)}
+ol.stages li .d{font-weight:400;font-size:13px;color:var(--ink3)}
+ol.stages li.run .d{color:var(--chalk-ink)}
+
+
+.log{background:var(--sheet);border:1px solid var(--ink);border-radius:6px;padding:14px 16px;font:13px/1.55 var(--mono);height:220px;overflow:auto;white-space:pre-wrap;color:var(--ink2)}
+.log .tool{color:var(--ink3)}
+.log .ok{color:var(--chalk-ink)}
+.log .bad{color:var(--fault)}
+.logfoot{display:flex;justify-content:space-between;align-items:center;margin-top:10px;color:var(--ink3);font-size:13px}
+.handoff{margin-top:34px;max-width:72ch}
+.handoff h3{font:600 14.5px var(--sans);color:var(--ink2);margin:0 0 6px}
+.handoff p{font:400 16.5px/1.6 var(--serif);margin:0 0 10px}
+.handoff .next{display:flex;gap:10px;align-items:center;margin-top:14px}
+.handoff .next .btn.go{padding:9px 16px}
+
+@media (max-width:760px){
+  .bar .in{gap:14px}.who{display:none}
+  td.p,td.st{display:none}
+  td.a{width:auto}
+  .runbody{grid-template-columns:1fr}
+  .log{height:200px}
+}
+</style>
+</head>
+<body>
+<div class="bar"><div class="in">
+  <span class="word">Chalk<i></i></span>
+  <div class="nav" role="tablist">
+    <button role="tab" aria-selected="true" data-go="library">Library</button>
+    <button role="tab" aria-selected="false" data-go="run">Run</button>
+    <button role="tab" aria-selected="false" data-go="reader">Reader</button>
+  </div>
+  <span class="who">claude-code <b>opus 5.5</b> ready · 1 job running</span>
+</div></div>
+
+<main>
+
+<!-- ===================== LIBRARY ===================== -->
+<section class="page" id="library" data-on>
+
+  <div class="source">
+    <div class="head">
+      <div>
+        <h2>Probabilistic Robotics</h2>
+        <div class="by"><span>Thrun, Burgard, Fox</span><span>2005</span></div>
+        <div class="meta">Printed page = PDF page − 21. 16 chapters read from the table of contents.</div>
+      </div>
+      <div class="kind">Book</div>
+    </div>
+    <table>
+      <tr><td class="n">2</td><td class="t">Recursive State Estimation</td><td class="p">pp. 13–38</td>
+          <td class="s"><span class="track"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i></span></td>
+          <td class="st">Reviewed, ship</td>
+          <td class="a"><button class="btn" data-go="reader">Open reader</button><button class="btn quiet">Session</button></td></tr>
+      <tr><td class="n">3</td><td class="t">Gaussian Filters</td><td class="p">pp. 39–81</td>
+          <td class="s"><span class="track"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i></span></td>
+          <td class="st">Reviewed, ship</td>
+          <td class="a"><button class="btn" data-go="reader">Open reader</button><button class="btn quiet">Session</button></td></tr>
+      <tr><td class="n">4</td><td class="t">Nonparametric Filters</td><td class="p">pp. 85–116</td>
+          <td class="s"><span class="track"><i class="done"></i><i class="run"></i><i></i><i></i><i></i><i></i><i></i><i></i></span></td>
+          <td class="st run">Highlight, running 3 min</td>
+          <td class="a"><button class="btn" data-go="run">Watch</button></td></tr>
+      <tr><td class="n">5</td><td class="t">Robot Motion</td><td class="p">pp. 117–148</td>
+          <td class="s"><span class="track"><i class="done"></i><i class="done"></i><i class="fail"></i><i></i><i></i><i></i><i></i><i></i></span></td>
+          <td class="st fail">Lecture stopped</td>
+          <td class="a"><button class="btn" data-go="run">Open log</button><button class="btn quiet">Retry lecture</button></td></tr>
+      <tr><td class="n">6</td><td class="t">Robot Perception</td><td class="p">pp. 149–187</td>
+          <td class="s"><span class="track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></td>
+          <td class="st">Not started</td>
+          <td class="a"><button class="btn go" data-teach="6">Teach</button></td></tr>
+      <tr><td class="n">7</td><td class="t">Mobile Robot Localization: Markov and Gaussian</td><td class="p">pp. 189–236</td>
+          <td class="s"><span class="track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></td>
+          <td class="st">Not started</td>
+          <td class="a"><button class="btn go" data-teach="7">Teach</button></td></tr>
+      <tr><td class="n">8</td><td class="t">Mobile Robot Localization: Grid and Monte Carlo</td><td class="p">pp. 237–267</td>
+          <td class="s"><span class="track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></td>
+          <td class="st">Not started</td>
+          <td class="a"><button class="btn go" data-teach="8">Teach</button></td></tr>
+    </table>
+    <div class="notice" style="justify-content:flex-start;color:var(--ink2)">Chapters 9–17 are listed below the fold; the ledger shows them all.</div>
+  </div>
+
+  <div class="source">
+    <div class="head">
+      <div>
+        <h2>Estimation with Applications to Tracking and Navigation</h2>
+        <div class="by"><span>Bar-Shalom, Li, Kirubarajan</span><span>2001</span></div>
+        <div class="meta">Table of contents found, 11 chapters. Printed page offset still unknown.</div>
+      </div>
+      <div class="kind">Book</div>
+    </div>
+    <div class="notice">
+      <span>Open any page and type the printed number you see, and Chalk works out the offset.</span>
+      <button class="btn">Set page offset</button>
+    </div>
+  </div>
+
+  <div class="source">
+    <div class="head">
+      <div>
+        <h2>A tutorial on graph-based SLAM</h2>
+        <div class="by"><span>Grisetti, Kümmerle, Stachniss, Burgard</span><span>2010</span></div>
+        <div class="meta">Papers are taught as one unit. Sections: 1 Introduction, 2 Related work, 3 Graph-based SLAM, 4 Least-squares on a manifold, 5 Experiments.</div>
+      </div>
+      <div class="kind">Paper</div>
+    </div>
+    <table>
+      <tr><td class="n">1</td><td class="t">Whole paper</td><td class="p">16 pages</td>
+          <td class="s"><span class="track"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span></td>
+          <td class="st">Not started</td>
+          <td class="a"><button class="btn go" data-teach="paper">Teach</button></td></tr>
+    </table>
+  </div>
+
+  <label class="drop" id="drop">
+    <div><p>Drop a PDF here, or choose a file.</p><small>A book gets a chapter list from its table of contents. A paper becomes one unit.</small></div>
+    <span class="btn">Choose file</span>
+    <input type="file" accept="application/pdf" id="file">
+  </label>
+
+  <div class="ingest" id="ingest" hidden>
+    <h2 style="font-size:19px">Convex Optimization.pdf</h2>
+    <div class="probe" style="margin-top:4px">Table of contents found: <b>11 chapters</b>. First printed page 1 is PDF page 19, so the offset is 18 — check it once.</div>
+    <div class="row">
+      <label>Kind</label>
+      <div class="radios"><label><input type="radio" name="k" checked> Book</label><label><input type="radio" name="k"> Paper</label></div>
+      <label for="id">Short name</label><input id="id" type="text" value="boyd-cvx">
+      <label for="off">Page offset</label><input id="off" type="number" value="18" style="width:90px">
+      <label for="au">Authors, year</label><input id="au" type="text" value="Boyd, Vandenberghe, 2004">
+    </div>
+    <div class="foot"><button class="btn" id="cancel">Discard</button><button class="btn go" id="add">Add to library</button></div>
+  </div>
+</section>
+
+<!-- ===================== RUN ===================== -->
+<section class="page" id="run">
+  <div class="runhead">
+    <div>
+      <div class="crumb"><a href="#" data-go="library">Probabilistic Robotics</a>, chapter 4</div>
+      <h1>Nonparametric Filters</h1>
+    </div>
+    <span class="track" style="grid-template-columns:repeat(8,14px)"><i class="done"></i><i class="run"></i><i></i><i></i><i></i><i></i><i></i><i></i></span>
+  </div>
+
+  <div class="runbody">
+    <ol class="stages">
+      <li class="done">map <span class="d">4 min</span></li>
+      <li class="run">highlight <span class="d" id="clock">3:12</span></li>
+      <li>lecture</li>
+      <li>cards</li>
+      <li>exercises</li>
+      <li>session</li>
+      <li>build</li>
+      <li>review</li>
+    </ol>
+    <div>
+      <div class="log" id="log"></div>
+      <div class="logfoot">
+        <span id="tok">opus 5.5 · 41k tokens in, 9k out</span>
+        <button class="btn" id="stop">Stop this stage</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="handoff">
+    <h3>Last handoff, from the map stage</h3>
+    <p>Chapter 4 maps to three algorithms: histogram filter (4.1), particle filter (4.2–4.3), and the KLD-sampling adaptation (4.4). Lesson ids L1–L5 assigned; the robot thread is 1-D door localization, then 2-D landmark MCL. Highlight stage: mark the resampling derivation and the particle-deprivation discussion as pitfalls.</p>
+    <p>Open question for the professor: whether KLD-sampling deserves a card or only a lecture paragraph.</p>
+    <div class="next"><button class="btn go" disabled>Continue to lecture</button><span style="color:var(--ink3);font-size:13px">available when highlight finishes</span></div>
+  </div>
+</section>
+
+<!-- ===================== READER ===================== -->
+<section class="page" id="reader">
+  <div class="runhead">
+    <div>
+      <div class="crumb"><a href="#" data-go="library">Probabilistic Robotics</a>, chapter 3</div>
+      <h1>Gaussian Filters</h1>
+    </div>
+    <span class="track" style="grid-template-columns:repeat(8,14px)"><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i><i class="done"></i></span>
+  </div>
+  <div class="notice" style="margin-top:22px">
+    <span>In the real app the Reader built by <code style="font-family:var(--mono)">build_viewer.py</code> is embedded here, inside this same frame.</span>
+    <a class="btn" href="https://claude.ai/artifact/HhaCbApreu42bkad6AwfBY" target="_blank" rel="noopener">Open the chapter 3 reader</a>
+  </div>
+</section>
+
+</main>
+
+<script>
+(function(){
+  const pages=['library','run','reader'];
+  function go(p){
+    pages.forEach(id=>{const el=document.getElementById(id);if(p===id)el.setAttribute('data-on','');else el.removeAttribute('data-on');});
+    document.querySelectorAll('.nav [role=tab]').forEach(b=>b.setAttribute('aria-selected',String(b.dataset.go===p)));
+    window.scrollTo({top:0});
+  }
+  document.addEventListener('click',e=>{const b=e.target.closest('[data-go]');if(b){e.preventDefault();go(b.dataset.go);}});
+  document.querySelectorAll('[data-teach]').forEach(b=>b.addEventListener('click',()=>{b.textContent='Queued';b.disabled=true;setTimeout(()=>go('run'),350);}));
+
+  const drop=document.getElementById('drop'),ingest=document.getElementById('ingest');
+  ['dragenter','dragover'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.add('over');}));
+  ['dragleave','drop'].forEach(ev=>drop.addEventListener(ev,e=>{e.preventDefault();drop.classList.remove('over');}));
+  drop.addEventListener('drop',()=>{ingest.hidden=false;ingest.scrollIntoView({behavior:'smooth',block:'nearest'});});
+  document.getElementById('file').addEventListener('change',()=>{ingest.hidden=false;});
+  document.getElementById('cancel').addEventListener('click',()=>{ingest.hidden=true;});
+  document.getElementById('add').addEventListener('click',()=>{ingest.hidden=true;});
+
+  const lines=[
+    ['tool','› Read .claude/skills/teach/references/highlight-spec.md'],
+    ['tool','› Read map.md'],
+    ['tool','› Bash python scripts/pages.py thrun-pr 4 --range'],
+    ['', 'Reading pp. 85–96 (histogram filter). Candidates so far: define 4, key 3, derive 1, pitfall 1.'],
+    ['tool','› Read pages 97–108 (particle filter)'],
+    ['', 'Resampling derivation (4.2.4) marked derive, note label WHY. Particle deprivation (4.3.4) marked pitfall, note label ROBOT.'],
+    ['tool','› Write highlights.json  (61 items)'],
+    ['tool','› Bash python scripts/highlight_pdf.py examples/thrun-pr/ch04-nonparametric-filters'],
+    ['ok','58 anchors matched exactly, 3 by fuzzy match, 0 unmatched'],
+    ['tool','› Bash python scripts/render_pages.py examples/thrun-pr/ch04-nonparametric-filters'],
+    ['ok','32 pages rendered'],
+    ['', 'Writing HANDOFF.md for the lecture stage.'],
+  ];
+  const log=document.getElementById('log');let i=0,t=192;
+  function add(k,s){const d=document.createElement('div');if(k)d.className=k;d.textContent=s;log.appendChild(d);}
+  function tick(){
+    if(i<lines.length){const [k,s]=lines[i++];add(k,s);log.scrollTop=log.scrollHeight;}
+    t++;document.getElementById('clock').textContent=Math.floor(t/60)+':'+String(t%60).padStart(2,'0');
+  }
+  if(matchMedia('(prefers-reduced-motion: reduce)').matches){lines.forEach(([k,s])=>add(k,s));}
+  else setInterval(tick,900);
+  document.getElementById('stop').addEventListener('click',function(){this.textContent='Stopped';this.disabled=true;});
+})();
+</script>
+</body>
+</html>

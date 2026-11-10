@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN"
+  "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="415.065298pt" height="1247.793676pt" viewBox="0 0 415.065298 1247.793676" xmlns="http://www.w3.org/2000/svg" version="1.1">
+ <metadata>
+  <rdf:RDF xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:cc="http://creativecommons.org/ns#" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+   <cc:Work>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/StillImage"/>
+    <dc:date>2026-11-02T10:39:42.131580</dc:date>
+    <dc:format>image/svg+xml</dc:format>
+    <dc:creator>
+     <cc:Agent>
+      <dc:title>Matplotlib v3.11.2, https://matplotlib.org/</dc:title>
+     </cc:Agent>
+    </dc:creator>
+   </cc:Work>
+  </rdf:RDF>
+ </metadata>
+ <defs>
+  <style type="text/css">*{stroke-linejoin: round; stroke-linecap: butt}</style>
+ </defs>
+ <g id="figure_1">
+  <g id="patch_1">
+   <path d="M 0 1247.793676 
+L 415.065298 1247.793676 
+L 415.065298 0 
+L 0 0 
+z
+" style="fill: #ffffff"/>
+  </g>
+  <g id="axes_1">
+   <g id="line2d_1">
+    <path d="M 23.432727 99.443875 
+L 348.087273 99.443875 
+" clip-path="url(#p7ec235b218)" style="fill: none; stroke: #b4b2a9; stroke-width: 0.8; stroke-linecap: square"/>
+   </g>
+   <g id="text_1">
+    <text style="font-weight: 500; font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="78.624" y="31.019936" transform="rotate(-0 78.624 31.019936)">Kalman filter (μ, Σ)</text>
+   </g>
+   <g id="text_2">
+    <text style="font-weight: 500; font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="218.225455" y="31.019936" transform="rotate(-0 218.225455 31.019936)">Information filter (ξ, Ω)</text>
+   </g>
+   <g id="text_3">
+    <text style="font-weight: 500; font-size: 9.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #378add" x="23.432727" y="334.578034" transform="rotate(-0 23.432727 334.578034)">predict</text>
+   </g>
+   <g id="text_4">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; fill: #1f1e1d" transform="translate(78.624 333.113679)">μ̄ = Aμ + Bu</text>
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; fill: #1f1e1d" transform="translate(78.624 343.91614)">Σ̄ = AΣAᵀ + R      cheap</text>
+   </g>
+   <g id="text_5">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="218.225455" y="332.213503" transform="rotate(-0 218.225455 332.213503)">Ω̄ = (AΩ⁻¹Aᵀ + R)⁻¹   two inversions</text>
+   </g>
+   <g id="text_6">
+    <text style="font-weight: 500; font-size: 9.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #d85a30" x="23.432727" y="635.819414" transform="rotate(-0 23.432727 635.819414)">update</text>
+   </g>
+   <g id="text_7">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="78.624" y="633.454883" transform="rotate(-0 78.624 633.454883)">K = Σ̄Cᵀ(CΣ̄Cᵀ+Q)⁻¹   invert k×k</text>
+   </g>
+   <g id="text_8">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; fill: #1f1e1d" transform="translate(218.225455 634.355058)">Ω += CᵀQ⁻¹C</text>
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; fill: #1f1e1d" transform="translate(218.225455 645.157519)">ξ += CᵀQ⁻¹z          addition</text>
+   </g>
+   <g id="text_9">
+    <text style="font-weight: 500; font-size: 9.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #888780" x="23.432727" y="937.060793" transform="rotate(-0 23.432727 937.060793)">ignorance</text>
+   </g>
+   <g id="text_10">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="78.624" y="934.744074" transform="rotate(-0 78.624 934.744074)">Σ = ∞   impossible</text>
+   </g>
+   <g id="text_11">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="218.225455" y="934.744074" transform="rotate(-0 218.225455 934.744074)">Ω = 0   trivial</text>
+   </g>
+   <g id="text_12">
+    <text style="font-weight: 500; font-size: 9.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1d9e75" x="23.432727" y="1238.302172" transform="rotate(-0 23.432727 1238.302172)">sparsity</text>
+   </g>
+   <g id="text_13">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="78.624" y="1235.937641" transform="rotate(-0 78.624 1235.937641)">Σ dense</text>
+   </g>
+   <g id="text_14">
+    <text style="font-size: 9px; font-family: 'SF Mono', 'Menlo', 'Consolas', 'DejaVu Sans Mono', monospace; text-anchor: start; fill: #1f1e1d" x="218.225455" y="1235.937641" transform="rotate(-0 218.225455 1235.937641)">Ω sparse = factor graph</text>
+   </g>
+   <g id="text_15">
+    <text style="font-weight: 500; font-size: 10.5px; font-family: 'Inter', 'Helvetica Neue', 'Arial', 'DejaVu Sans', sans-serif; text-anchor: start; fill: #1f1e1d" x="7.2" y="17.371875" transform="rotate(-0 7.2 17.371875)">Fig L5 · 3.5  What is cheap in one parameterization is expensive in the other</text>
+   </g>
+  </g>
+ </g>
+ <defs>
+  <clipPath id="p7ec235b218">
+   <rect x="7.2" y="27.371875" width="357.12" height="144.144"/>
+  </clipPath>
+ </defs>
+</svg>

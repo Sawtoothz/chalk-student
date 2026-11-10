@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FAST-LIO2 session</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/plotly.js/2.35.2/plotly.min.js"></script>
+<style>
+:root{--paper:#f7f5ef;--sheet:#fffdf8;--ink:#1f1e1d;--ink2:#5b5952;--ink3:#8a877d;--rule:#dedbd1;--tile:#f5f4ef;
+--blue:#378add;--coral:#d85a30;--teal:#1d9e75;--gray:#888780;--amber:#ba7517;--ok:#3b6d11;--bad:#a32d2d;
+--sans:"IBM Plex Sans",system-ui,sans-serif;--mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;--serif:"Source Serif 4",Georgia,serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#1c1c1a;--sheet:#262624;--ink:#f1efe8;--ink2:#b8b5aa;--ink3:#86837a;--rule:#3b3a36;--tile:#30302e;color-scheme:dark}}
+*{box-sizing:border-box} body{margin:0;background:var(--paper);color:var(--ink);font:14.5px/1.5 var(--sans)}
+.wrap{max-width:1000px;margin:0 auto;padding:20px 16px 60px}
+.fig{background:var(--sheet);border:1px solid var(--rule);border-radius:12px;padding:16px 18px;margin:0 0 22px}
+.fig .cap{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap;margin-bottom:6px}
+.fig .no{font:600 12px var(--mono);color:var(--ink3);letter-spacing:.04em} .fig h2{font:600 17px var(--sans);margin:0} .fig .hint{color:var(--ink2);font-size:13.5px;margin:0 0 10px}
+.chip{display:inline-block;font:500 11.5px var(--sans);padding:2px 8px;border-radius:999px;background:var(--tile);color:var(--ink2);border:1px solid var(--rule)}
+.row{display:grid;grid-template-columns:1fr 290px;gap:16px} @media (max-width:760px){.row{grid-template-columns:1fr}}
+.ctl{display:grid;gap:8px;align-content:start}
+.ctl label{display:grid;grid-template-columns:1fr auto;gap:8px;font-size:13px;color:var(--ink2)} .ctl label b{font-weight:500;color:var(--ink);font-family:var(--mono);font-size:12.5px}
+.ctl input[type=range]{width:100%;accent-color:var(--teal)} .ctl .tog{display:flex;gap:8px;align-items:center;font-size:13px}
+.ctl button{font:inherit;color:var(--ink);border:1px solid var(--rule);background:var(--sheet);border-radius:6px;padding:6px 10px;cursor:pointer} .ctl button.go{background:var(--teal);border-color:var(--teal);color:#fff;font-weight:600}
+.tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-top:10px}
+.tile{background:var(--tile);border-radius:8px;padding:8px 10px} .tile .k{font-size:11.5px;color:var(--ink3)} .tile .v{font:500 16px var(--mono)} .tile .v.ok{color:var(--ok)} .tile .v.bad{color:var(--bad)}
+.predict{font:italic 14px var(--serif);color:var(--ink2);margin:8px 0 0}
+.plot{min-height:380px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<div class="fig" id="f1">
+  <div class="cap"><span class="no">S1</span><h2>Backward propagation: why raw points must be moved to the scan-end frame</h2><span class="chip">C3</span></div>
+  <p class="hint">A 2-D LiDAR sweeps 360° in 100 ms while the vehicle moves. Gray: the room. Coral: the raw scan placed as if every point were taken at the scan end. Blue: the same points after backward propagation with the IMU poses. Drag the sliders; the readouts are RMS distance to the nearest wall.</p>
+  <div class="row">
+    <div id="p1" class="plot"></div>
+    <div class="ctl">
+      <label>forward speed v <b id="v1v">1.0 m/s</b></label><input id="v1" type="range" min="0" max="4" step="0.1" value="1">
+      <label>yaw rate ω <b id="w1v">1.0 rad/s</b></label><input id="w1" type="range" min="-3" max="3" step="0.1" value="1">
+      <label>IMU rate <b id="r1v">200 Hz</b></label><input id="r1" type="range" min="20" max="400" step="20" value="200">
+      <label>gyro bias error <b id="b1v">0.00 rad/s</b></label><input id="b1" type="range" min="0" max="0.2" step="0.01" value="0">
+      <div class="tog"><input id="u1" type="checkbox" checked><label for="u1">undistort (backward propagation)</label></div>
+      <div class="tiles"><div class="tile"><div class="k">RMS to wall, raw</div><div class="v" id="t1a">–</div></div><div class="tile"><div class="k">RMS to wall, undistorted</div><div class="v" id="t1b">–</div></div><div class="tile"><div class="k">points</div><div class="v" id="t1c">–</div></div></div>
+      <p class="predict">Predict first: at ω = 1 rad/s a 10 Hz scan turns 5.7° during the sweep. At 4 m from a wall, how far does the last point land from the first? Then set ω and read the raw RMS.</p>
+    </div>
+  </div>
+</div>
+
+<div class="fig" id="f2">
+  <div class="cap"><span class="no">S2</span><h2>The iterated update with the information-form gain</h2><span class="chip">C4 · C5</span></div>
+  <p class="hint">Same room, 2-D pose state (x, y, θ) with a prior P from propagation. Each iteration fits a line to the 5 nearest map points of every scan point, builds the m×3 Jacobian, and takes the step with K = (HᵀR⁻¹H + P⁻¹)⁻¹HᵀR⁻¹. The textbook gain is computed too, inverting the m×m matrix, so you can see they agree and what each one costs.</p>
+  <div class="row">
+    <div id="p2" class="plot"></div>
+    <div class="ctl">
+      <label>initial position error <b id="e2v">0.30 m</b></label><input id="e2" type="range" min="0" max="1.0" step="0.05" value="0.3">
+      <label>initial heading error <b id="h2v">10°</b></label><input id="h2" type="range" min="0" max="30" step="1" value="10">
+      <label>scan points m <b id="m2v">400</b></label><input id="m2" type="range" min="50" max="2000" step="50" value="400">
+      <label>point noise σ <b id="s2v">2 cm</b></label><input id="s2" type="range" min="0" max="10" step="0.5" value="2">
+      <label>prior σ (pos, heading) <b id="q2v">0.5 m, 20°</b></label><input id="q2" type="range" min="0.05" max="2" step="0.05" value="0.5">
+      <div class="tog"><button class="go" id="run2">Run update</button><button id="step2">One iteration</button></div>
+      <div class="tiles">
+        <div class="tile"><div class="k">pose error after</div><div class="v" id="t2a">–</div></div>
+        <div class="tile"><div class="k">iterations</div><div class="v" id="t2b">–</div></div>
+        <div class="tile"><div class="k">|K_info − K_textbook|max</div><div class="v" id="t2c">–</div></div>
+        <div class="tile"><div class="k">inverted matrix</div><div class="v" id="t2d">–</div></div>
+        <div class="tile"><div class="k">flops ratio m³ : n³</div><div class="v" id="t2e">–</div></div>
+      </div>
+      <p class="predict">Predict first: with σ = 2 cm and m = 400, will four iterations get below 1 cm? Then watch the residual curve.</p>
+    </div>
+  </div>
+</div>
+
+</div>
+<script>
+(function(){
+const C={blue:'#378add',coral:'#d85a30',teal:'#1d9e75',gray:'#888780',amber:'#ba7517'};
+const dark=matchMedia('(prefers-color-scheme: dark)').matches;
+const base={paper_bgcolor:'rgba(0,0,0,0)',plot_bgcolor:dark?'#30302e':'#fffdf8',font:{family:'IBM Plex Sans, system-ui, sans-serif',size:12,color:dark?'#f1efe8':'#1f1e1d'},margin:{l:40,r:10,t:10,b:36},legend:{orientation:'h',y:1.08}};
+const ax=(t)=>({title:t,gridcolor:dark?'#3b3a36':'#e6e3d9',zeroline:false,scaleanchor:undefined});
+// ---- the room: four walls as segments
+const WALLS=[[[-4,-3],[4,-3]],[[4,-3],[4,3]],[[4,3],[-4,3]],[[-4,3],[-4,-3]],[[1,-3],[1,0]]];   // plus an inner wall
+function raycast(px,py,a){ // nearest hit distance along direction a from (px,py)
+  const dx=Math.cos(a),dy=Math.sin(a); let best=Infinity;
+  for(const [[x1,y1],[x2,y2]] of WALLS){const ex=x2-x1,ey=y2-y1;const den=dx*ey-dy*ex;if(Math.abs(den)<1e-9)continue;
+    const t=((x1-px)*ey-(y1-py)*ex)/den,u=((x1-px)*dy-(y1-py)*dx)/den;if(t>0.05&&u>=0&&u<=1&&t<best)best=t;}
+  return best;
+}
+function distToWalls(x,y){let b=Infinity;for(const [[x1,y1],[x2,y2]] of WALLS){const ex=x2-x1,ey=y2-y1,L2=ex*ex+ey*ey;let t=((x-x1)*ex+(y-y1)*ey)/L2;t=Math.max(0,Math.min(1,t));const d=Math.hypot(x-(x1+t*ex),y-(y1+t*ey));if(d<b)b=d;}return b;}
+const wallTraces=()=>WALLS.map(([[x1,y1],[x2,y2]])=>({x:[x1,x2],y:[y1,y2],mode:'lines',line:{color:C.gray,width:3},hoverinfo:'skip',showlegend:false}));
+// ---------------------------------------------------------------- S1
+const $=id=>document.getElementById(id);
+function s1(){
+  const v=+$('v1').value,w=+$('w1').value,rate=+$('r1').value,bias=+$('b1').value,undo=$('u1').checked;
+  $('v1v').textContent=v.toFixed(1)+' m/s';$('w1v').textContent=w.toFixed(1)+' rad/s';$('r1v').textContent=rate+' Hz';$('b1v').textContent=bias.toFixed(2)+' rad/s';
+  const T=0.1,N=360; // one sweep, 360 beams
+  // true trajectory during the sweep: constant v, w, from (-1.5,-0.5, 0.3)
+  const x0=-1.5,y0=-0.5,th0=0.3;
+  const pose=t=>{const th=th0+w*t;const x=Math.abs(w)>1e-6?x0+v/w*(Math.sin(th)-Math.sin(th0)):x0+v*t*Math.cos(th0);const y=Math.abs(w)>1e-6?y0-v/w*(Math.cos(th)-Math.cos(th0)):y0+v*t*Math.sin(th0);return [x,y,th];};
+  const [xe,ye,the]=pose(T);
+  const raw=[],und=[];
+  // IMU poses integrated at `rate` with a biased gyro (what the estimator believes)
+  const dt=1/rate; const imu=[[0,x0,y0,th0]]; for(let t=dt;t<=T+1e-9;t+=dt){const [,x,y,th]=imu[imu.length-1];const thn=th+(w+bias)*dt;imu.push([t,x+v*dt*Math.cos(th),y+v*dt*Math.sin(th),thn]);}
+  const [,xei,yei,thei]=imu[imu.length-1];
+  for(let i=0;i<N;i++){const t=T*i/N;const [x,y,th]=pose(t);const beam=th+2*Math.PI*i/N;const r=raycast(x,y,beam);if(!isFinite(r))continue;
+    const pr=r+ (Math.random()-0.5)*0.01; // point in LiDAR frame at time t: polar (pr, 2π i/N)
+    const lx=pr*Math.cos(2*Math.PI*i/N),ly=pr*Math.sin(2*Math.PI*i/N);
+    // raw: treat the point as taken at scan end
+    raw.push([xe+Math.cos(the)*lx-Math.sin(the)*ly, ye+Math.sin(the)*lx+Math.cos(the)*ly]);
+    // undistorted: use the IMU pose at t (believed), express in world via believed end pose, then place with the true end pose
+    let k=Math.min(imu.length-1,Math.floor(t/dt));const [tk,xk,yk,thk]=imu[k];const ddt=t-tk;const thj=thk+(w+bias)*ddt,xj=xk+v*ddt*Math.cos(thk),yj=yk+v*ddt*Math.sin(thk);
+    const wx=xj+Math.cos(thj)*lx-Math.sin(thj)*ly,wy=yj+Math.sin(thj)*lx+Math.cos(thj)*ly;             // in the IMU-integration world
+    const ex=Math.cos(thei)*(wx-xei)+Math.sin(thei)*(wy-yei),ey=-Math.sin(thei)*(wx-xei)+Math.cos(thei)*(wy-yei); // to believed end frame
+    und.push([xe+Math.cos(the)*ex-Math.sin(the)*ey, ye+Math.sin(the)*ex+Math.cos(the)*ey]);
+  }
+  const rms=P=>Math.sqrt(P.reduce((a,[x,y])=>a+distToWalls(x,y)**2,0)/P.length);
+  $('t1a').textContent=(rms(raw)*100).toFixed(1)+' cm';const ru=rms(und);$('t1b').textContent=(ru*100).toFixed(1)+' cm';$('t1b').className='v '+(ru<0.03?'ok':'bad');$('t1c').textContent=raw.length;
+  const tr=[...wallTraces(),
+    {x:raw.map(p=>p[0]),y:raw.map(p=>p[1]),mode:'markers',marker:{color:C.coral,size:4,opacity:undo?0.35:0.9},name:'raw, placed at scan end'},
+    ...(undo?[{x:und.map(p=>p[0]),y:und.map(p=>p[1]),mode:'markers',marker:{color:C.blue,size:4},name:'undistorted'}]:[]),
+    {x:[x0,xe],y:[y0,ye],mode:'lines+markers',line:{color:C.teal,width:2},marker:{size:6},name:'vehicle, start → end of sweep'}];
+  Plotly.react('p1',tr,{...base,xaxis:{...ax('x [m]'),range:[-4.6,4.6]},yaxis:{...ax('y [m]'),range:[-3.6,3.6],scaleanchor:'x'}},{displayModeBar:false,responsive:true});
+}
+['v1','w1','r1','b1'].forEach(id=>$(id).addEventListener('input',s1));$('u1').addEventListener('change',s1);
+// ---------------------------------------------------------------- S2
+const MAP=[]; for(const [[x1,y1],[x2,y2]] of WALLS){const n=Math.ceil(Math.hypot(x2-x1,y2-y1)/0.05);for(let i=0;i<=n;i++){const t=i/n;MAP.push([x1+t*(x2-x1),y1+t*(y2-y1)]);}}
+function knn(p,k){const d=MAP.map((q,i)=>[Math.hypot(q[0]-p[0],q[1]-p[1]),i]).sort((a,b)=>a[0]-b[0]).slice(0,k);return d.map(x=>MAP[x[1]]);}
+function fitLine(P){ // n·x + d = 0 by least squares, like esti_plane: solve A n = -1
+  const sx=P.reduce((a,p)=>a+p[0],0)/P.length,sy=P.reduce((a,p)=>a+p[1],0)/P.length;let sxx=0,sxy=0,syy=0;for(const p of P){sxx+=(p[0]-sx)**2;sxy+=(p[0]-sx)*(p[1]-sy);syy+=(p[1]-sy)**2;}
+  const ang=0.5*Math.atan2(2*sxy,sxx-syy)+Math.PI/2;const n=[Math.cos(ang),Math.sin(ang)];const d=-(n[0]*sx+n[1]*sy);
+  if(P.some(p=>Math.abs(n[0]*p[0]+n[1]*p[1]+d)>0.1))return null;return [n,d];
+}
+let S2={truth:[0.6,-0.8,0.4],scan:[],x:null,P:null,hist:[],Kdiff:0,m:0,steps:0};
+function makeScan(){const m=+$('m2').value,sig=+$('s2').value/100;const [tx,ty,tth]=S2.truth;S2.scan=[];
+  for(let i=0;i<m;i++){const a=2*Math.PI*i/m;const r=raycast(tx,ty,tth+a);if(!isFinite(r))continue;const pr=r+sig*gauss();S2.scan.push([pr*Math.cos(a),pr*Math.sin(a)]);}}
+function gauss(){let u=0,v=0;while(!u)u=Math.random();while(!v)v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+function resetS2(){const e=+$('e2').value,h=+$('h2').value*Math.PI/180,q=+$('q2').value;
+  $('e2v').textContent=e.toFixed(2)+' m';$('h2v').textContent=$('h2').value+'°';$('m2v').textContent=$('m2').value;$('s2v').textContent=$('s2').value+' cm';$('q2v').textContent=q.toFixed(2)+' m, '+(q*40).toFixed(0)+'°';
+  makeScan();const a=Math.random()*2*Math.PI;S2.x=[S2.truth[0]+e*Math.cos(a),S2.truth[1]+e*Math.sin(a),S2.truth[2]+h];S2.x0=S2.x.slice();
+  const sp=q,sh=q*40*Math.PI/180;S2.P=[[sp*sp,0,0],[0,sp*sp,0],[0,0,sh*sh]];S2.hist=[];S2.steps=0;S2.Kdiff=0;drawS2();}
+function inv3(M){const [a,b,c]=M[0],[d,e,f]=M[1],[g,h,i]=M[2];const A=e*i-f*h,B=-(d*i-f*g),Cc=d*h-e*g;const det=a*A+b*B+c*Cc;const r=[[A,-(b*i-c*h),b*f-c*e],[B,a*i-c*g,-(a*f-c*d)],[Cc,-(a*h-b*g),a*e-b*d]];return r.map(row=>row.map(v=>v/det));}
+function iterate(){ // one iterated-ESKF step on (x,y,θ) with prior (x0, P)
+  const [x,y,th]=S2.x,c=Math.cos(th),s=Math.sin(th);const r=Math.max(1e-4,(+$('s2').value/100))**2;
+  const H=[],z=[];
+  for(const [lx,ly] of S2.scan){const wx=x+c*lx-s*ly,wy=y+s*lx+c*ly;const fit=fitLine(knn([wx,wy],5));if(!fit)continue;const [n,d]=fit;
+    z.push(n[0]*wx+n[1]*wy+d); H.push([n[0],n[1],n[0]*(-s*lx-c*ly)+n[1]*(c*lx-s*ly)]);}
+  S2.m=H.length; if(!H.length)return;
+  // dx = x ⊟ x0 (prior), J = I for a vector-space pose
+  const dx=[x-S2.x0[0],y-S2.x0[1],Math.atan2(Math.sin(th-S2.x0[2]),Math.cos(th-S2.x0[2]))];
+  const Pinv=inv3(S2.P);const A=[[0,0,0],[0,0,0],[0,0,0]];const Htz=[0,0,0];
+  for(let i=0;i<H.length;i++){for(let a=0;a<3;a++){Htz[a]+=H[i][a]*z[i]/r;for(let b=0;b<3;b++)A[a][b]+=H[i][a]*H[i][b]/r;}}
+  for(let a=0;a<3;a++)for(let b=0;b<3;b++)A[a][b]+=Pinv[a][b];
+  const Ainv=inv3(A); // (HᵀR⁻¹H + P⁻¹)⁻¹
+  // K_info z and K_info H without forming K explicitly
+  const Kz=Ainv.map(row=>row[0]*Htz[0]+row[1]*Htz[1]+row[2]*Htz[2]);
+  const HtH=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<H.length;i++)for(let a=0;a<3;a++)for(let b=0;b<3;b++)HtH[a][b]+=H[i][a]*H[i][b]/r;
+  const KH=Ainv.map(row=>[0,1,2].map(b=>row[0]*HtH[0][b]+row[1]*HtH[1][b]+row[2]*HtH[2][b]));
+  const step=[0,1,2].map(a=>-Kz[a]-((a===0?1:0)-KH[a][0])*dx[0]-((a===1?1:0)-KH[a][1])*dx[1]-((a===2?1:0)-KH[a][2])*dx[2]);
+  // textbook gain on a subsample (m×m inverse), to show agreement: K = P Hᵀ (H P Hᵀ + R)⁻¹ — done for the first ≤60 rows via Gauss elimination
+  const mm=Math.min(H.length,60);if(S2.steps===0){const Hs=H.slice(0,mm);const S=[];for(let i=0;i<mm;i++){S.push([]);for(let j=0;j<mm;j++){let v=0;for(let a=0;a<3;a++)for(let b=0;b<3;b++)v+=Hs[i][a]*S2.P[a][b]*Hs[j][b];S[i].push(v+(i===j?r:0));}}
+    const Sinv=invN(S);const K1=[];for(let a=0;a<3;a++){K1.push([]);for(let j=0;j<mm;j++){let v=0;for(let i=0;i<mm;i++){let ph=0;for(let b=0;b<3;b++)ph+=S2.P[a][b]*Hs[i][b];v+=ph*Sinv[i][j];}K1[a].push(v);}}
+    // information form on the same subsample
+    const As=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<mm;i++)for(let a=0;a<3;a++)for(let b=0;b<3;b++)As[a][b]+=Hs[i][a]*Hs[i][b]/r;for(let a=0;a<3;a++)for(let b=0;b<3;b++)As[a][b]+=Pinv[a][b];const Asi=inv3(As);
+    let md=0;for(let a=0;a<3;a++)for(let j=0;j<mm;j++){let v=0;for(let b=0;b<3;b++)v+=Asi[a][b]*Hs[j][b]/r;md=Math.max(md,Math.abs(v-K1[a][j]));}S2.Kdiff=md;}
+  S2.x=[x+step[0],y+step[1],th+step[2]];S2.steps++;
+  const rmsz=Math.sqrt(z.reduce((a,v)=>a+v*v,0)/z.length);S2.hist.push(rmsz);
+  const conv=Math.abs(step[0])<1e-3&&Math.abs(step[1])<1e-3&&Math.abs(step[2])<1e-3;
+  if(conv||S2.steps>=6){const KHm=KH;S2.P=[0,1,2].map(a=>[0,1,2].map(b=>{let v=0;for(let k=0;k<3;k++)v+=((a===k?1:0)-KHm[a][k])*S2.P[k][b];return v;}));}
+  return conv;
+}
+function invN(M){const n=M.length;const A=M.map((r,i)=>[...r,...Array.from({length:n},(_,j)=>i===j?1:0)]);for(let i=0;i<n;i++){let p=i;for(let k=i+1;k<n;k++)if(Math.abs(A[k][i])>Math.abs(A[p][i]))p=k;[A[i],A[p]]=[A[p],A[i]];const d=A[i][i];for(let j=0;j<2*n;j++)A[i][j]/=d;for(let k=0;k<n;k++)if(k!==i){const f=A[k][i];for(let j=0;j<2*n;j++)A[k][j]-=f*A[i][j];}}return A.map(r=>r.slice(n));}
+function drawS2(){const [x,y,th]=S2.x,c=Math.cos(th),s=Math.sin(th);const [tx,ty,tth]=S2.truth;
+  const pts=S2.scan.map(([lx,ly])=>[x+c*lx-s*ly,y+s*lx+c*ly]);
+  const err=Math.hypot(x-tx,y-ty);$('t2a').textContent=(err*100).toFixed(1)+' cm, '+(Math.abs(th-tth)*180/Math.PI).toFixed(2)+'°';$('t2a').className='v '+(err<0.01?'ok':'');
+  $('t2b').textContent=S2.steps;$('t2c').textContent=S2.Kdiff?S2.Kdiff.toExponential(1):'–';$('t2d').textContent=S2.m?('3×3 (not '+S2.m+'×'+S2.m+')'):'–';$('t2e').textContent=S2.m?((S2.m**3/27)).toExponential(1):'–';
+  const tr=[...wallTraces(),{x:pts.map(p=>p[0]),y:pts.map(p=>p[1]),mode:'markers',marker:{color:C.coral,size:4},name:'scan at current estimate'},
+    {x:[tx],y:[ty],mode:'markers',marker:{color:C.gray,size:12,symbol:'x'},name:'true pose'},{x:[x],y:[y],mode:'markers',marker:{color:C.blue,size:10},name:'estimate'},
+    {x:S2.hist.map((_,i)=>i+1),y:S2.hist,mode:'lines+markers',line:{color:C.teal},name:'RMS residual per iteration [m]',xaxis:'x2',yaxis:'y2'}];
+  Plotly.react('p2',tr,{...base,xaxis:{...ax('x [m]'),domain:[0,0.6],range:[-4.6,4.6]},yaxis:{...ax('y [m]'),range:[-3.6,3.6],scaleanchor:'x'},xaxis2:{...ax('iteration'),domain:[0.7,1],dtick:1},yaxis2:{...ax('RMS residual [m]'),anchor:'x2',type:'log'}},{displayModeBar:false,responsive:true});}
+['e2','h2','m2','s2','q2'].forEach(id=>$(id).addEventListener('input',resetS2));
+$('step2').addEventListener('click',()=>{iterate();drawS2();});
+$('run2').addEventListener('click',()=>{resetS2();let i=0;const tick=()=>{const done=iterate();drawS2();if(!done&&++i<6)setTimeout(tick,350);};setTimeout(tick,100);});
+function init(){if(!window.Plotly){setTimeout(init,200);return;}s1();resetS2();}
+init();
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,453 @@
+title: A Tour of Multiple View Geometry
+footer: Hartley & Zisserman · Multiple View Geometry · ch. 1
+slides:
+- layout: title
+  title: A Tour of Multiple View Geometry
+  subtitle: Multiple View Geometry in Computer Vision, chapter 1
+  meta: Lesson t3.1 · Hartley, Zisserman
+  source: map.md
+- layout: bullets
+  title: Why a robot engineer needs this chapter
+  bullets:
+  - A drone, a quadruped and a tracked robot all turn images into geometry
+  - Which parts of the world can a set of images determine, and which not?
+  - The answer is a group of transformations, not a vague 'noise'
+  - A monocular drone loses metric scale; a quadruped turning in place breaks F
+  - Bundle adjustment and VIO front ends are built on this vocabulary
+  notes: 'Start from failures students will meet. A visual odometry initializer that fits only the fundamental matrix fails when a quadruped turns on the spot or a camera looks straight down at flat ground. A monocular drone can rebuild the shape of a scene but not its size. Both failures have one cause: the images leave a group of transformations undetermined. This chapter names that group and shows how each extra piece of knowledge, a plane at infinity, a calibration, removes part of it. The chapter is informal on purpose; the proofs come later in the book. Question for the room: what has your own camera system ever gotten wrong that could be an ambiguity?'
+  source: map.md
+- layout: agenda
+  title: Roadmap
+  items:
+  - 1.1 Points, infinity, the ladder
+  - 1.2 Camera as a 3×4 matrix, calibration as a conic
+  - '1.3 Two views: a 4×4 ambiguity'
+  - 1.7 Climbing back to Euclidean
+  - 'Skims: trifocal, n views, auto-calibration'
+  notes: 'The chapter has two numbered equations and almost no proofs, so the lecture states its claims precisely and points to the later chapter that proves each one. Sections 1.1 to 1.3 and 1.7 get the time; sections 1.4 to 1.6 and 1.8 to 1.10 are skims. Tell students the order: first what a point is, then what a camera does to it, then what two cameras cannot tell you, then how extra knowledge repairs that. Every figure today is generated from code, and every number on a slide comes from a run. Question: which of these topics have you met under a different name, for example the horizon or a calibration matrix?'
+  source: map.md
+- layout: figure
+  title: 1.1 Parallel rails meet in the image
+  figure: figures/L1-point-at-infinity.png
+  caption: Rails 1.5 m apart, camera 1.6 m up, pitched 10° down
+  bullets:
+  - In the world plane the rails never meet
+  - In the image they meet at v = (320, 152) px
+  - v is the image of the direction (1, 0, 0)ᵀ
+  notes: 'Walk through the picture left to right. The world plane shows two parallel rails; the image shows them converging. The meeting point is a finite pixel, the vanishing point, and it is the image of a direction, a point at infinity in the plane. Make the point that two lines always meet once points at infinity are allowed: parallel lines meet at infinity. Also mention that the horizon is a line, the image of the floor''s line at infinity, so it moves only with pitch and roll. Question: if the camera pitched down further, which way would the vanishing point move in the image, and why?'
+  source: lecture.md §L1
+  takeaway: 'Parallel lines meet at a finite pixel: the image of a point at infinity'
+- layout: equation
+  title: 1.1 Homogeneous coordinates and X′ = HX
+  equations:
+  - tex: (kx,\ ky,\ k)^\top \sim (x,\ y,\ 1)^\top \mapsto (x,\ y),\quad k \neq 0
+    label: p. 2
+  - tex: \mathbf{X}^\prime = \mathrm{H}_{(n+1)\times(n+1)}\, \mathbf{X}
+    label: p. 3
+  bullets:
+  - '(x, y, 0)ᵀ is a point at infinity: a direction'
+  - 'H non-singular, defined up to scale: 8 DoF for 3×3, 15 for 4×4'
+  - Euclidean and affine maps keep infinity at infinity; a general H does not
+  notes: 'The scale k is arbitrary but non-zero, so a triple stands for a whole line of vectors through the origin. Dropping k to zero gives the points at infinity. A projective transformation is any non-singular matrix acting on these vectors. Count the degrees of freedom: nine entries minus one for scale gives 8, sixteen minus one gives 15. Stress that the book''s text on page 3 swaps two words, line and plane at infinity, for space and image; students should not copy that slip. Question: why must H be non-singular? Try the case where it maps the plane onto a line.'
+  source: lecture.md §L1
+  takeaway: A point at infinity is a direction, and H need not keep it there
+  where:
+  - - k
+    - arbitrary non-zero scale
+  - - (x, y, 0)ᵀ
+    - point at infinity
+  - - H
+    - non-singular, up to scale
+  - - X, X′
+    - homogeneous (n+1)-vectors
+- layout: predict
+  title: 'Predict: where does a far landmark go?'
+  bullets:
+  - A drone sees a landmark at (X, Y, Z, T) with T → 0
+  - Which parametrization would you put in a filter state?
+  question: Which landmark representation stays finite and well conditioned as T → 0?
+  choices:
+  - (X/T, Y/T, Z/T)
+  - (X, Y, Z, T)
+  - Both of them
+  - Neither of them
+  notes: 'Answer after a minute of discussion. The inhomogeneous form blows up as T goes to zero because it divides by a vanishing number, while the homogeneous four-vector stays finite and well conditioned: a distant landmark is nearly a point at infinity and is perfectly legal. That is why VIO front ends use inverse depth or homogeneous landmarks. Divide only when you need pixels or metres, and raise an error rather than return infinity if the point is truly at infinity. Follow-up: what does the sign of T tell you about which side of the camera the point is on? Careful, that needs the camera, which comes next section.'
+  source: lecture.md §L1
+- layout: key
+  title: The idea of the ladder
+  statement: Projective, affine and Euclidean geometry differ in what they keep pinned at infinity
+  detail: Pin a line at infinity for parallelism; pin the circular points for angles
+  notes: 'Hold this sentence while the next slides run. A projective map keeps only lines and incidence. Fix the line at infinity and parallel lines stay parallel: that is affine geometry. Fix two further complex points on that line, the circular points, and circles and angles survive: that is Euclidean geometry up to scale. In 3D the line becomes the plane at infinity and the circular points become the absolute conic. Every upgrade later in the chapter is a way of pinning these objects. Question: which object does the horizon in a photograph pin down, and which does it leave free?'
+  source: lecture.md §L2
+- layout: figure
+  title: '1.1.1 The ladder: projective, affine, Euclidean'
+  figure: figures/L2-ladder.png
+  caption: A square and its inscribed circle through four maps
+  bullets:
+  - 'Similarity: corner 90.0°'
+  - 'Affine: opposite sides 0.0° apart, corner 49.0°'
+  - 'Projective: corner 51.7°, opposite sides 10.7° apart'
+  notes: 'Each rung adds structure and loses freedom. Projective geometry knows only lines and incidence. Pin a line at infinity and parallelism returns: affine. Pin two complex points on it, the circular points, and angles, circles and length ratios return: Euclidean. In 3D the plane at infinity and the absolute conic play these roles. The numbers in the figure are measured: after the affine map opposite sides are still parallel but the corner is no longer a right angle. Reconstruction later climbs this ladder in reverse. Question: for a bird''s-eye view of terrain, which rung does the horizon give you, and what do you still need for lengths?'
+  source: lecture.md §L2
+  takeaway: Each rung you drop loses angles first, then parallelism
+- layout: compare
+  title: Three geometries, one square
+  columns:
+  - heading: Euclidean / similarity
+    bullets:
+    - Keeps lengths up to scale and angles
+    - Corner stays 90.0°
+    - Circular points fixed
+  - heading: Affine
+    bullets:
+    - Keeps parallelism
+    - Opposite sides 0.0° apart
+    - Corner becomes 49.0°
+    - Line at infinity fixed
+  - heading: Projective
+    bullets:
+    - Keeps lines and incidence only
+    - Opposite sides 10.7° apart
+    - Corner becomes 51.7°
+    - Line at infinity moves
+  takeaway: 'Read the numbers left to right: each geometry keeps less than the one before'
+  notes: 'This is the previous figure read as a table. The same square and inscribed circle go through each map, and the measured angles tell you what survived. A similarity keeps the corner at 90.0 degrees. An affine map keeps opposite sides parallel, 0.0 degrees apart, but the corner moves to 49.0. A general projective map loses parallelism too: opposite sides end up 10.7 degrees apart. Link each column to a camera situation: a top-down aerial view is close to affine, a forward-looking camera is projective. Question: which column describes a photograph of a floor tile taken from standing height?'
+  source: figures/numbers.json
+- layout: equation
+  title: 1.1.1 Circles and the circular points
+  equations:
+  - tex: (x - aw)^2 + (y - bw)^2 = r^2 w^2
+    label: p. 5
+  - tex: x^2 + y^2 = 0,\ \ w = 0 \quad \Rightarrow \quad (1,\ \pm i,\ 0)^\top
+    label: p. 5
+  bullets:
+  - 1 + i² = 0, so I and J lie on every circle, whatever a, b, r
+  - A conic has 5 DoF; a circle already passes through I and J
+  notes: 'Write the circle in homogeneous coordinates and substitute w equals zero: the right side vanishes and what is left is x squared plus y squared equals zero, which has the complex solutions one, plus or minus i. So every circle passes through the same two points at infinity, the circular points. They are the two missing intersections of two circles, which otherwise meet in at most two real points. Knowing them is the same as knowing how to measure angles in the plane. Exercise T2 asks you to derive why the converse holds, so do not answer it here. Question: how many real points does the absolute conic, the 3D analogue, have?'
+  source: lecture.md §L2
+  takeaway: Every circle passes through the two circular points I and J
+  where:
+  - - (a, b)
+    - circle centre
+  - - r
+    - radius
+  - - w
+    - homogeneous coordinate
+  - - I, J
+    - circular points (1, ±i, 0)ᵀ
+- layout: equation
+  title: 1.1.1 The absolute conic and perpendicularity
+  equations:
+  - tex: \Omega_\infty:\ X^2 + Y^2 + Z^2 = 0,\ \ T = 0
+    label: p. 6
+  - tex: \mathbf{d}_1^\top\, \Omega_\infty\, \mathbf{d}_2 = 0
+    label: p. 6
+  bullets:
+  - Every sphere meets the plane at infinity in Ω∞; no real points
+  - Conjugate directions are perpendicular; in a Euclidean frame Ω∞ = I
+  - The general angle formula is (3.23), p. 82
+  notes: 'The absolute conic lives on the plane at infinity and has no real points, which is why we meet it only through the relation it defines. Two directions d1 and d2 are conjugate with respect to Ω∞ when the quadratic form between them is zero, and that is exactly perpendicularity. In a Euclidean frame Ω∞ is the identity and the relation is the plain dot product. Under a general projective map Ω∞ changes, and that is how calibration enters later. The book states this informally on page 6 and proves it in chapter 3. Question: what does knowing Ω∞ in your reconstruction let you measure that you could not before?'
+  source: lecture.md §L2
+  takeaway: Perpendicular directions are conjugate with respect to Ω∞
+  where:
+  - - Ω∞
+    - absolute conic on the plane at infinity
+  - - d₁, d₂
+    - two direction vectors
+  - - T
+    - fourth homogeneous coordinate
+- layout: predict
+  title: 'Predict: how many points fix a circle? A conic?'
+  bullets:
+  - A general conic has 6 coefficients up to scale
+  - A circle must pass through the circular points I and J
+  question: How many ordinary points fix a general conic, and how many a circle?
+  choices:
+  - 5 and 3
+  - 6 and 4
+  - 5 and 2
+  - 4 and 3
+  notes: 'Answer: five for a general conic, because six coefficients up to scale leave five degrees of freedom; three for a circle, because passing through I and J already uses two of the five conditions. This is the counting style the whole chapter uses: count unknowns, count equations. It returns for the seven points of the two-view geometry, the trifocal tensor and auto-calibration with square pixels. Encourage students to do the count before looking at the page. Question: can you place five points on a line and still determine a conic? What goes wrong?'
+  source: lecture.md §L2
+- layout: figure
+  title: 1.2 The camera centre is what matters
+  figure: figures/L3-cameras-as-points.png
+  caption: Same-centre views (left); homography fit error vs baseline (right)
+  bullets:
+  - 'Planar scene: at most 2.4 × 10⁻¹³ px at any baseline'
+  - 'Scene 4–12 m deep: 1 px at 0.048 m, 2.1 px at 0.1 m'
+  - 22.75 px at 1 m
+  notes: 'On the left, two image planes through one centre cut the same bundle of rays, so a pixel in one view maps to a pixel in the other by a 3×3 matrix whatever the scene contains. Move the centre and that fails unless the scene is a plane. The right panel puts a number on nearly: with depths between 4 and 12 metres and a focal length of 500 pixels, one homography explains the two views to one pixel only up to 0.048 m of baseline. This is the practical reason a VO initializer must test both a homography and the fundamental matrix. Question: what baseline would a quadruped''s stride give, and which model fits?'
+  source: lecture.md §L3
+  takeaway: A shared centre gives a homography; a moved centre needs a plane
+- layout: stats
+  title: How far can the centre move before one H fails?
+  stats:
+  - value: '0.048'
+    label: m of baseline until the fit error reaches 1 px
+  - value: '2.1'
+    label: px of fit error at 0.1 m
+  - value: '22.75'
+    label: px of fit error at 1 m
+  bullets:
+  - Scene 4–12 m deep, focal length 500 px
+  - 'Planar scene: at most 2.4 × 10⁻¹³ px at any baseline'
+  takeaway: Nearly the same centre is a tight condition once the scene has depth
+  notes: 'These are the measured values from the figure, not estimates. The scene is four to twelve metres deep and the focal length is 500 pixels. A homography explains the two views to within one pixel only while the camera has moved less than 0.048 metres. At 0.1 metres the error is already 2.1 pixels, and at one metre it reaches 22.75 pixels. For a planar scene the same homography is exact at every baseline, up to round-off near 2.4 times ten to the minus thirteen pixels. Question: given these numbers, how would you decide between fitting H and fitting F for a drone that has just taken off?'
+  source: figures/numbers.json
+- layout: equation
+  title: 1.2 The camera is a 3×4 matrix
+  equations:
+  - tex: \mathrm{P} = [\,\mathrm{I}_{3\times3} \mid \mathbf{0}_3\,]
+    label: p. 7
+  - tex: (x,\ y,\ w)^\top = \mathrm{P}_{3\times4}\,(X,\ Y,\ Z,\ T)^\top,\quad \operatorname{rank}\mathrm{P} = 3
+    label: p. 7
+  - tex: H = [\,\mathbf{p}_1\ \mathbf{p}_2\ \mathbf{p}_4\,]\ \ \text{for the plane}\ Z = 0
+    label: p. 7
+  bullets:
+  - P = [I | 0] forgets where along the ray a point was
+  - The centre C satisfies PC = 0; rank 3 makes it unique
+  notes: 'Place the camera at the origin: projection sends (X, Y, Z, T) to (X, Y, Z), so every point on a ray maps to the same image point. Other centres and pixel frames are coordinate changes, hence any rank-3 matrix is a camera. If the scene is the plane Z equals zero, the third column multiplies zero and drops out, leaving a 3×3 matrix made of columns one, two and four. Note that P here maps world to camera; a robot pose is usually the inverse. And P is a camera, not a covariance, and H is a homography, not a Jacobian. Question: what happens to the plane homography if the camera centre lies in the plane?'
+  source: lecture.md §L3
+  takeaway: Any rank-3 3×4 matrix is a camera; the centre C satisfies PC = 0
+  where:
+  - - P
+    - 3×4 camera matrix
+  - - (X, Y, Z, T)
+    - world point, homogeneous
+  - - (x, y, w)
+    - image point, homogeneous
+  - - H
+    - plane homography, 3×3
+  - - p₁ … p₄
+    - columns of P
+- layout: predict
+  title: 'Predict: does a rotation need depth?'
+  bullets:
+  - A quadruped turns 15° in place; the scene is 4–12 m deep
+  - Fit one homography between the two images
+  question: After a pure rotation, does one homography fit the images of a deep scene?
+  choices:
+  - Yes, the error is near zero
+  - No, the error grows with depth
+  - Only if the scene is a plane
+  notes: 'Answer: it is essentially zero, 1 × 10⁻¹³ px at zero baseline, even though the scene has real depth. Two images with the same centre differ by a homography whatever is in front of them, since each image is just the bundle of rays through the centre. Depth matters only when the centre moves. Then the error grows: 1 px at 0.048 m of baseline and 22.75 px at 1 m in the figure''s scene. The derivation of why a shared centre gives a homography is an exercise, so only the statement and the numbers are given here. Question: why does a gimbal panorama stitch without parallax problems?'
+  source: lecture.md §L3
+- layout: figure
+  title: '1.2 Calibration as a conic: ray angles'
+  figure: figures/L4-iac-angles.png
+  caption: Angle error against pixel position for a wrong focal length
+  bullets:
+  - 'Correct f gives the true angle: 32.62° at the image edge'
+  - f 20% short reads 6.04° high
+  - f 20% long reads 4.55° low
+  notes: 'Each point of the plane at infinity is a direction, one ray through the centre, so that plane maps one to one onto the image. Ω∞ on it maps to an image conic ω, the image of the absolute conic. Angles between directions are measured against Ω∞, so angles between back-projected rays are measured against ω. A calibrated camera is exactly one where ω is known. The error from a wrong focal length is zero on the optical axis and largest at the edge. Question: if you zoom a lens without recalibrating, in the book''s sense is the camera still calibrated?'
+  source: lecture.md §L4
+  takeaway: A wrong focal length hurts most at the image edge
+- layout: equation
+  title: 1.2 The angle between two rays
+  equations:
+  - tex: \cos\theta = \frac{\mathbf{x}_1^\top\,\omega\,\mathbf{x}_2}{\sqrt{(\mathbf{x}_1^\top\,\omega\,\mathbf{x}_1)(\mathbf{x}_2^\top\,\omega\,\mathbf{x}_2)}}
+    label: (8.9)
+  - tex: \omega = (\mathrm{K}\mathrm{K}^\top)^{-1}
+    label: Result 8.17
+  bullets:
+  - x₁, x₂ homogeneous pixels; ω 3×3 symmetric; K upper triangular
+  - 'Example 1.1: vanishing points then right angles give Euclidean (Fig. 1.2)'
+  notes: 'The book states this in words on page 9; the formula is equation 8.9 on page 210. Substituting ω gives the cosine between the rays K⁻¹x1 and K⁻¹x2, so in practice you back-project each pixel with one triangular solve and take the angle with atan2 rather than arccos, which loses digits for small angles. Example 1.1 is the same idea used on one image: vanishing points give the plane''s line at infinity, which is affine, and known right angles then give metric structure. Question: why is ω defined only up to scale, and why does the formula not care?'
+  source: lecture.md §L4
+  takeaway: Calibration is knowing ω; it turns pixels into ray angles
+  where:
+  - - x₁, x₂
+    - homogeneous image points
+  - - ω
+    - image of the absolute conic, 3×3
+  - - K
+    - calibration matrix, upper triangular
+  - - θ
+    - angle between the two rays
+- layout: predict
+  title: 'Predict: size of the error from a wrong f'
+  bullets:
+  - Image 640 × 480 px, f = 500 px, true angle at the edge 32.62°
+  - The calibration file has f set 20% short
+  question: The focal length is 20% short. How does the edge angle read?
+  choices:
+  - High, by about 6°
+  - Low, by about 6°
+  - No change at the edge
+  - High, by about 1°
+  notes: 'Answer: high, by 6.04 degrees; a focal length 20% too long reads 4.55 degrees low. The error is zero at the image centre and grows toward the edge, so a calibration that looks fine near the axis can still be badly wrong where a landmark bearing matters most. Ask students to reason with the pinhole: a shorter focal length makes a given pixel offset subtend a larger angle. This is a number to remember when someone says a focal length is close enough. Question: how would you check a calibration at the image edge rather than at the centre?'
+  source: lecture.md §L4
+- layout: figure
+  title: '1.3 Two views: a cube and its look-alikes'
+  figure: figures/L5-projective-ambiguity.png
+  caption: Cameras P H⁻¹ and points H X give the same images
+  bullets:
+  - 'Largest pixel change: 8.5 × 10⁻¹⁴ px'
+  - 'Largest change in unit-norm F: 4.7 × 10⁻¹⁴'
+  - The images cannot tell the cubes apart
+  notes: 'The picture shows a cube and three transformed cubes: a similarity, an affine map and a projective map. Each has cameras P H inverse, and the images are identical to machine precision. Matches only constrain the products P X, so any invertible 4×4 H slipped between camera and point changes nothing the images can see. That is the projective ambiguity, and it is the worst case: enough points in general position determine the scene up to exactly this. The fundamental matrix is unchanged by H, which is why it is the tool for this problem. Question: which rungs of the ladder do the three look-alike cubes keep?'
+  source: lecture.md §L5
+  takeaway: Images alone cannot tell a cube from its projective look-alikes
+- layout: equation
+  title: 1.3 Projective ambiguity and the epipolar constraint
+  equations:
+  - tex: \mathrm{P}_j \mathbf{X}_i = (\mathrm{P}_j \mathrm{H}^{-1})(\mathrm{H}\mathbf{X}_i)
+    label: (1.1)
+  - tex: \mathbf{x}_i^{\prime\top}\, \mathrm{F}\, \mathbf{x}_i = 0, \quad \operatorname{rank}\mathrm{F} = 2
+    label: p. 11
+  bullets:
+  - 'F has 9 entries: 9 − 1 (scale) − 1 (det F = 0) = 7'
+  - So at least seven matches, outside critical configurations (p. 11)
+  notes: 'Equation 1.1 is one line of algebra: insert H inverse times H between camera and point. The epipolar constraint is linear in the nine entries of F; removing the scale and the rank-2 condition leaves seven degrees of freedom, which is the package''s counting of the book''s statement that at least seven points are needed. The book does not give that reason itself, and some configurations have one or three solutions. Be clear that F is determined by the two cameras and in turn fixes them only up to the 4×4 H. Question: why must H be non-singular in equation 1.1? Think about what a singular H does to the points.'
+  source: lecture.md §L5
+  takeaway: F has 7 degrees of freedom; the cameras stay free up to H
+  where:
+  - - Pⱼ
+    - camera j, 3×4
+  - - H
+    - any non-singular 4×4
+  - - Xᵢ
+    - scene point i
+  - - F
+    - fundamental matrix, 3×3, rank 2
+  - - xᵢ, x′ᵢ
+    - matched image points
+- layout: steps
+  title: 1.3 The four-step outline (p. 12)
+  steps:
+  - title: (i) Equations
+    text: One linear equation in F per match, solved properly in ch. 11
+  - title: (ii) Solve for F
+    text: Ch. 11; outliers are handled in §4.7
+  - title: (iii) Cameras
+    text: Cameras P, P′ from F, §9.5, p. 253
+  - title: (iv) Triangulate
+    text: A point Xᵢ for each match, ch. 12
+  takeaway: The outline is a map of later chapters, not an implementation
+  notes: 'This is the book''s recipe for reconstruction from two views. The authors themselves warn that it should not be implemented directly from this brief description, and they are right: raw pixel coordinates give a badly conditioned design matrix, outliers need a robust estimator, and linear triangulation is not optimal. Treat the table as a map of where each step is done properly. Note that noise and outliers appear nowhere in this chapter, but every real use of step (ii) needs them. Question: which of the four steps would you expect to fail first on real video, and why?'
+  source: lecture.md §L5
+- layout: bullets
+  title: '1.4–1.6 Skim: three views, n views, transfer'
+  bullets:
+  - 'Three views: trifocal tensor, 27 entries; 4 equations per triplet'
+  - 7 triplets solve it linearly, 6 non-linearly (p. 13)
+  - 'n views: affine factorization by SVD; bundle adjustment needs a start'
+  - 'Transfer x″ = P″X: triangulate from two views, then project'
+  - With a plane or a pure rotation, one homography suffices
+  notes: 'Only the statements matter here. The trifocal tensor relates three views through a point and two lines, with twenty-seven entries; each point triplet gives four equations, hence seven triplets linearly. For many views, factorization by SVD works when all points are seen in all views, and bundle adjustment is the maximum-likelihood fit, which needs an initial guess: that is why every SfM and VIO back end initializes before refining. Transfer predicts where a point appears in a third image. The details come in chapters 15 to 18. Question: why does bundle adjustment need a good starting point?'
+  source: lecture.md §L5
+- layout: steps
+  title: Climbing from projective to metric
+  steps:
+  - title: Projective
+    text: Cameras and points known only up to a 4×4 H, eq. (1.1)
+  - title: Affine
+    text: Send π∞ to (0, 0, 0, 1)ᵀ with H_A; parallel edges become parallel
+  - title: Metric
+    text: Send Ω∞ to I with H_M; corners become right angles
+  bullets:
+  - 'Remaining freedom: a similarity, so no absolute scale'
+  takeaway: Each step pins one object at infinity and removes one kind of ambiguity
+  notes: 'This is the stratification the whole chapter builds toward. Start from the projective reconstruction that two uncalibrated views give. Identify the plane at infinity and map it to its standard position: parallel edges become parallel but corners are still skewed. Then identify the absolute conic on that plane and map it to the identity: corners become right angles and edge lengths agree. What remains is a similarity, which is why scale is the one thing a calibrated monocular camera cannot recover. The cube figure on the next slide measures both steps. Question: which of the two steps needs the calibration, and why?'
+  source: lecture.md §L6
+- layout: figure
+  title: 1.7 Climbing back to Euclidean
+  figure: figures/L6-euclidean-upgrade.png
+  caption: A projective reconstruction of a cube upgraded in two steps
+  bullets:
+  - 'π∞ to (0, 0, 0, 1)ᵀ: worst parallel-edge angle 63.61° → 0.00°'
+  - 'Corners then 67.92°–112.08°; Ω∞ = MᵀωM to I: corners 90.00°'
+  notes: 'Start from a projective reconstruction. The first step sends the plane at infinity to its standard position; parallel edges become parallel, but corners are still skewed. The second sends the absolute conic to the identity, after which corners are right angles and edge lengths agree. Ω∞ lies on the plane at infinity, so finding Ω∞ is enough. Each calibrated camera back-projects ω to a cone, and Ω∞ lies on all of them. Two views leave two candidates and three leave one. Conversely, a Euclidean structure projects Ω∞ to each ω, so calibration and Euclidean reconstruction are the same knowledge. Question: what is still unknown after the second step?'
+  source: lecture.md §L6
+  takeaway: 'Two steps remove the ambiguity: plane at infinity, then absolute conic'
+- layout: equation
+  title: 1.7 The two upgrade steps
+  equations:
+  - tex: \Omega_\infty = \mathrm{M}^\top \omega\, \mathrm{M} = \mathrm{L}\mathrm{L}^\top
+    label: §10.4
+  bullets:
+  - H_A = [I | 0; πᵀ] sends π∞ to (0, 0, 0, 1)ᵀ (affine)
+  - H_M = [Lᵀ 0; 0 1] makes Ω∞ = I (metric); L is the Cholesky factor
+  - 'A global similarity remains: scale is not recovered'
+  notes: 'The chapter gives no equations for this; the formulas are from section 10.4. M is the left 3×3 block of a camera in the affine frame, ω is the image of the absolute conic, and L is the Cholesky factor of the resulting 3×3 matrix. After applying H M, perpendicular edges satisfy the dot-product relation of the earlier slide. What remains is a similarity: the reconstruction has the right shape but arbitrary scale, position and orientation. That is why a calibrated monocular drone reconstructs shape but not size, and an IMU or a known stereo baseline supplies the last piece. Question: why can an estimated ω come out with the wrong sign?'
+  source: lecture.md §L6
+  takeaway: 'What is left after calibration is a similarity: shape without scale'
+  where:
+  - - Ω∞
+    - absolute conic
+  - - M
+    - left 3×3 block of a camera
+  - - ω
+    - image of the absolute conic
+  - - L
+    - Cholesky factor
+- layout: bullets
+  title: '1.8–1.10 Skim: auto-calibration and the rewards'
+  bullets:
+  - 'No calibration knowledge: projective is the limit (p. 17)'
+  - 'Constant calibration: find π∞ first (hard), then ω linearly (easy)'
+  - 'Square pixels: 2n rays; four images fix it up to a finite set'
+  - '3D models: projective, auto-calibration, dense matching along epipolar lines'
+  - Video augmentation needs the Euclidean camera motion
+  notes: 'Auto-calibration asks whether the camera can be calibrated from the images alone. With constant unknown calibration, finding the plane at infinity is the hard step and ω follows linearly. With square pixels each image gives two rays that must meet Ω∞; finitely many conics meet eight such rays, so four images suffice up to a finite set. The two rewards in the chapter are a 3D model pipeline and inserting a virtual object into video, which needs the camera motion to be Euclidean, even with varying zoom. Algorithms are in chapter 19. Question: why is a Euclidean motion needed to insert an object but not to match features?'
+  source: lecture.md §L6
+- layout: table
+  title: 'Traps: which rung did the sensor setup leave open?'
+  table:
+    header:
+    - Symptom
+    - Cause
+    - Try
+    rows:
+    - - F flips between frames
+      - Rotation or planar scene
+      - Fit H and F, pick by score
+    - - Parallels converge
+      - π∞ unknown
+      - Calibrate K; impose parallels
+    - - Right angles wrong
+      - Ω∞ (ω, K) wrong
+      - Recalibrate f, aspect, skew
+    - - Bearings off at the edge
+      - Wrong f in ω
+      - Recalibrate
+    - - Map size drifts
+      - Scale unobservable
+      - IMU, stereo, scale prior
+    - - BA diverges
+      - Bad start or free gauge
+      - Initialize; anchor pose and scale
+    - - Panorama ghosting
+      - Centre moved
+      - Rotate about the centre
+    - - Bird's-eye warps
+      - Stale horizon
+      - Update H from attitude
+    widths:
+    - 3
+    - 3
+    - 4
+  notes: 'Every row is a rung of the ladder that the sensor setup left unpinned. Go through them as diagnosis: parallel lines that converge in a reconstruction mean the plane at infinity is unknown; parallels that are fine but wrong right angles mean the absolute conic, hence the calibration, is wrong; a map whose shape is right but whose size drifts means scale, which images cannot see. A bundle adjustment that diverges often has a bad initial guess or a free gauge, so anchor a pose and a distance. Question: pick one row and describe the experiment that would confirm the cause.'
+  source: lecture.md §L7
+- layout: bullets
+  title: 'Summary: claims to defend'
+  bullets:
+  - Points at infinity are ordinary points once coordinates are homogeneous
+  - Projective, affine and Euclidean differ by what they pin at infinity
+  - A camera is a rank-3 3×4 matrix; the centre decides when a homography fits
+  - Uncalibrated matches fix a scene only up to a 4×4 H, eq. (1.1)
+  - Calibration is knowing ω, equivalently Ω∞, and removes all but a similarity
+  notes: 'Ask students to defend each claim in a sentence, with an example from a robot. For the first, the vanishing point; for the second, the ladder figure; for the third, a quadruped turning in place; for the fourth, the cube and its look-alikes; for the fifth, why a calibrated monocular drone recovers shape but not scale. Remind them that the chapter is informal: precise definitions come in chapters 2 and 3. The exercises in the package check these claims numerically, so the best revision is to run them and compare with the figure numbers. Question: which claim would be hardest to defend to a skeptical colleague, and why?'
+  source: map.md
+- layout: bullets
+  title: What comes next
+  bullets:
+  - 'Ch. 2–3: lines, conics, planes and Ω∞ become definitions; angle formula (3.23)'
+  - 'Ch. 6–8: cameras as K[R | t], and ω = (KKᵀ)⁻¹'
+  - 'Ch. 9–12: two-view geometry, F, cameras from F, triangulation'
+  - 'Ch. 18–19: n-view methods and auto-calibration'
+  - 'Robot side: graph SLAM, FAST-LIO2, and monocular VIO scale'
+  notes: 'This chapter is a preview, and each informal statement becomes a definition or a theorem later. The line at infinity, the circular points and Ω∞ are defined in chapters 2 and 3. The camera as a calibration times a pose arrives in chapter 6, and the image of the absolute conic is derived in chapter 8. Chapters 9 to 12 build the machinery behind the four-step outline. On the robot side, bundle adjustment is the visual factor graph, and a monocular camera cannot see metric scale, which is the similarity ambiguity of this chapter. Question: which chapter do you want to start with, and what will you test first?'
+  source: map.md

@@ -1,0 +1,321 @@
+title: 'A Tour of Multiple View Geometry: review'
+footer: H&Z · Multiple View Geometry · ch. 1 · review
+slides:
+- layout: title
+  title: 'A Tour of Multiple View Geometry: review'
+  subtitle: Multiple View Geometry in Computer Vision, chapter 1
+  meta: Lesson t3.1 · Hartley, Zisserman
+  source: map.md
+- layout: agenda
+  title: What is on these slides
+  items:
+  - Key result per section, with its trap
+  - 'Cards C1–C9: the code that matters'
+  - Shapes and cost per card
+  - Symptom to fix and mistakes already made
+  - Conventions and where claims are proved
+  source: map.md
+- layout: equation
+  title: 1.1 Homogeneous coordinates, X′ = HX
+  equations:
+  - tex: (kx,\ ky,\ k)^\top \sim (x,\ y,\ 1)^\top
+    label: p. 2
+  - tex: \mathbf{X}^\prime = \mathrm{H}_{(n+1)\times(n+1)}\, \mathbf{X}
+    label: p. 3
+  bullets:
+  - Points at infinity have last coordinate 0; H is 8 DoF (3×3), 15 DoF (4×4)
+  - 'Trap: dehomogenizing a point at infinity; test |w| against ‖x‖, raise'
+  - 'Print slip p. 3: line and plane at infinity swapped with space and image'
+  source: lecture.md §L1
+  takeaway: 'Dehomogenizing infinity is the trap: test |w|, then raise'
+  where:
+  - - k
+    - non-zero scale
+  - - (x, y, 0)ᵀ
+    - point at infinity
+  - - H
+    - non-singular, up to scale
+- layout: equation
+  title: '1.1.1 Ladder: Ω∞ and perpendicularity'
+  equations:
+  - tex: \mathbf{d}_1^\top\, \Omega_\infty\, \mathbf{d}_2 = 0
+    label: p. 6
+  bullets:
+  - Circular points (1, ±i, 0)ᵀ lie on every circle (p. 5); Ω∞ = I in a Euclidean frame
+  - 'Affine: line at infinity fixed; similarity: circular points fixed too'
+  - 'Trap: affine corner 49.0° and opposite sides 0.0° apart; right angles lost'
+  source: lecture.md §L2
+  takeaway: Affine maps lose right angles even though parallels survive
+  where:
+  - - Ω∞
+    - absolute conic, T = 0
+  - - d₁, d₂
+    - direction vectors
+- layout: equation
+  title: 1.2 Camera and plane homography
+  equations:
+  - tex: (x,\ y,\ w)^\top = \mathrm{P}_{3\times4}\,(X,\ Y,\ Z,\ T)^\top
+    label: p. 7
+  - tex: H = [\,\mathbf{p}_1\ \mathbf{p}_2\ \mathbf{p}_4\,]\ \ (Z = 0)
+    label: p. 7
+  bullets:
+  - Rank 3, centre PC = 0 (§6.2.1, p. 158); same centre means H, any scene
+  - 'Trap: centre on the plane makes H rank 2; depth 4–12 m breaks H at 0.048 m'
+  source: lecture.md §L3
+  takeaway: Centre on the plane makes H rank 2; depth breaks H at 0.048 m
+  where:
+  - - P
+    - camera, 3×4, rank 3
+  - - H
+    - plane homography, 3×3
+  - - (X, Y, Z, T)
+    - world point
+- layout: equation
+  title: '1.2 Calibrated: angle between rays'
+  equations:
+  - tex: \cos\theta = \frac{\mathbf{x}_1^\top\,\omega\,\mathbf{x}_2}{\sqrt{(\mathbf{x}_1^\top\,\omega\,\mathbf{x}_1)(\mathbf{x}_2^\top\,\omega\,\mathbf{x}_2)}}
+    label: (8.9)
+  bullets:
+  - pp. 9–10; ω = (KKᵀ)⁻¹ (Result 8.17, p. 210); Example 1.1 is the ladder from one image
+  - 'Trap: f 20% short reads 6.04° high at the edge; use atan2, not arccos'
+  source: lecture.md §L4
+  takeaway: A short f reads high at the edge; use atan2, not arccos
+  where:
+  - - x₁, x₂
+    - homogeneous pixels
+  - - ω
+    - (KKᵀ)⁻¹, 3×3
+  - - θ
+    - ray angle
+- layout: equation
+  title: 1.3 Ambiguity and F
+  equations:
+  - tex: \mathrm{P}_j \mathbf{X}_i = (\mathrm{P}_j \mathrm{H}^{-1})(\mathrm{H}\mathbf{X}_i)
+    label: (1.1)
+  - tex: \mathbf{x}_i^{\prime\top}\, \mathrm{F}\, \mathbf{x}_i = 0
+    label: p. 11
+  bullets:
+  - pp. 10–12; rank F = 2 (det F = 0, p. 13); the outline is not for implementing
+  - 'Trap: compare reprojected pixels, not P and P H⁻¹; measure x′ᵀFx in pixels'
+  source: lecture.md §L5
+  takeaway: Compare reprojected pixels, not P and P H⁻¹
+  where:
+  - - Pⱼ
+    - camera j
+  - - H
+    - any 4×4
+  - - Xᵢ
+    - scene point
+  - - F
+    - rank 2, 3×3
+- layout: equation
+  title: 1.7 Euclidean upgrade
+  equations:
+  - tex: \Omega_\infty = \mathrm{M}^\top \omega\, \mathrm{M} = \mathrm{L}\mathrm{L}^\top
+    label: §10.4
+  bullets:
+  - 'pp. 16–17: Ω∞ lies on π∞; two views leave two solutions, three leave one'
+  - 'Trap: ω has arbitrary sign; π₄ near 0 needs a Householder step'
+  source: lecture.md §L6
+  takeaway: ω has arbitrary sign; fix it before the Cholesky step
+  where:
+  - - Ω∞
+    - absolute conic
+  - - M
+    - camera left block
+  - - L
+    - Cholesky factor
+- layout: bullets
+  title: 1.4–1.8 Skims in one place
+  bullets:
+  - '1.4 Trifocal tensor Tᵢʲᵏ: 27 entries, 4 equations per triplet, (1.2) p. 12'
+  - 1.5 Affine factorization by SVD; bundle adjustment needs a start (p. 14)
+  - '1.6 Transfer x″ = P″X (p. 16); plane or pure rotation: one view, H'
+  - '1.8 Auto-calibration: π∞ hard, ω linear; square pixels, 4 images'
+  source: lecture.md §L5
+- layout: code
+  title: 'C1 Homogeneous points: scale-free infinity test'
+  code: "def normalize_h(Xh):\n    Xh = np.atleast_2d(np.asarray(Xh, float))\n    return Xh / np.linalg.norm(Xh, axis=1, keepdims=True)\n\ndef at_infinity(Xh, tol=1e-12):\n    return np.abs(normalize_h(Xh)[:, -1]) < tol\n\ndef dehom(Xh, tol=1e-12):\n    Xh = np.atleast_2d(np.asarray(Xh, float))\n    if np.any(at_infinity(Xh, tol)):\n        raise ValueError(\"point at infinity\")\n    return Xh[:, :-1] / Xh[:, -1:]\n"
+  bullets:
+  - Rows are points; dehomogenize last and raise at infinity
+  source: translate.md C1
+- layout: code
+  title: C3 Camera centre by SVD, depth by eq. 6.15
+  code: "def camera_centre(P, rank_tol=1e-12):\n    _, s, Vt = np.linalg.svd(P)\n    if s[2] < rank_tol * s[0]:\n        raise ValueError(\"rank P < 3: not a camera (p. 7)\")\n    return Vt[-1]\n\ndef depth(P, Xh):\n    Xh = np.atleast_2d(Xh)\n    M = P[:, :3]\n    w = Xh @ P[2]\n    return (np.sign(np.linalg.det(M)) * w\n            / (Xh[:, 3] * np.linalg.norm(M[2])))\n"
+  bullets:
+  - 'Negative depth: behind the camera, same pixel as a point in front'
+  source: translate.md C3
+- layout: code
+  title: C4 Plane homography and the pixel fit test
+  code: "def plane_homography(P, cond_max=1e12):\n    H = P[:, [0, 1, 3]]\n    if np.linalg.cond(H) > cond_max:\n        raise ValueError(\"plane Z = 0 through the centre\")\n    return H / np.linalg.norm(H)\n\ndef transfer_rms_px(H, x1, x2):\n    y = np.atleast_2d(x1) @ H.T\n    d = y[:, :2] / y[:, 2:] - x2[:, :2] / x2[:, 2:]\n    return np.sqrt(np.mean(np.sum(d ** 2, axis=1)))\n"
+  bullets:
+  - Pick columns, do not fit; normalize by Frobenius norm, not H₃₃
+  source: translate.md C4
+- layout: code
+  title: 'C5 Projective ambiguity: solve, do not invert'
+  code: "def apply_ambiguity(Ps, Xh, H, cond_max=1e10):\n    if np.linalg.cond(H) > cond_max:\n        raise ValueError(\"H is numerically singular\")\n    Ps_new = [np.linalg.solve(H.T, P.T).T for P in Ps]\n    Ps_new = [P / np.linalg.norm(P) for P in Ps_new]\n    Xh_new = np.atleast_2d(Xh) @ H.T\n    Xh_new /= np.linalg.norm(Xh_new, axis=1, keepdims=True)\n    return Ps_new, Xh_new\n"
+  bullets:
+  - 'P H⁻¹ = (H⁻ᵀPᵀ)ᵀ: one LU of Hᵀ; the oracle is the pixel change'
+  source: translate.md C5
+- layout: code
+  title: C6 Epipolar distance in pixels, scale-free rank
+  code: "def epipolar_distance_px(F, x, xp):\n    x, xp = np.atleast_2d(x), np.atleast_2d(xp)\n    l = x @ F.T\n    return (np.abs(np.sum(xp * l, axis=1))\n            / np.hypot(l[:, 0], l[:, 1]))\n\ndef rank2_gap(F):\n    s = np.linalg.svd(F, compute_uv=False)\n    return s[2] / s[0]\n"
+  bullets:
+  - Normalize points before step (i); same centre gives F = 0
+  source: translate.md C6
+- layout: code
+  title: C7 Linear triangulation, any number of views
+  code: "def triangulate(Ps, xs):\n    rows = []\n    for P, x in zip(Ps, xs):\n        x = x / x[2]\n        rows += [x[0] * P[2] - P[0], x[1] * P[2] - P[1]]\n    A = np.array(rows)\n    A /= np.linalg.norm(A, axis=1, keepdims=True)\n    X = np.linalg.svd(A)[2][-1]\n    ...  # unit-norm X: see translate.md C7\n"
+  bullets:
+  - Homogeneous DLT, row scaling; check cheirality and reprojection
+  source: translate.md C7
+- layout: code
+  title: 'C8 Ray angle: back-project, then atan2'
+  code: "def back_project(K, x):\n    return solve_triangular(K, np.atleast_2d(x).T,\n                            lower=False).T\n\ndef ray_angle(K, x1, x2):\n    d1, d2 = back_project(K, x1), back_project(K, x2)\n    cross = np.linalg.norm(np.cross(d1, d2), axis=1)\n    dot = np.sum(d1 * d2, axis=1)\n    ...  # atan2 of cross and dot: see translate.md C8\n"
+  bullets:
+  - No inverse of KKᵀ; arccos loses about half the digits near zero
+  source: translate.md C8
+- layout: code
+  title: C9 Metric upgrade by one Cholesky
+  code: "def metric_upgrade(M, omega):\n    Omega = M.T @ omega @ M\n    Omega = 0.5 * (Omega + Omega.T)\n    if np.trace(Omega) < 0:\n        Omega = -Omega\n    ...  # Cholesky of Omega: see translate.md C9\n    H = np.eye(4)\n    H[:3, :3] = L.T\n    return H\n"
+  bullets:
+  - 'Equals Result 10.5''s H up to a rotation: A = L⁻ᵀQ'
+  - Upgrade cameras and points together with C5
+  source: translate.md C9
+- layout: compare
+  title: Naive or robust, card by card
+  columns:
+  - heading: Naive
+    bullets:
+    - Divide by w, get infinity
+    - arccos for the ray angle
+    - Compare P with P H⁻¹
+    - Invert H and KKᵀ
+  - heading: Robust
+    bullets:
+    - Test |w| against ‖x‖, then raise
+    - atan2 of cross and dot
+    - Compare reprojected pixels
+    - Solve with one LU; triangular solves
+  takeaway: Each robust column entry is one of the cards above
+  source: translate.md cards
+- layout: stats
+  title: Session readouts at default settings
+  stats:
+  - value: '0.140'
+    label: px, distance of x′ to its epipolar line
+  - value: '0.740'
+    label: px, median over all 60 points
+  - value: '6.90'
+    label: px, rotation-only H on floor points
+  - value: '5.55'
+    label: px, rotation-only H on clutter
+  bullets:
+  - Python session and JS session agree on all 15 settings
+  source: REVIEW.md
+- layout: table
+  title: Shapes and cost per card
+  table:
+    header:
+    - Card
+    - Shapes
+    - Cost
+    rows:
+    - - C1
+      - x ∈ ℝ³, X ∈ ℝ⁴, H (n+1)²
+      - 9 / 16 multiplies per point
+    - - C3
+      - P 3×4, rank 3
+      - 12 multiplies per point
+    - - C4
+      - H 3×3
+      - 9 multiplies per point
+    - - C5
+      - H 4×4
+      - one 4×4 LU; 48 per camera
+    - - C6
+      - F 3×3, rank 2
+      - one 3×4 SVD for F
+    - - C7
+      - A is 2n×4
+      - one 2n×4 SVD per point
+    - - C8
+      - K, ω 3×3
+      - two triangular solves
+    - - C9
+      - Ω∞ 3×3
+      - O(1) per upgrade
+    widths:
+    - 1
+    - 4
+    - 4
+  source: translate.md cards
+- layout: table
+  title: Symptom to fix
+  table:
+    header:
+    - Symptom
+    - Cause
+    - Try
+    rows:
+    - - F flips between frames
+      - Rotation or planar scene
+      - Fit H and F, pick by score
+    - - Parallels converge
+      - π∞ unknown
+      - Calibrate K; impose parallels
+    - - Right angles wrong
+      - Ω∞ (ω, K) wrong
+      - Recalibrate f, aspect, skew
+    - - Bearings off at the edge
+      - Wrong f in ω
+      - Recalibrate
+    - - Map size drifts
+      - Scale unobservable
+      - IMU, stereo, scale prior
+    - - BA diverges
+      - Bad start or free gauge
+      - Initialize; anchor pose and scale
+    - - Panorama ghosting
+      - Centre moved
+      - Rotate about the centre
+    - - Bird's-eye warps
+      - Stale horizon
+      - Update H from attitude
+    widths:
+    - 3
+    - 3
+    - 4
+  source: lecture.md symptom table
+- layout: bullets
+  title: Mistakes already made (REVIEW.md)
+  bullets:
+  - PC = 0 is §6.2.1, p. 158; p. 7 gives only rank 3 and the [I | 0] centre
+  - Cheirality (which side is in front) is ch. 21, p. 515, not p. 11
+  - Seven matches fix F is a dof count; the book gives no reason (p. 281)
+  - The vanishing point is finite; the ideal point is the wall direction
+  - 'H_M differs from Result 10.5''s H by a rotation: A = L⁻ᵀQ'
+  - Example 1.1 is pp. 9–10, not p. 10
+  source: REVIEW.md
+- layout: key
+  title: The one sentence
+  statement: Images fix a scene only up to a group; each extra piece of knowledge removes part of it
+  detail: Projective, then affine with π∞, then metric with Ω∞; scale stays free
+  source: map.md
+- layout: bullets
+  title: Conventions that bite
+  bullets:
+  - P is a 3×4 camera, not a covariance; H is a homography, not a Jacobian
+  - H&Z P = K[R | t] maps world to camera; GTSAM Pose3 is the inverse
+  - ω is the image of the absolute conic, not an angular rate
+  - T is the fourth homogeneous coordinate
+  - Noise, outliers and RANSAC are not in this chapter (§4.7)
+  source: lecture.md notation
+- layout: bullets
+  title: Where each claim is proved
+  bullets:
+  - 'Ch. 2–3: lines, conics, Ω∞, angle formula (3.23)'
+  - 'Ch. 6–8: K[R | t], IAC; ch. 9 and 11: F; ch. 12: triangulation'
+  - 'Ch. 18–19: factorization, bundle adjustment, auto-calibration'
+  - 'Robot side: lesson t2.8 graph SLAM; scale from the IMU'
+  source: map.md feeds

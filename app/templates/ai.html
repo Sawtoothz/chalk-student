@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+{% set page = 'ai' %}
+{% block title %}Chalk · AI engine{% endblock %}
+{% block body %}
+<div class="head"><div>
+  <h1>AI engine</h1>
+  <p class="ai-lede">Which AI agent runs the <code>/teach</code> stages when you press Teach or turn on Auto-run. Every engine
+  reads the same pipeline (<code>.claude/skills/teach/</code>) and the same rules (<code>AGENTS.md</code>), and every package
+  must still pass <code>just check</code> and the review stage.</p>
+</div></div>
+
+<form id="aiform" class="ai-list">
+  {% for r in rows %}
+  <section class="ai-card{% if r.chosen %} on{% endif %}" data-name="{{ r.name }}">
+    <label class="ai-pick">
+      <input type="radio" name="engine" value="{{ r.name }}" {% if r.chosen %}checked{% endif %}>
+      <span class="ai-name">{{ r.label }}</span>
+      {% if r.name != 'custom' %}
+        {% if r.path %}<span class="ai-ok">installed</span>{% else %}<span class="ai-miss">not installed</span>{% endif %}
+      {% elif r.path %}<span class="ai-ok">found</span>{% endif %}
+    </label>
+    <p class="ai-note">{{ r.note }}</p>
+    {% if r.name != 'custom' and not r.path %}
+    <p class="ai-how">Install: <code>{{ r.install }}</code><br>Then log in once in a terminal: <code>{{ r.login }}</code></p>
+    {% elif r.login %}
+    <p class="ai-how">Not logged in yet? Run <code>{{ r.login }}</code> in a terminal once.</p>
+    {% endif %}
+    <div class="ai-grid">
+      <label>Strong model <small>map, highlight, lecture, cards, exercises, review</small>
+        <input name="strong" value="{{ r.strong }}" placeholder="engine default" autocomplete="off" spellcheck="false"></label>
+      <label>Fast model <small>session, build, slides</small>
+        <input name="fast" value="{{ r.fast }}" placeholder="engine default" autocomplete="off" spellcheck="false"></label>
+    </div>
+    <details class="ai-cmd" {% if r.name == 'custom' %}open{% endif %}>
+      <summary>Command</summary>
+      <textarea name="command" rows="2" spellcheck="false" placeholder="{{ r.default_command or 'mytool --model {model} --prompt {prompt}' }}">{{ r.command }}</textarea>
+      <small>Placeholders: <code>{prompt}</code> (required), <code>{model}</code>, <code>{max_turns}</code>. Split like a shell
+      line but never run through a shell. An empty <code>{model}</code> drops the flag before it. Leave empty for the default shown.</small>
+    </details>
+    <div class="ai-act">
+      <button type="button" class="btn ai-test">Test</button>
+      <span class="ai-res" aria-live="polite"></span>
+    </div>
+    <pre class="ai-out" hidden></pre>
+  </section>
+  {% endfor %}
+  <div class="ai-save">
+    <button class="btn go" type="submit">Save</button><span id="saved" aria-live="polite"></span>
+  </div>
+</form>
+
+<p class="ai-warn">Stages run with full permissions in this folder (no approval prompts), because nobody is there to
+answer them. Keep the GUI on localhost or a Tailscale address. Test sends one short prompt with the fast model, which
+costs a few cents; a whole chapter costs about $20–30 with the strong models.
+A weaker model makes packages that look complete and are subtly wrong: keep the strong tier on your best model.</p>
+{% endblock %}
+{% block scripts %}
+<script>
+(function(){
+  const form = document.getElementById('aiform');
+  const collect = () => {
+    const out = {engine: form.querySelector('input[name=engine]:checked').value, engines: {}};
+    form.querySelectorAll('.ai-card').forEach(c => {
+      out.engines[c.dataset.name] = {strong: c.querySelector('[name=strong]').value,
+        fast: c.querySelector('[name=fast]').value, command: c.querySelector('[name=command]').value};
+    });
+    return out;
+  };
+  const save = async () => {
+    const r = await fetch('/settings', {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(collect())});
+    if (!r.ok) { const e = await r.json().catch(() => ({})); throw new Error(e.detail || ('HTTP ' + r.status)); }
+    return r.json();
+  };
+  form.addEventListener('change', e => {
+    if (e.target.name === 'engine')
+      form.querySelectorAll('.ai-card').forEach(c => c.classList.toggle('on', c.dataset.name === e.target.value));
+  });
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    const s = document.getElementById('saved');
+    try { const st = await save(); s.textContent = 'Saved. Stages now run on ' + form.querySelector('.ai-card.on .ai-name').textContent + '.';
+          const chip = document.getElementById('aichip'); if (chip) chip.textContent = 'AI: ' + form.querySelector('.ai-card.on .ai-name').textContent; }
+    catch (err) { s.textContent = 'Not saved: ' + err.message; }
+  });
+  form.querySelectorAll('.ai-test').forEach(b => b.addEventListener('click', async () => {
+    const card = b.closest('.ai-card'), res = card.querySelector('.ai-res'), out = card.querySelector('.ai-out');
+    b.disabled = true; res.textContent = 'Saving and asking it to reply OK…'; out.hidden = true;
+    try {
+      await save();
+      const r = await (await fetch('/ai/test/' + card.dataset.name, {method: 'POST'})).json();
+      res.textContent = r.ok ? 'Works: it answered.' : 'Did not work. Output below.';
+      res.className = 'ai-res ' + (r.ok ? 'good' : 'bad');
+      out.textContent = (r.command ? '$ ' + r.command + '\n\n' : '') + r.output; out.hidden = false;
+    } catch (err) { res.textContent = 'Error: ' + err.message; res.className = 'ai-res bad'; }
+    finally { b.disabled = false; }
+  }));
+})();
+</script>
+{% endblock %}

@@ -1,0 +1,246 @@
+<!-- Interactive session for Thrun ch. 5, browser version of session.py. Included by build_viewer.py. Needs Plotly global.
+     Source file: figures/interactive.src.html; `python3 figures/build_interactive.py` inlines figures/session_draws.json
+     into the DRAWS constant (placeholder below) and writes ../interactive.html. Edit the source, not the output. -->
+<style>
+.ix{display:flex;flex-direction:column;gap:26px;max-width:960px}
+.ix .intro{font-family:var(--serif);font-size:16px;max-width:72ch;color:var(--ink)}
+.fig-card{border:0.5px solid var(--rule);border-radius:12px;background:var(--sheet);padding:14px 14px 12px;font-family:var(--sans)}
+.fig-head{display:flex;justify-content:space-between;align-items:flex-start;gap:8px}
+.fig-num{font-family:var(--mono);font-size:11px;letter-spacing:.04em;color:var(--ink3)}
+.fig-title{font-size:16px;font-weight:600;margin-top:2px}
+.fig-hint{margin-top:6px;font-size:12.5px;color:var(--ink2)}
+.fig-predict{margin:10px 0 4px;padding:8px 12px;border-left:3px solid var(--key);background:var(--code-bg);border-radius:0 6px 6px 0;font-size:13.5px}
+.fig-predict b{font-weight:600}
+.fig-chip{margin-top:2px;padding:3px 8px;border-radius:8px;font-size:11px;white-space:nowrap;background:var(--define);color:var(--accent-ink)}
+.fig-chip[data-state="warn"]{background:var(--key);color:#4a2f06}
+.fig-chip[data-state="bad"]{background:var(--derive);color:#501313}
+:root[data-theme="dark"] .fig-chip[data-state="warn"],:root[data-theme="dark"] .fig-chip[data-state="bad"]{color:#f5f4ef}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fig-chip[data-state="warn"],:root:not([data-theme="light"]) .fig-chip[data-state="bad"]{color:#f5f4ef}}
+.fig-plot{margin-top:8px;min-height:300px}
+.fig-row{display:flex;align-items:center;gap:10px;margin-top:6px}
+.fig-row label{min-width:150px;font-size:13px;color:var(--ink2)}
+.fig-row input[type=range]{flex:1;accent-color:var(--accent);min-width:0}
+.fig-row output{min-width:64px;text-align:right;font-family:var(--mono);font-size:12px;font-variant-numeric:tabular-nums}
+.fig-tiles{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:12px;font-family:var(--mono)}
+.fig-tile{padding:8px 10px;border-radius:8px;background:var(--code-bg);min-width:0}
+.fig-tile .k{font-size:11px;color:var(--ink3)}
+.fig-tile .v{font-size:13px;font-weight:500;line-height:1.6;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.fig-tile.wide{grid-column:1 / -1}
+.fig-after{margin-top:10px;font-size:13.5px;color:var(--ink2);font-family:var(--serif);font-size:15px}
+.fig-after summary{cursor:pointer;font-family:var(--sans);font-size:13px;color:var(--accent-ink);font-weight:500}
+@media (max-width:600px){.fig-row label{min-width:110px}}
+</style>
+<div class="ix">
+<p class="intro">Four figures, one idea: a motion model is a distribution over where a command takes the robot, and both of its forms (a sampler and a density) are only as good as their handling of the corners. Each figure has a <b>Predict first</b> prompt: write your guess down before you move the slider. Colours: blue = estimate / reference, coral = the book's version, teal = the quantity being taught, gray = structure, amber = warning. Every sampler is fed from one fixed list of 6000 standard normals, so the readouts equal those of <code>session.py</code>.</p>
+
+<figure class="fig-card" id="figA">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.4a · Table 5.3</div><div class="fig-title">Sampling the velocity model</div></div><div class="fig-chip" id="chipA">three noise terms: a 3-D cloud</div></div>
+  <div class="fig-hint">Start (0, 0, 0), v = 1.0 m/s, Δt = 2 s, 300 draws of Table 5.3 with α₁…α₄ = 0.02 and α₅, α₆ = 0.005 times the sliders. Drag ω through 0 · scale all noise · set γ̂ to 0 and read the last two tiles.</div>
+  <div class="fig-predict"><b>Predict first.</b> Set the γ̂ scale to 0 (the book's first version, eq. 5.13, without a final rotation). The cloud of end positions looks the same. What is wrong with it, and which readout will show it?</div>
+  <div class="fig-row"><label for="a_w">commanded ω [rad/s]</label><input type="range" id="a_w" min="-1.2" max="1.2" step="0.05" value="0.8"><output id="a_w_o"></output></div>
+  <div class="fig-row"><label for="a_s">log₁₀ scale on α₁…α₆</label><input type="range" id="a_s" min="-1" max="0.5" step="0.1" value="0"><output id="a_s_o"></output></div>
+  <div class="fig-row"><label for="a_g">γ̂ scale (α₅, α₆ times this)</label><input type="range" id="a_g" min="0" max="4" step="0.5" value="1"><output id="a_g_o"></output></div>
+  <div class="fig-plot" id="plotA" style="min-height:440px"></div>
+  <div class="fig-tiles" id="tilesA"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>The (x′, y′) cloud does not change when γ̂ goes to 0 (the position tiles are identical; the draws are the same and γ̂ only touches θ′). The heading spread falls a little (0.381 to 0.340 rad at the default), and the recovered-γ̂ tile drops to 0.000. Every sample then lies on a two-dimensional surface in (x′, y′, θ′): Table 5.1 asked to score a pose off that surface finds no (v̂, ω̂) that reaches it (p. 129). That is why the book adds the third term. The round-trip tile is the invariant: velocity_inverse of a sample, pushed back through velocity_forward, returns the sample, 0 of 300 off. It holds while each step turns less than a half turn (card C3, trick 6).</details>
+</figure>
+
+<figure class="fig-card" id="figB">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.4b · Table 5.1 line 7</div><div class="fig-title">Which way is forward?</div></div><div class="fig-chip" id="chipB">line 7 has the wrong sign</div></div>
+  <div class="fig-hint">Start (0, 0, 0), Δt = 2 s, the moderate α of Fig 2.4a. Left: log density of the end position (heading fixed to the noise-free one) from the chord-form inverse of card C3. Right: the same sum of log-probabilities with v̂, ω̂, γ̂ from the book's lines 2–9 as printed (only Δθ is wrapped). Sweep ω from + to − with v &gt; 0 · flip v · stop at ω = 0 and at v = 0.</div>
+  <div class="fig-predict"><b>Predict first.</b> Command a <b>right</b> turn (ω &lt; 0, v &gt; 0). Which panel puts its bright ridge on the arc the robot actually drives? What does the right panel show for a <b>reversing</b> command (v &lt; 0, ω &gt; 0)?</div>
+  <div class="fig-row"><label for="b_v">commanded v [m/s]</label><input type="range" id="b_v" min="-1.2" max="1.2" step="0.1" value="1"><output id="b_v_o"></output></div>
+  <div class="fig-row"><label for="b_w">commanded ω [rad/s]</label><input type="range" id="b_w" min="-1" max="1" step="0.1" value="-0.5"><output id="b_w_o"></output></div>
+  <div class="fig-plot" id="plotB" style="min-height:420px"></div>
+  <div class="fig-tiles" id="tilesB"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>With v &gt; 0, ω &lt; 0 the printed lines give v̂ &lt; 0 (line 7 takes its sign from Δθ, and r* is a distance), so the right panel scores the very pose the robot reached with a huge penalty and its ridge sits somewhere else. The chord form takes the sign from the displacement along the initial heading and the ridge goes through the cross. For v &lt; 0, ω &gt; 0 the book's panel is also wrong; whenever v and ω have the same sign the two agree, which is why the printed table looks fine on a left-turning test. At ω = 0 line 2 divides by zero (p. 130) and the right panel goes blank; at v = 0 a spin in place is booked as γ̂ in the chord form (card C3, what breaks first, item 4).</details>
+</figure>
+
+<figure class="fig-card" id="figC">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.4c · Tables 5.5–5.6</div><div class="fig-title">The odometry model at its corners</div></div><div class="fig-chip" id="chipC">printed and C4 agree</div></div>
+  <div class="fig-hint">Particles start at (0, 0, 0). The odometer reports a step of d metres along its own heading θ̄ (negative d is reversing), then a turn of ψ. Both clouds use the same 300 normal draws: coral is Table 5.6 as printed, teal is card C4. α = (0.01, 0.0005, 0.01, 0.0005) times the slider. Reverse (d &lt; 0) · spin in place (d = 0, ψ ≠ 0) and sweep θ̄ · scale α.</div>
+  <div class="fig-predict"><b>Predict first.</b> Back up 0.5 m in a straight line (d = −0.5, ψ = 0). Does the printed sampler spread the headings more, less, or the same as driving forward 0.5 m? Then set d = 0, ψ = 30° and change θ̄: should the answer depend on it?</div>
+  <div class="fig-row"><label for="c_d">odometry step d [m]</label><input type="range" id="c_d" min="-1.5" max="1.5" step="0.1" value="-0.5"><output id="c_d_o"></output></div>
+  <div class="fig-row"><label for="c_psi">turn ψ [deg]</label><input type="range" id="c_psi" min="-90" max="90" step="10" value="0"><output id="c_psi_o"></output></div>
+  <div class="fig-row"><label for="c_th">odometry frame heading θ̄ [deg]</label><input type="range" id="c_th" min="-180" max="180" step="15" value="150"><output id="c_th_o"></output></div>
+  <div class="fig-row"><label for="c_s">log₁₀ scale on α₁…α₄</label><input type="range" id="c_s" min="-1" max="1" step="0.1" value="0"><output id="c_s_o"></output></div>
+  <div class="fig-plot" id="plotC" style="min-height:440px"></div>
+  <div class="fig-tiles" id="tilesC"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>Reversing makes the printed decomposition δrot1 = δrot2 = ±π, and α₁δ²rot then inflates the heading noise although the robot never turned; rot_for_noise measures each rotation from the nearer of straight ahead and straight back, so backing up is as quiet as driving forward. For a turn in place (d = 0), atan2(0, 0) gives δrot1 = −θ̄ in the printed lines, so the heading spread follows the odometer's own frame; the 1 cm threshold makes it independent of θ̄ (card C4, tricks 2–3). The tick marks show the heading of 40 particles. The book warns about the unwrapped δrot2 error on p. 135; that bug lives in the density (T4), not in these two samplers.</details>
+</figure>
+
+<figure class="fig-card" id="figD">
+  <div class="fig-head"><div><div class="fig-num">Fig 2.4d · Table 5.7</div><div class="fig-title">The end-pose check lets particles through</div></div><div class="fig-chip" id="chipD">tunnelling: spacing is larger than the wall</div></div>
+  <div class="fig-hint">Start (0, 0, 90°) facing a wall, ω = −0.35 rad/s, Δt = 3 s, α = (0.03 × 4, 0.005 × 2). The wall is 0.15 m thick, 0.45 m grown by the robot radius (dashed). 200 particles go through sample_motion_model_with_map; draws that land in the grown wall are redrawn, at most cap times, and the map is checked at N equally spaced points along the arc. Raise N until the amber × vanish · cut the cap to 1 and count the dead particles · speed up.</div>
+  <div class="fig-predict"><b>Predict first.</b> With one check (N = 1, the book's end-pose test) and a long step (v = 1.0 m/s, a 3 m step), what fraction of the accepted particles drove through the wall? How many checks make that fraction almost vanish, and what does it cost in rejected particles?</div>
+  <div class="fig-row"><label for="d_v">commanded v [m/s]</label><input type="range" id="d_v" min="0.2" max="1.6" step="0.1" value="1"><output id="d_v_o"></output></div>
+  <div class="fig-row"><label for="d_n">map checks per motion N</label><input type="range" id="d_n" min="1" max="20" step="1" value="1"><output id="d_n_o"></output></div>
+  <div class="fig-row"><label for="d_cap">retry cap (draws per particle)</label><input type="range" id="d_cap" min="1" max="10" step="1" value="10"><output id="d_cap_o"></output></div>
+  <div class="fig-plot" id="plotD" style="min-height:480px"></div>
+  <div class="fig-tiles" id="tilesD"></div>
+  <details class="fig-after"><summary>What you should have seen</summary>With N = 1 the only test is the end pose, so a particle that crossed the wall in the middle of the arc and landed behind it is accepted (eq. 5.51 drops the path, p. 143): 77.0 % of the accepted particles at the default, the amber ×. At N = 10 (spacing 0.30 m, below the 0.45 m configuration-space wall) it is 0.6 %, which is the book's advice to predict often. The price shows in the cap tile: the arcs that survive are the minority, so 36 of 200 particles use up all ten draws and come back with π = 0 (resampling removes them); at N = 1 none do. Table 5.7's loop has no bound (p. 141); the cap is what keeps a robot facing a wall from freezing the filter. A shorter step (smaller v, or the same v at a higher update rate) gets the same safety without the rejections.</details>
+</figure>
+</div>
+
+<script>
+(function(){
+const DRAWS=__DRAWS__;
+const PI=Math.PI, TAU=2*PI;
+const wrap=a=>(((a+PI)%TAU)+TAU)%TAU-PI;
+const sinc=h=>Math.abs(h)<1e-300?1:Math.sin(h)/h;
+const sum=a=>a.reduce((s,v)=>s+v,0);
+const mean=a=>sum(a)/a.length;
+const std=a=>{const m=mean(a);return Math.sqrt(mean(a.map(v=>(v-m)*(v-m))))};
+function Stream(){let i=0;return{normal(n){const o=new Array(n);for(let k=0;k<n;k++)o[k]=DRAWS[(i+k)%DRAWS.length];i+=n;return o}}}
+const nanf=v=>v!==v;
+
+// ---------- style
+const css=k=>getComputedStyle(document.documentElement).getPropertyValue(k).trim();
+const COL={blue:'#378ADD',coral:'#D85A30',teal:'#1D9E75',gray:'#888780',amber:'#BA7517'};
+function axis(extra){const grid=css('--rule'),mut=css('--ink2');return Object.assign({gridcolor:grid,zerolinecolor:grid,linecolor:grid,tickfont:{color:mut}},extra)}
+function layout(extra){const ink=css('--ink'),mut=css('--ink2'),bg=css('--sheet');return Object.assign({paper_bgcolor:bg,plot_bgcolor:bg,font:{family:'IBM Plex Sans, system-ui, sans-serif',color:ink,size:12},margin:{l:48,r:12,t:36,b:40},legend:{font:{color:mut,size:11},bgcolor:'rgba(0,0,0,0)'},xaxis:axis(),yaxis:axis(),title:{x:0,font:{size:13,color:ink}}},extra)}
+const cfg={displayModeBar:false,responsive:true};
+const fx=(v,d)=>nanf(v)?'nan':(v<0?'−':'')+Math.abs(v).toFixed(d);
+function tiles(id,obj){document.getElementById(id).innerHTML=Object.entries(obj).map(([k,v])=>`<div class="fig-tile${k.startsWith('*')?' wide':''}"><div class="k">${k.replace(/^\*/,'')}</div><div class="v">${v}</div></div>`).join('')}
+function chip(id,text,state){const c=document.getElementById(id);c.textContent=text;c.dataset.state=state}
+function bind(ids,fn){ids.forEach(id=>{const el=document.getElementById(id),o=document.getElementById(id+'_o');const upd=()=>{o.textContent=el.value;fn()};el.addEventListener('input',upd);o.textContent=el.value});fn()}
+const val=id=>+document.getElementById(id).value;
+const linspace=(a,b,n)=>Array.from({length:n},(_,i)=>a+(b-a)*i/(n-1));
+
+// ---------- models (same as exercises/solutions/T3_solution.py and models.py)
+const ALPHA_VEL=[0.02,0.02,0.02,0.02,0.005,0.005], ALPHA_ODO=[0.01,0.0005,0.01,0.0005];
+function vForward(X,v,w,g,dt){const half=0.5*w*dt,s=v*dt*sinc(half),th=X[2];return[X[0]+s*Math.cos(th+half),X[1]+s*Math.sin(th+half),wrap(th+(w+g)*dt)]}
+function vInverse(X,Xp,dt){const dx=Xp[0]-X[0],dy=Xp[1]-X[1],th=X[2];const c=dx*Math.cos(th)+dy*Math.sin(th),l=-dx*Math.sin(th)+dy*Math.cos(th);
+  let half=Math.atan2(l,c);half=half>PI/2?half-PI:(half<-PI/2?half+PI:half);const sgn=c<0?-1:1;
+  return[sgn*Math.hypot(dx,dy)/(dt*sinc(half)),2*half/dt,wrap(Xp[2]-th-2*half)/dt]}
+function logProb(a,b2){b2=Math.max(b2,1e-12);return -0.5*(Math.log(2*PI*b2)+a*a/b2)}
+function logMotionVelocity(Xp,u,X,al,dt){const[v,w]=u,[vh,wh,gh]=vInverse(X,Xp,dt);
+  return logProb(v-vh,al[0]*v*v+al[1]*w*w)+logProb(w-wh,al[2]*v*v+al[3]*w*w)+logProb(gh,al[4]*v*v+al[5]*w*w)}
+function sampleVelocity(u,X,al,dt,st){const[v,w]=u,M=X.length;
+  const zv=st.normal(M),zw=st.normal(M),zg=st.normal(M);
+  const sv=Math.sqrt(al[0]*v*v+al[1]*w*w),sw=Math.sqrt(al[2]*v*v+al[3]*w*w),sg=Math.sqrt(al[4]*v*v+al[5]*w*w);
+  return X.map((x,i)=>vForward(x,v+zv[i]*sv,w+zw[i]*sw,zg[i]*sg,dt))}
+function bookInverse(x0,Xp,dt){const[x,y,th]=x0,[xp,yp,tp]=Xp;
+  const mu=0.5*((x-xp)*Math.cos(th)+(y-yp)*Math.sin(th))/((y-yp)*Math.cos(th)-(x-xp)*Math.sin(th));
+  const xs=(x+xp)/2+mu*(y-yp),ys=(y+yp)/2+mu*(xp-x),rs=Math.sqrt((x-xs)*(x-xs)+(y-ys)*(y-ys));
+  const dth=wrap(Math.atan2(yp-ys,xp-xs)-Math.atan2(y-ys,x-xs));const wh=dth/dt;
+  return[dth/dt*rs,wh,(tp-th)/dt-wh]}
+function odoParams(P0,P1){const dx=P1[0]-P0[0],dy=P1[1]-P0[1],trans=Math.hypot(dx,dy);
+  const rot1=trans<0.01?0:wrap(Math.atan2(dy,dx)-P0[2]);return[rot1,trans,wrap(P1[2]-P0[2]-rot1)]}
+const rotNoise=r=>Math.min(Math.abs(r),Math.abs(wrap(r-PI)));
+function sampleOdometry(P0,P1,X,al,st){const[rot1,trans,rot2]=odoParams(P0,P1),[a1,a2,a3,a4]=al;
+  const n1=rotNoise(rot1),n2=rotNoise(rot2);
+  const b1=a1*n1**2+a2*trans**2,b2=a3*trans**2+a4*(n1**2+n2**2),b3=a1*n2**2+a2*trans**2;const M=X.length;
+  const z1=st.normal(M),z2=st.normal(M),z3=st.normal(M);
+  return X.map((x,i)=>{const h1=rot1-z1[i]*Math.sqrt(b1),h2=trans-z2[i]*Math.sqrt(b2),h3=rot2-z3[i]*Math.sqrt(b3);
+    return[x[0]+h2*Math.cos(x[2]+h1),x[1]+h2*Math.sin(x[2]+h1),wrap(x[2]+h1+h3)]})}
+function sampleOdometryBook(P0,P1,X,al,st){const[xb,yb,tb]=P0,[xbp,ybp,tbp]=P1,[a1,a2,a3,a4]=al;
+  const rot1=Math.atan2(ybp-yb,xbp-xb)-tb,trans=Math.hypot(xbp-xb,ybp-yb),rot2=tbp-tb-rot1;const M=X.length;
+  const z1=st.normal(M),z2=st.normal(M),z3=st.normal(M);
+  const s1=Math.sqrt(a1*rot1**2+a2*trans**2),s2=Math.sqrt(a3*trans**2+a4*rot1**2+a4*rot2**2),s3=Math.sqrt(a1*rot2**2+a2*trans**2);
+  return{X:X.map((x,i)=>{const h1=rot1-z1[i]*s1,h2=trans-z2[i]*s2,h3=rot2-z3[i]*s3;
+    return[x[0]+h2*Math.cos(x[2]+h1),x[1]+h2*Math.sin(x[2]+h1),wrap(x[2]+h1+h3)]}),d:[rot1,trans,rot2]}}
+const WALL={x:0.2,y:1.75,w:2.2,h:0.15,r:0.15};
+const inFree=X=>!((X[0]>WALL.x-WALL.r)&&(X[0]<WALL.x+WALL.w+WALL.r)&&(X[1]>WALL.y-WALL.r)&&(X[1]<WALL.y+WALL.h+WALL.r));
+function sampleWithMap(u,X,sampler,freeFn,st,maxTries){const Xn=sampler(u,X,st).map(p=>p.slice());const ok=Xn.map(freeFn);
+  for(let t=0;t<maxTries-1;t++){const bad=[];ok.forEach((o,i)=>{if(!o)bad.push(i)});if(!bad.length)break;
+    const re=sampler(u,bad.map(i=>X[i]),st);bad.forEach((i,k)=>{Xn[i]=re[k];ok[i]=freeFn(re[k])})}
+  return{Xn,pi:ok.map(o=>o?1:0)}}
+
+// ---------- Fig A
+function figA(){const w=val('a_w'),s=val('a_s'),g=val('a_g'),v=1.0,dt=2.0,M=300;
+  const al=ALPHA_VEL.map((a,i)=>a*Math.pow(10,s)*(i>=4?g:1));const x0=[0,0,0];
+  const free=vForward(x0,v,w,0,dt);const Xs=sampleVelocity([v,w],Array.from({length:M},()=>x0),al,dt,Stream());
+  let bad=0;const gh=[];Xs.forEach(X=>{const[a,b,c]=vInverse(x0,X,dt);gh.push(c);const B=vForward(x0,a,b,c,dt);
+    const e=Math.max(Math.hypot(B[0]-X[0],B[1]-X[1]),Math.abs(wrap(B[2]-X[2])));if(e>1e-9)bad++});
+  const mx=mean(Xs.map(p=>p[0])),my=mean(Xs.map(p=>p[1]));let sxx=0,sxy=0,syy=0;Xs.forEach(p=>{sxx+=(p[0]-mx)**2;sxy+=(p[0]-mx)*(p[1]-my);syy+=(p[1]-my)**2});
+  sxx/=M;sxy/=M;syy/=M;const tr=sxx+syy,dd=Math.sqrt(Math.max((sxx-syy)**2/4+sxy*sxy,0));const l1=tr/2+dd,l2=tr/2-dd;
+  const dth=Xs.map(p=>wrap(p[2]-free[2]));
+  const arc=linspace(0,1,60).map(t=>vForward(x0,v,w,0,dt*t));
+  Plotly.react('plotA',[{x:Xs.map(p=>p[0]),y:Xs.map(p=>p[1]),mode:'markers',name:'Table 5.3 samples',marker:{size:4,color:COL.teal,opacity:0.5}},
+    {x:arc.map(p=>p[0]),y:arc.map(p=>p[1]),mode:'lines',name:'noise-free arc (eq. 5.9)',line:{color:COL.blue,width:2}},
+    {x:[free[0]],y:[free[1]],mode:'markers',name:'noise-free end pose',marker:{color:COL.blue,size:10,symbol:'x'}},
+    {x:[0],y:[0],mode:'markers',name:'start',marker:{color:COL.gray,size:10}}],
+    layout({title:{text:'Fig 2.4a · where 300 draws of one command end up'},xaxis:axis({title:'x′ [m]'}),yaxis:axis({title:'y′ [m]',scaleanchor:'x',scaleratio:1}),height:440}),cfg);
+  tiles('tilesA',{'noise-free end pose (x′, y′, θ′)':`(${fx(free[0],2)} m, ${fx(free[1],2)} m, ${fx(free[2],2)} rad)`,
+    'position spread σ major / minor':`${fx(Math.sqrt(l1),3)} / ${fx(Math.sqrt(l2),3)} m`,
+    'heading spread σ(θ′ − θ′₀)':`${fx(std(dth),3)} rad`,'γ̂ recovered by Table 5.1, std':`${fx(std(gh),3)} rad/s`,
+    'round trip, samples off by > 1e-9':`${bad} of ${M}`});
+  chip('chipA',g===0?'γ̂ off: samples on a 2-D surface':'three noise terms: a 3-D cloud',g===0?'warn':'ok')}
+
+// ---------- Fig B
+function figB(){const v=val('b_v'),w=val('b_w'),dt=2.0,a=ALPHA_VEL,x0=[0,0,0];const x1=vForward(x0,v,w,0,dt);
+  const lpBook=Xp=>{const[vh,wh,gh]=bookInverse(x0,Xp,dt);return logProb(v-vh,a[0]*v*v+a[1]*w*w)+logProb(w-wh,a[2]*v*v+a[3]*w*w)+logProb(gh,a[4]*v*v+a[5]*w*w)};
+  const gx=linspace(-3,3,41);const Zc=gx.map(y=>gx.map(x=>logMotionVelocity([x,y,x1[2]],[v,w],x0,a,dt)));
+  const Zb=gx.map(y=>gx.map(x=>lpBook([x,y,x1[2]])));
+  let top=-Infinity;Zc.forEach(r=>r.forEach(z=>{if(z===z&&z>top)top=z}));
+  const clip=Z=>Z.map(r=>r.map(z=>isFinite(z)?Math.min(Math.max(z,top-40),top):null));
+  const cs=[[0,'#f1efe8'],[1,COL.teal]];
+  const tr=[{type:'heatmap',x:gx,y:gx,z:clip(Zc),colorscale:cs,zmin:top-40,zmax:top,showscale:false,hoverinfo:'skip'},
+    {x:[x1[0]],y:[x1[1]],mode:'markers',showlegend:false,marker:{color:COL.blue,size:11,symbol:'x'}},{x:[0],y:[0],mode:'markers',showlegend:false,marker:{color:COL.gray,size:9}},
+    {type:'heatmap',x:gx,y:gx,z:clip(Zb),colorscale:cs,zmin:top-40,zmax:top,showscale:false,hoverinfo:'skip',xaxis:'x2',yaxis:'y2'},
+    {x:[x1[0]],y:[x1[1]],mode:'markers',showlegend:false,marker:{color:COL.blue,size:11,symbol:'x'},xaxis:'x2',yaxis:'y2'},{x:[0],y:[0],mode:'markers',showlegend:false,marker:{color:COL.gray,size:9},xaxis:'x2',yaxis:'y2'}];
+  const ann=(x,t)=>({x,y:1.07,xref:'paper',yref:'paper',text:t,showarrow:false,xanchor:'left',font:{size:12,color:css('--ink2')}});
+  Plotly.react('plotB',tr,layout({title:{text:'Fig 2.4b · log p(x′ | u, x) over end position; × = noise-free end pose'},margin:{l:48,r:12,t:60,b:40},
+    xaxis:axis({title:'x′ [m]',domain:[0,0.46],range:[-3,3],anchor:'y'}),yaxis:axis({title:'y′ [m]',scaleanchor:'x',scaleratio:1,range:[-3,3],anchor:'x'}),
+    xaxis2:axis({title:'x′ [m]',domain:[0.54,1],range:[-3,3],anchor:'y2'}),yaxis2:axis({scaleanchor:'x2',scaleratio:1,range:[-3,3],anchor:'x2'}),
+    annotations:[ann(0,'chord-form inverse (card C3)'),ann(0.54,'Table 5.1 line 7 as printed')],showlegend:false,height:420}),cfg);
+  const[vb,wb]=bookInverse(x0,x1,dt),[vc,wc]=vInverse(x0,x1,dt);const lpc=logMotionVelocity(x1,[v,w],x0,a,dt),lpb=lpBook(x1);
+  const isnan=nanf(vb),wrong=!isnan&&Math.abs(vb-v)>1e-6;
+  tiles('tilesB',{'commanded v':`${fx(v,2)} m/s`,'v̂ line 7  |  chord inverse':`${fx(vb,2)}  |  ${fx(vc,2)} m/s`,'ω̂ line 8  |  chord inverse':`${fx(wb,2)}  |  ${fx(wc,2)} rad/s`,
+    'log p at the noise-free end pose, book':fx(lpb,2),'log p at the noise-free end pose, chord':fx(lpc,2),'book minus chord':`${fx(lpb-lpc,2)} nats`});
+  chip('chipB',isnan?'line 7: nan (straight line or no motion)':(wrong?'line 7 has the wrong sign':'line 7 agrees with the command'),isnan?'warn':(wrong?'bad':'ok'))}
+
+// ---------- Fig C
+function figC(){const d=val('c_d'),psi=val('c_psi'),thd=val('c_th'),s=val('c_s'),M=300;
+  const al=ALPHA_ODO.map(a=>a*Math.pow(10,s));const tb=thd*(PI/180);
+  const P0=[0,0,tb],P1=[0+d*Math.cos(tb),0+d*Math.sin(tb),tb+psi*(PI/180)];const X0=Array.from({length:M},()=>[0,0,0]);
+  const Xr=sampleOdometry(P0,P1,X0,al,Stream());const bk=sampleOdometryBook(P0,P1,X0,al,Stream());const Xb=bk.X,db=bk.d;
+  const dr=odoParams(P0,P1);const freeTh=wrap(dr[0]+dr[2]);
+  const spread=X=>{const h=std(X.map(p=>wrap(p[2]-freeTh)));const mx=mean(X.map(p=>p[0])),my=mean(X.map(p=>p[1]));
+    return[h,Math.sqrt(mean(X.map(p=>(p[0]-mx)**2+(p[1]-my)**2)))]};
+  const[hr,pr]=spread(Xr),[hb,pb]=spread(Xb);const ratio=hb/Math.max(hr,1e-12);
+  const ticks=X=>{const xs=[],ys=[];X.slice(0,40).forEach(p=>{xs.push(p[0],p[0]+0.06*Math.cos(p[2]),null);ys.push(p[1],p[1]+0.06*Math.sin(p[2]),null)});return{x:xs,y:ys}};
+  const tb_=ticks(Xb),tr_=ticks(Xr);
+  Plotly.react('plotC',[{x:Xb.map(p=>p[0]),y:Xb.map(p=>p[1]),mode:'markers',name:'Table 5.6 as printed',marker:{size:4,color:COL.coral,opacity:0.45}},
+    {x:Xr.map(p=>p[0]),y:Xr.map(p=>p[1]),mode:'markers',name:'card C4',marker:{size:4,color:COL.teal,opacity:0.55}},
+    {x:tb_.x,y:tb_.y,mode:'lines',line:{color:COL.coral,width:1},showlegend:false,hoverinfo:'skip'},{x:tr_.x,y:tr_.y,mode:'lines',line:{color:COL.teal,width:1},showlegend:false,hoverinfo:'skip'},
+    {x:[0],y:[0],mode:'markers',name:'start (heading 0)',marker:{color:COL.gray,size:10}}],
+    layout({title:{text:'Fig 2.4c · odometry step applied to 300 particles (ticks = headings of 40)'},xaxis:axis({title:'x′ [m]'}),yaxis:axis({title:'y′ [m]',scaleanchor:'x',scaleratio:1}),height:440}),cfg);
+  const deg=a=>fx(a*(180/PI),1);
+  tiles('tilesC',{'δrot1, δtrans, δrot2 printed':`${deg(db[0])}°, ${fx(db[1],2)} m, ${deg(db[2])}°`,'δrot1, δtrans, δrot2 card C4':`${deg(dr[0])}°, ${fx(dr[1],2)} m, ${deg(dr[2])}°`,
+    'heading spread printed | C4':`${fx(hb,3)} | ${fx(hr,3)} rad`,'position spread printed | C4':`${fx(pb,3)} | ${fx(pr,3)} m`});
+  const bad=ratio>1.2;chip('chipC',bad?`printed variances inflate heading noise ×${fx(ratio,1)}`:'printed and C4 agree',bad?'warn':'ok')}
+
+// ---------- Fig D
+function figD(){const v=val('d_v'),N=val('d_n'),cap=val('d_cap'),M=200,dt=3.0,w=-0.35,a=[0.03,0.03,0.03,0.03,0.005,0.005];
+  const x0=[0,0,PI/2],u=[v,w];const sampler=(uu,X,st)=>sampleVelocity(uu,X,a,dt,st);
+  const arcPt=(Xn,k)=>{const[vh,wh]=vInverse(x0,Xn,dt);return vForward(x0,vh,wh,0,dt*k)};
+  const freePath=Xn=>{for(let k=1;k<=N;k++){if(!inFree(arcPt(Xn,k/N)))return false}return true};
+  const X0=Array.from({length:M},()=>x0);
+  const first=sampler(u,X0,Stream());const freeFirst=first.filter(inFree).length/M;
+  const r=sampleWithMap(u,X0,sampler,freePath,Stream(),cap);const Xn=r.Xn,acc=r.pi.map(p=>p>0);
+  const crossed=Xn.map(p=>{for(let k=1;k<=200;k++){if(!inFree(arcPt(p,k/200)))return true}return false});
+  const through=acc.map((o,i)=>o&&crossed[i]),dead=acc.map(o=>!o),ok=acc.map((o,i)=>o&&!crossed[i]);
+  const nAcc=acc.filter(Boolean).length,nThr=through.filter(Boolean).length,nDead=dead.filter(Boolean).length;
+  const sel=m=>Xn.filter((_,i)=>m[i]);const arc=linspace(0,1,60).map(t=>vForward(x0,v,w,0,dt*t));
+  const pts=(m,name,mk)=>{const P=sel(m);return{x:P.map(p=>p[0]),y:P.map(p=>p[1]),mode:'markers',name,marker:mk}};
+  const sh=[{type:'rect',x0:WALL.x,x1:WALL.x+WALL.w,y0:WALL.y,y1:WALL.y+WALL.h,fillcolor:COL.gray,opacity:0.6,line:{width:0}},
+    {type:'rect',x0:WALL.x-WALL.r,x1:WALL.x+WALL.w+WALL.r,y0:WALL.y-WALL.r,y1:WALL.y+WALL.h+WALL.r,line:{color:COL.gray,dash:'dash',width:1}}];
+  Plotly.react('plotD',[pts(ok,'accepted, arc clear',{size:5,color:COL.teal,opacity:0.6}),pts(through,'accepted, arc crossed the wall',{size:7,color:COL.amber,symbol:'x'}),
+    pts(dead,'π = 0 after the cap',{size:6,color:COL.coral,symbol:'circle-open'}),
+    {x:arc.map(p=>p[0]),y:arc.map(p=>p[1]),mode:'lines',name:'noise-free arc',line:{color:COL.blue,width:2}},{x:[0],y:[0],mode:'markers',name:'start',marker:{color:COL.gray,size:10}}],
+    layout({title:{text:'Fig 2.4d · 200 particles after one step with a wall in the way'},xaxis:axis({title:'x′ [m]',range:[-0.8,3.2]}),yaxis:axis({title:'y′ [m]',scaleanchor:'x',scaleratio:1,range:[-0.5,3.4]}),shapes:sh,height:480}),cfg);
+  const step=v*dt/N,thick=WALL.h+2*WALL.r,frac=nThr/Math.max(nAcc,1);
+  tiles('tilesD',{'free at the first draw (end pose)':`${fx(100*freeFirst,1)} %`,'π = 0 after the cap':`${nDead} of ${M}`,
+    'accepted whose arc crossed the wall':`${fx(100*frac,1)} % (${nThr} of ${nAcc})`,'check spacing v·Δt / N':`${fx(step,2)} m  (wall in C-space: ${fx(thick,2)} m)`});
+  const tun=frac>0.05;chip('chipD',tun?'tunnelling: spacing is larger than the wall':'arc checks keep particles out of the wall',tun?'warn':'ok')}
+
+let inited=false;
+function init(){if(inited)return;if(!window.Plotly){setTimeout(init,300);return}inited=true;
+  bind(['a_w','a_s','a_g'],figA);bind(['b_v','b_w'],figB);bind(['c_d','c_psi','c_th','c_s'],figC);bind(['d_v','d_n','d_cap'],figD)}
+window.__ixRedraw=()=>{if(!inited){init();return}figA();figB();figC();figD()};
+window.__ixReadouts=()=>Object.fromEntries(['A','B','C','D'].map(k=>[k,Object.fromEntries([...document.querySelectorAll('#tiles'+k+' .fig-tile')].map(t=>[t.querySelector('.k').textContent,t.querySelector('.v').textContent]))]));
+if(!document.getElementById('panel-session').hidden)init();
+})();
+</script>

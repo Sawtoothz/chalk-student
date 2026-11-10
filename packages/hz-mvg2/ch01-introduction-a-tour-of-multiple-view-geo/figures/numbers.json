@@ -1,0 +1,108 @@
+{
+  "L1_vanishing_point_px": [
+    320.0,
+    151.84
+  ],
+  "L1_pitch_deg": 10.0,
+  "L1_camera_height_m": 1.6,
+  "L2_ladder": [
+    {
+      "name": "Euclidean frame",
+      "corner_deg": 90.0,
+      "opposite_sides_deg": 0.0,
+      "line_at_infinity_fixed": true,
+      "circular_points_fixed": true
+    },
+    {
+      "name": "similarity",
+      "corner_deg": 90.0,
+      "opposite_sides_deg": 0.0,
+      "line_at_infinity_fixed": true,
+      "circular_points_fixed": true
+    },
+    {
+      "name": "affine",
+      "corner_deg": 49.0,
+      "opposite_sides_deg": 0.0,
+      "line_at_infinity_fixed": true,
+      "circular_points_fixed": false
+    },
+    {
+      "name": "projective",
+      "corner_deg": 51.7,
+      "opposite_sides_deg": 10.7,
+      "line_at_infinity_fixed": false,
+      "circular_points_fixed": false
+    }
+  ],
+  "L3_rotation_deg": 15.0,
+  "L3_rms_px_pure_rotation_depth_scene": 1e-13,
+  "L3_rms_px_planar_scene_max_over_baselines": 2.4e-13,
+  "L3_rms_px_depth_scene_at_baseline_m": {
+    "0.100": 2.1,
+    "1.000": 22.75
+  },
+  "L3_scene_depth_m": [
+    4,
+    12
+  ],
+  "L3_baseline_m_where_rms_reaches_1px": 0.048,
+  "L3_focal_px_image_size": [
+    500,
+    640,
+    480
+  ],
+  "L4_true_angle_at_image_edge_deg": 32.62,
+  "L4_angle_error_at_image_edge_deg_by_f_ratio": {
+    "0.8": 6.04,
+    "0.9": 2.8,
+    "1.1": -2.43,
+    "1.2": -4.55
+  },
+  "L5_cube_family": [
+    {
+      "name": "true",
+      "max_reprojection_change_px": 0.0,
+      "F_change": 0.0
+    },
+    {
+      "name": "similarity",
+      "max_reprojection_change_px": 8.5e-14,
+      "F_change": 2.5e-14
+    },
+    {
+      "name": "affine",
+      "max_reprojection_change_px": 5.7e-14,
+      "F_change": 4.7e-14
+    },
+    {
+      "name": "projective",
+      "max_reprojection_change_px": 5.7e-14,
+      "F_change": 3e-14
+    }
+  ],
+  "L6_Omega_agreement_two_views": 6.1e-16,
+  "L6_upgrade": [
+    {
+      "name": "projective",
+      "max_nonparallel_deg": 63.61,
+      "corner_min_deg": 27.37,
+      "corner_max_deg": 157.16,
+      "edge_length_ratio": 2.801
+    },
+    {
+      "name": "affine",
+      "max_nonparallel_deg": 0.0,
+      "corner_min_deg": 67.92,
+      "corner_max_deg": 112.08,
+      "edge_length_ratio": 1.343
+    },
+    {
+      "name": "metric",
+      "max_nonparallel_deg": 0.0,
+      "corner_min_deg": 90.0,
+      "corner_max_deg": 90.0,
+      "edge_length_ratio": 1.0
+    }
+  ]
+}

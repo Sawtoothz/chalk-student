@@ -1,0 +1,250 @@
+# Source index: books and papers. `just ingest <pdf> <id> [book|paper]` or the GUI upload writes entries here.
+# Books: pdf_page = printed_page + offset; chapters hold printed page ranges.
+# Papers: kind: paper, one unit (1 = whole paper), offset 0, pages = page count, sections kept for the map stage.
+# PDFs live in library/ and are not committed.
+
+thrun-pr:
+  title: Probabilistic Robotics
+  authors: Thrun, Burgard, Fox
+  year: 2005
+  pdf: library/thrun-pr.pdf
+  offset: 21
+  track: t2
+  chapters:
+    2: {title: Recursive State Estimation, pages: [13, 38], lesson: t2.1}
+    3: {title: Gaussian Filters, pages: [39, 84], lesson: t2.2}
+    4: {title: Nonparametric Filters, pages: [85, 116], lesson: t2.3}
+    5: {title: Robot Motion, pages: [117, 148], lesson: t2.4}
+    6: {title: Robot Perception, pages: [149, 190], lesson: t2.4}
+    7: {title: "Mobile Robot Localization: Markov and Gaussian", pages: [191, 236], lesson: t2.7}
+    8: {title: "Mobile Robot Localization: Grid and Monte Carlo", pages: [237, 280], lesson: t2.3}
+    9: {title: Occupancy Grid Mapping, pages: [281, 308], lesson: t2.5}
+    10: {title: Simultaneous Localization and Mapping, pages: [309, 336], lesson: t2.7}
+    11: {title: The GraphSLAM Algorithm, pages: [337, 384], lesson: t2.8}
+    12: {title: The Sparse Extended Information Filter, pages: [385, 436], lesson: t2.8}
+    13: {title: The FastSLAM Algorithm, pages: [437, 486], lesson: t2.9}
+    14: {title: Markov Decision Processes, pages: [487, 512], lesson: t6.2}
+    15: {title: Partially Observable Markov Decision Processes, pages: [513, 546], lesson: t6.2}
+    16: {title: Approximate POMDP Techniques, pages: [547, 568], lesson: t6.2}
+    17: {title: Exploration, pages: [569, 606], lesson: t6.4}
+
+# Fill in as you add PDFs. Offsets are found with scripts/pages.py --probe.
+barfoot-se2:
+  title: State Estimation for Robotics, 2nd ed.
+  authors: Barfoot
+  year: 2024
+  pdf: library/barfoot-se2.pdf
+  kind: book
+  offset: 20
+  track: t2
+  chapters:
+    1:
+      title: Introduction
+      pages: [1, 6]
+    2:
+      title: Primer on Probability Theory
+      pages: [9, 42]
+    3:
+      title: Linear-Gaussian Estimation
+      pages: [43, 104]
+    4:
+      title: Nonlinear Non-Gaussian Estimation
+      pages: [105, 170]
+    5:
+      title: Handling Nonidealities in Estimation
+      pages: [171, 198]
+    6:
+      title: Variational Inference
+      pages: [199, 234]
+    7:
+      title: Primer on Three-Dimensional Geometry
+      pages: [237, 278]
+    8:
+      title: Matrix Lie Groups
+      pages: [279, 374]
+    9:
+      title: Pose Estimation Problems
+      pages: [377, 434]
+    10:
+      title: Pose-and-Point Estimation Problems
+      pages: [435, 454]
+    11:
+      title: Continuous-Time Estimation
+      pages: [455, 472]
+
+boyd-cvx:
+  title: Convex Optimization
+  authors: Boyd, Vandenberghe
+  year: 2004
+  pdf: library/boyd-cvx.pdf
+  kind: book
+  offset: 14
+  track: t1
+  chapters:
+    1:
+      title: Introduction
+      pages: [1, 18]
+    2:
+      title: Convex sets
+      pages: [21, 66]
+    3:
+      title: Convex functions
+      pages: [67, 126]
+    4:
+      title: Convex optimization problems
+      pages: [127, 214]
+    5:
+      title: Duality
+      pages: [215, 288]
+    6:
+      title: Approximation and fitting
+      pages: [291, 350]
+    7:
+      title: Statistical estimation
+      pages: [351, 396]
+    8:
+      title: Geometric problems
+      pages: [397, 454]
+    9:
+      title: Unconstrained minimization
+      pages: [457, 520]
+    10:
+      title: Equality constrained minimization
+      pages: [521, 560]
+    11:
+      title: Interior-point methods
+      pages: [561, 629]
+
+hz-mvg2:
+  title: Multiple View Geometry in Computer Vision, 2nd ed.
+  authors: Hartley, Zisserman
+  year: 2004
+  pdf: library/hz-mvg2.pdf
+  kind: book
+  offset: 18
+  track: t3
+  chapters:
+    1:
+      title: Introduction – a Tour of Multiple View Geometry
+      pages: [1, 22]
+    2:
+      title: Projective Geometry and Transformations of 2D
+      pages: [25, 64]
+    3:
+      title: Projective Geometry and Transformations of 3D
+      pages: [65, 86]
+    4:
+      title: Estimation – 2D Projective Transformations
+      pages: [87, 131]
+    5:
+      title: Algorithm Evaluation and Error Analysis
+      pages: [132, 150]
+    6:
+      title: Camera Models
+      pages: [153, 177]
+    7:
+      title: Computation of the Camera Matrix P
+      pages: [178, 194]
+    8:
+      title: More Single View Geometry
+      pages: [195, 236]
+    9:
+      title: Epipolar Geometry and the Fundamental Matrix
+      pages: [239, 261]
+    10:
+      title: 3D Reconstruction of Cameras and Structure
+      pages: [262, 278]
+    11:
+      title: Computation of the Fundamental Matrix F
+      pages: [279, 309]
+    12:
+      title: Structure Computation
+      pages: [310, 324]
+    13:
+      title: Scene planes and homographies
+      pages: [325, 343]
+    14:
+      title: Affine Epipolar Geometry
+      pages: [344, 362]
+    15:
+      title: The Trifocal Tensor
+      pages: [365, 390]
+    16:
+      title: Computation of the Trifocal Tensor T
+      pages: [391, 408]
+    17:
+      title: N-Linearities and Multiple View Tensors
+      pages: [411, 433]
+    18:
+      title: N-View Computational Methods
+      pages: [434, 457]
+    19:
+      title: Auto-Calibration
+      pages: [458, 501]
+    20:
+      title: Duality
+      pages: [502, 514]
+    21:
+      title: Cheirality
+      pages: [515, 532]
+    22:
+      title: Degenerate Configurations
+      pages: [533, 560]
+
+rmd-mpc2:
+  title: Model Predictive Control - Theory, Computation, and Design, 2nd ed.
+  authors: Rawlings, Mayne, Diehl
+  year: 2020
+  pdf: library/rmd-mpc2.pdf
+  kind: book
+  offset: 50
+  track: t7
+  chapters:
+    1:
+      title: Getting Started with Model Predictive Control
+      pages: [1, 88]
+    2:
+      title: Model Predictive Control—Regulation
+      pages: [89, 192]
+    3:
+      title: Robust and Stochastic Model Predictive Control
+      pages: [193, 268]
+    4:
+      title: State Estimation
+      pages: [269, 332]
+    5:
+      title: Output Model Predictive Control
+      pages: [333, 362]
+    6:
+      title: Distributed Model Predictive Control
+      pages: [363, 444]
+    7:
+      title: Explicit Control Laws for Constrained Linear Systems
+      pages: [445, 484]
+    8:
+      title: Numerical Optimal Control
+      pages: [485, 692]
+
+# A paper: the IEEE ITS Magazine version (11 pages), from the authors' site; added through the GUI upload.
+grisetti-gslam:
+  title: A Tutorial on Graph-Based SLAM
+  authors: Grisetti, Kümmerle, Stachniss, Burgard
+  year: 2010
+  pdf: library/grisetti-gslam.pdf
+  kind: paper
+  pages: 11
+  offset: 0
+  sections: [Introduction, Related Work, Graph-Based SLAM, Least Squares on a Manifold, Experiments, Conclusions]
+  lesson: t2.8
+
+xu-fastlio2:
+  title: "FAST-LIO2: Fast Direct LiDAR-Inertial Odometry"
+  authors: Xu, Cai, He, Lin, Zhang
+  year: 2022
+  pdf: library/xu-fastlio2.pdf
+  kind: paper
+  pages: 19  # arXiv 2107.06829v1 (journal version is 13)
+  offset: 0
+  sections: [Introduction, Related Work, System Overview, State Estimation, Mapping, Experiments, Conclusion]
+  lesson: t2.8
+  code: [https://github.com/hku-mars/FAST_LIO, https://github.com/hku-mars/ikd-Tree, https://github.com/hku-mars/IKFoM]

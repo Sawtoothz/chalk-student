@@ -1,0 +1,301 @@
+title: "Nonparametric Filters"
+footer: "Thrun · Probabilistic Robotics · ch. 4"
+slides:
+  - layout: title
+    title: "Nonparametric Filters"
+    subtitle: "Probabilistic Robotics, chapter 4"
+    meta: "Lesson t2.3 · Thrun, Burgard, Fox"
+    source: map.md
+  - layout: bullets
+    title: "Why drop the Gaussian?"
+    bullets:
+      - "A Gaussian forced onto a two-humped belief puts its mean between the humps"
+      - "In the figure that mean sits where the true density is 0.097 of its peak"
+      - "A field with point symmetry gives a robot two equally good poses"
+      - "A nonparametric filter stores a finite set of numbers: bins or samples"
+      - "The price is computation, which grows with the state dimension"
+    notes: "Start with the robot problem. A soccer robot sees one goal and a penalty box. The field is point-symmetric, so two mirrored poses explain the data equally well. A Kalman filter must report one mean and one covariance, and the mean lands on the centre circle, where the robot is not. A nonparametric filter keeps both humps. The cost is that we now store many numbers instead of a mean and a covariance. Mention the two definitions on p. 86: adaptive and resource-adaptive. Question for the room: where else does a belief have two modes, for example a quadruped's contact state or a door that is open or closed?"
+    source: lecture.md §L1
+  - layout: figure
+    title: "One belief, three representations"
+    figure: figures/L1-three-beliefs.png
+    caption: "Gaussian (ch. 3), histogram (4.1), particles (4.3)"
+    takeaway: "Two numbers cannot hold two humps; bins and samples can"
+    source: lecture.md §L1
+    notes: "Read the figure left to right. The Gaussian summarizes the belief with two numbers and loses the humps. The histogram fixes the numbers in space: one probability per bin. The particle set lets the numbers move: samples, each with a weight. Both nonparametric forms converge to the true posterior as the number of values grows, under smoothness assumptions the book does not prove. Point at the Gaussian's peak and ask students what a controller would do with that mean. The answer is that it would drive toward a place the robot probably is not."
+  - layout: agenda
+    title: "Roadmap"
+    items:
+      - "4.1 Histogram filter: fixed bins, one probability per bin"
+      - "4.2 Binary Bayes filter: one static bit, in log odds"
+      - "4.3 Particle filter: moving samples, weights, resampling"
+      - "4.3.2 and 4.3.3 Why weighting by the likelihood is correct"
+      - "4.3.4 How a finite set lies: variance, diversity, bias, deprivation"
+    notes: "Today has two halves. First, the histogram family: Table 4.1 for a finite state and Table 4.2 for a single static bit. Second, the particle filter, Table 4.3, with its justification through importance sampling and the practical problems of a finite sample set. Tell students that Table 4.1 is Table 2.1 with the integral replaced by a sum, and that the particle filter is the same recursion with samples in place of bins. Question: which of the two do you expect to scale better to a six-dimensional state, and why?"
+    source: map.md
+  - layout: figure
+    title: "A robot on a ring corridor"
+    figure: figures/L2-discrete-bayes.png
+    caption: "Doors at 1.5, 4.0 and 7.5 m; sees a door, drives 2.5 m, sees a door"
+    bullets:
+      - "Predict: shift plus blur"
+      - "Update: multiply, then normalize"
+    takeaway: "Only the hump that explains both sightings survives"
+    source: lecture.md §L2
+    notes: "Walk through the three panels. The prior is flat. After the first door sighting the belief concentrates on the three doors. After driving 2.5 m the humps shift and blur. The second door sighting keeps only the hump that explains both observations: at 1.5 m and now at 4.0 m. The remaining mass is spread thin by the detector's false-positive floor. Stress that nothing here is Gaussian and nothing is linearized. Question: what would the belief look like if the corridor had doors exactly 2.5 m apart everywhere?"
+  - layout: equation
+    title: "Discrete Bayes filter, Table 4.1"
+    equations:
+      - {tex: '\bar{p}_{k,t} = \sum_i p(X_t = x_k \mid u_t, X_{t-1} = x_i)\, p_{i,t-1}', label: "line 3"}
+      - {tex: 'p_{k,t} = \eta\, p(z_t \mid X_t = x_k)\, \bar{p}_{k,t}', label: "line 4"}
+    bullets:
+      - "Line 3 over all k is a matrix-vector product p̄ = T p, columns of T sum to 1"
+      - "Line 4 is an element-wise product, then division by the sum"
+      - "In signal processing this is the forward pass of a hidden Markov model"
+    where:
+      - ["p̄ₖ,ₜ", "predicted mass in bin k"]
+      - ["pᵢ,ₜ₋₁", "mass in bin i one step ago"]
+      - ["η", "normalizer: one over the sum"]
+      - ["xₖ", "the state of bin k"]
+    source: lecture.md §L2
+    notes: "Shapes first: the belief is a vector of length K that sums to one, T is K by K with each column a distribution over where the robot goes from one bin. Prediction is one matrix-vector product. The update multiplies bin by bin with the likelihood and renormalizes; that division is the eta. Note that the book leaves the predicted values unnormalized and lets line 4's eta fix it (p. 92). Cost: line 3 is O(K squared) when T is dense. Question: for a 3-D pose grid with millions of cells, why can we never store T?"
+  - layout: predict
+    title: "Predict: where is the mass after the second door?"
+    bullets:
+      - "Ring corridor, 100 bins of 0.1 m, doors at 1.5, 4.0 and 7.5 m"
+      - "Uniform prior, door seen, drive 2.5 m, door seen again"
+    question: "What fraction of the mass lies within 1 m of 4.0 m, and why is it not close to 1?"
+    notes: "Give students a minute to guess, then reveal. Answer: 0.53 of the mass lies within 1 m of 4.0 m. Reasoning: only the path from 1.5 m to 4.0 m explains both door sightings, but the detector has a 0.1 false-positive floor, so the rest of the mass is spread thinly over the other positions. The mass is not near 1 because one noisy detector pair cannot rule out everything else. Follow-up: what happens to this number if the false-positive floor drops? Ask the room to argue the direction before computing."
+    source: lecture.md §L2
+  - layout: figure
+    title: "Histograms over a continuous state"
+    figure: figures/L3-histogram-transform.png
+    caption: "A Gaussian cut into bins, pushed through a nonlinear g"
+    bullets:
+      - "Error is the bin width, not the nonlinearity"
+      - "Total variation: 0.066 at 5 bins, 0.021 at 10, 0.006 at 40"
+    takeaway: "Halve the bin width before you blame the nonlinearity"
+    source: lecture.md §L3
+    notes: "This is Fig. 4.1 redrawn. Each bin of x is pushed through g and its mass collected into bins of y. Unlike the EKF, the method does not care that g is nonlinear; the only error is the finite bin width. The numbers show the error shrinking as bins are added. The cost is the grid: a 20 m by 20 m area at 0.1 m and 5 degrees has 2,880,000 cells. Question: the book calls the per-bin approximation a Taylor approximation of order zero. In what sense is that accurate?"
+  - layout: equation
+    title: "Piecewise constant density and the bin approximations"
+    equations:
+      - {tex: 'p(x_t) = \frac{p_{k,t}}{|\mathbf{x}_{k,t}|} \quad \mathrm{for}\ x_t \in \mathbf{x}_{k,t}', label: "(4.2)"}
+      - {tex: 'p(z_t \mid \mathbf{x}_{k,t}) \approx p(z_t \mid \hat{x}_{k,t})', label: "(4.4)"}
+      - {tex: 'p(\mathbf{x}_{k,t} \mid u_t, \mathbf{x}_{i,t-1}) \approx \eta\, |\mathbf{x}_{k,t}|\, p(\hat{x}_{k,t} \mid u_t, \hat{x}_{i,t-1})', label: "(4.5)"}
+    bullets:
+      - "x̂ is the mean of the bin (4.3); probe every model at that point"
+      - "The η of (4.5) normalizes each column of T"
+    source: lecture.md §L3
+    notes: "Equation (4.2) says the density inside a bin is flat. Equation (4.3) defines the representative state as the bin mean. Equations (4.4) and (4.5) replace the exact bin-to-bin probabilities by the model evaluated at representative points. The eta in (4.5) exists because probed densities do not sum to one, so in code each column of T is normalized. On unequal bins the volume factor must be kept; on a uniform grid it cancels. The derivation in 4.1.3 shows the only real approximation is the likelihood at x-hat. Question: when is that approximation exact?"
+  - layout: figure
+    title: "Binary Bayes filter: log odds as a running sum"
+    figure: figures/L4-log-odds.png
+    caption: "Prior 0.3, thirty readings; dashed: prior term forgotten"
+    bullets:
+      - "Fifteen hits in thirty give bel = 0.990"
+      - "Forgetting the prior gives bel = 0.000"
+    source: lecture.md §L4
+    notes: "One static bit, such as one occupancy-grid cell. Table 4.1 collapses to one number, best stored as log odds, where each reading adds its evidence. Probabilities pin at 0 or 1; log odds are an unbounded sum. The solid curve matches Table 4.1 on two states to four decimals. The dashed curve runs the same readings with the prior term left out and collapses to 0.000. Emphasize that the inverse sensor model already contains the prior, which is why it must be taken back out every update. Question: why is this bug invisible when the prior is 0.5?"
+  - layout: equation
+    title: "Table 4.2: the log-odds update"
+    equations:
+      - {tex: 'l_t = l_{t-1} + \log \frac{p(x \mid z_t)}{1 - p(x \mid z_t)} - \log \frac{p(x)}{1 - p(x)}', label: "line 2"}
+      - {tex: 'bel_t(x) = 1 - \frac{1}{1 + \exp\{l_t\}}', label: "(4.14)"}
+    bullets:
+      - "p(x ∣ zₜ) is an inverse measurement model: state given reading"
+      - "Subtract l₀ every update; code it with expit for stability"
+    where:
+      - ["lₜ", "log odds of the cell after t readings"]
+      - ["p(x ∣ zₜ)", "inverse measurement model"]
+      - ["p(x)", "prior; its log odds is l₀"]
+    source: lecture.md §L4
+    notes: "Walk through the derivation idea behind (4.15) to (4.20). Apply Bayes rule to the measurement model, write the same posterior for the negation of x, and divide. The hard terms cancel in the ratio. Taking logs turns the update into a sum. Warn students that page 96 says the prior is added; the equation and Table 4.2 subtract it. In code, use the logistic function for (4.14), because the formula as written overflows for large values of l. Question: what does a clamp on l buy a mapper, and what does it give up?"
+  - layout: predict
+    title: "Predict: forget the prior, then what?"
+    bullets:
+      - "A cell with prior 0.3, fifteen hits in thirty readings; correct code ends at bel = 0.990"
+      - "Drop the subtracted prior term from line 2"
+    question: "Where does bel end up, and why?"
+    choices: ["Still near 0.990", "Pinned near 0", "Pinned near 1", "Stuck at the prior 0.3"]
+    notes: "Ask students to commit to a direction before revealing. Answer: bel ends at 0.000. Reasoning: the inverse model p(x given z) is below 0.5 on free readings, and without subtracting the log odds of the prior, each reading counts the prior again. Over thirty readings the repeated prior term dominates and drags the log odds far negative, so the belief saturates at 0. Mention that the bug is silent at a prior of 0.5, which is why it survives in real occupancy-grid code until someone changes the prior."
+    source: lecture.md §L4
+  - layout: figure
+    title: "One pass of the particle filter"
+    figure: figures/L5-particle-step.png
+    caption: "1-D linear-Gaussian system, so the Kalman filter gives the exact answer"
+    bullets:
+      - "Mean 2.678 against the KF's 2.709"
+      - "Std 0.378 against 0.377"
+    takeaway: "On a linear-Gaussian system the particles agree with the Kalman filter"
+    source: lecture.md §L5
+    notes: "Keep M guesses. Move each one by a random draw from the motion model, score each by the measurement likelihood, then draw M again with replacement in proportion to the score. Nothing is linearized: any motion model you can sample and any likelihood you can evaluate will do. This figure uses a linear-Gaussian system on purpose, so the Kalman filter is the oracle. Sixty particles survive as twenty distinct ones, and the mean and standard deviation agree with the KF closely. Question: which of the two numbers would you expect to degrade first as M is reduced?"
+  - layout: steps
+    title: "Table 4.3: sample, weight, resample"
+    steps:
+      - {title: "Sample (line 4)", text: "Draw xₜ^[m] from p(xₜ ∣ uₜ, xₜ₋₁^[m]), one draw per particle: the motion model of ch. 5"}
+      - {title: "Weight (line 5)", text: "Importance factor wₜ^[m] = p(zₜ ∣ xₜ^[m]): the sensor model of ch. 6"}
+      - {title: "Resample (8–11)", text: "Draw i with probability proportional to wₜ^[i], M times, with replacement"}
+    bullets:
+      - "The ideal posterior (4.23) holds only as M → ∞"
+    notes: "Name the three steps and tie them to earlier chapters. Line 4 uses the motion model, which we sample rather than evaluate. Line 5 uses the measurement model, which we evaluate rather than sample. Lines 8 to 11 are resampling, and the book calls them resampling or importance sampling on p. 99; keep the names apart: importance sampling is the weighting, resampling is the redraw. Equation (4.24) shows the variant with no resampling, where weights multiply across steps. Question: why is the variant without resampling correct but wasteful?"
+    source: lecture.md §L5
+  - layout: figure
+    title: "Importance sampling: how well g covers f"
+    figure: figures/L6-importance-sampling.png
+    caption: "Target f, proposal g, weights f/g; error against M for three proposals"
+    bullets:
+      - "Covering proposal: RMSE 0.017 at M = 1000"
+      - "Book's proposal: 0.068, about sixteen times the samples"
+      - "A proposal that misses f returns 0 at every M"
+    takeaway: "The cost of a proposal is measured in samples"
+    source: lecture.md §L6
+    notes: "Draw from g, weight each sample by f over g, and averages under f come out right. Both good and mediocre proposals fall as one over root M, but the constant differs. For the probability that x lies in (0, 3), the true value is 0.587. A covering proposal reaches an RMSE of 0.017 at M = 1000; the book's proposal, piled up at 9, needs about sixteen times the samples for the same error. The third proposal puts no mass where f does and returns 0 at every M with no warning. Question: how could N_eff fail to warn you about that third case?"
+  - layout: equation
+    title: "Importance sampling and its weights"
+    equations:
+      - {tex: 'E_f[I(x \in A)] = \int \frac{f(x)}{g(x)}\, g(x)\, I(x \in A)\, dx = E_g[w(x)\, I(x \in A)]', label: "(4.25)"}
+      - {tex: 'w^{[m]} = \frac{f(x^{[m]})}{g(x^{[m]})}', label: "(4.27)"}
+    bullets:
+      - "Valid only if f(x) > 0 implies g(x) > 0"
+      - "In the PF, f = bel(xₜ) and g is the motion model applied to bel(xₜ₋₁)"
+    source: lecture.md §L6
+    notes: "Equation (4.25) is just multiplying and dividing by g. The weight w is the density ratio. The support condition says the proposal may not be zero where the target has mass. Equation (4.28) divides by the sum of weights so f need only be known up to a constant, which is exactly the particle filter's situation. That division makes the estimate biased by order one over M, which we revisit under sampling bias. The error rate is one over root M with a constant set by how similar f and g are (p. 102). Question: in the particle filter, why does the support condition hold automatically?"
+  - layout: predict
+    title: "Predict: how many samples does a bad proposal cost?"
+    bullets:
+      - "Target f, estimate P(x in (0, 3)) = 0.587; both errors fall as 1/√M"
+      - "Proposal A covers f; proposal B is the book's, piled up at x = 9"
+    question: "By what factor must M grow for B to match A?"
+    choices: ["About 2", "About 4", "About 16", "B can never match A"]
+    notes: "Let students estimate from the picture of the two densities before revealing. Answer: about sixteen times. At M = 1000 the covering proposal has RMSE 0.017 while the book's proposal has 0.068, a ratio of about four in error. Because error falls as one over root M, a factor of four in error costs a factor of four squared, about sixteen, in samples. The general lesson is that proposal quality is worth more than raw sample count. Question: what is the practical fix on a tracked robot whose odometry is wide but whose scan match is sharp?"
+    source: lecture.md §L6
+  - layout: figure
+    title: "Particles as paths: the past collapses"
+    figure: figures/L7-path-space.png
+    caption: "Gray: particles per step; teal: histories of particles alive at t = 30"
+    bullets:
+      - "Of 40 particles at t = 0, only 2 have descendants at t = 30"
+    takeaway: "Resampling keeps the present diverse and the past thin"
+    source: lecture.md §L7
+    notes: "Treat each particle as a whole path from time zero. Over paths the recursion has no integral. The motion term appears in both target and proposal and cancels, so the weight that remains is the measurement likelihood. The figure shows the cost: of forty particles at the start only two have descendants at t = 30, and the forty paths share four states at t = 20. The set describes the present well and the past badly. Question: if you needed the whole trajectory of a robot, would you take it from particle ancestry?"
+  - layout: equation
+    title: "Why the weight is the measurement likelihood"
+    equations:
+      - {tex: 'p(x_{0:t} \mid z_{1:t}, u_{1:t}) = \eta\, p(z_t \mid x_t)\, p(x_t \mid x_{t-1}, u_t)\, p(x_{0:t-1} \mid z_{1:t-1}, u_{1:t-1})', label: "(4.32)"}
+      - {tex: 'w_t^{[m]} = \frac{\mathrm{target}}{\mathrm{proposal}} = \eta\, p(z_t \mid x_t)', label: "(4.34)"}
+    bullets:
+      - "Motion term and previous-path term cancel between target and proposal"
+      - "Argument is correct only as M → ∞ (p. 104)"
+    source: lecture.md §L7
+    notes: "Equation (4.32) is Bayes rule, then the Markov assumption twice. The proposal in line 4 of Table 4.3 is the motion model times the previous path posterior. Divide target by proposal and everything cancels except eta times the measurement likelihood. Dropping all but the last state of each path gives a sample from the belief over the current state. Point out two print errors: the indices in the denominator of (4.34) should start at 1, and the text after (4.35) says Table 4.4 where it means Table 4.3. Question: where is the argument lax about normalizers?"
+  - layout: key
+    title: "The one idea of 4.3"
+    statement: "A particle filter is importance sampling, repeated every time step"
+    detail: "Proposal: the motion model applied to the old particles. Weight: the measurement likelihood."
+    source: lecture.md §L6, §L7
+    notes: "Pause here and collect the argument of the last four slides into one sentence. Importance sampling says: draw from a proposal g you can sample, weight by target over proposal, and expectations under the target come out right. In the particle filter the proposal is the previous particle set pushed through the motion model, and the target is the posterior over paths. Everything in the ratio cancels except the measurement likelihood, which is why line 5 of Table 4.3 is so simple. Question for the room: what would the weight be if we proposed from a model that already looked at the measurement?"
+  - layout: figure
+    title: "Sampling variance: the estimate is random"
+    figure: figures/L8-sampling-variance.png
+    caption: "Same belief, same g, 25 and 250 samples, three runs each"
+    bullets:
+      - "Std of the sample mean: 0.146 at M = 25, 0.046 at M = 250"
+      - "Ratio 3.19, close to the square root of ten"
+    source: lecture.md §L8
+    notes: "A particle set is a random draw. Two identical robots with identical beliefs and actions end up with different particle beliefs. The spread falls as one over root M: the standard deviation of the sample mean is 0.146 at 25 samples and 0.046 at 250, a ratio of 3.19 against the square root of ten. Practical test for choosing M: run the filter twice on the same log with different seeds; if the outputs disagree by more than the behaviour layer tolerates, M is too small. Question: what would you do if you cannot afford a larger M?"
+  - layout: figure
+    title: "Resampling loses diversity"
+    figure: figures/L9-resampling.png
+    caption: "Left: no motion, no sensor, resample every step; right: low-variance comb"
+    bullets:
+      - "M = 100, multinomial: 16.7 distinct after 10 steps, 2.3 after 100"
+      - "Low-variance sampler keeps all 100"
+    source: lecture.md §L9
+    notes: "Drawing with replacement copies some particles and drops others even when all weights are equal. With no information, the set collapses and the filter reports a certainty it never had. The numbers are means over 40 runs. The fixes are to resample less often and to use a single random number instead of M. The comb on the right is Table 4.4: one random offset, then M teeth spaced one over M apart, so with exactly equal weights every particle is returned exactly once. Question: why should a stationary robot suspend resampling altogether?"
+  - layout: equation
+    title: "Resample less often; pick by cumulative weight"
+    equations:
+      - {tex: 'i = \operatorname{argmin}_j \sum_{m=1}^{j} w_t^{[m]} \geq U', label: "(4.37)"}
+    bullets:
+      - "(4.36): reset weights to 1 after resampling, multiply them otherwise"
+      - "Decide by the variance of the weights; never resample a static state"
+      - "Table 4.4 assumes normalized weights; Table 4.3 never normalizes"
+      - "O(M) instead of O(M log M) for M binary searches"
+    source: lecture.md §L9
+    notes: "Equation (4.37) says each comb tooth U picks the first particle whose cumulative weight reaches it. Table 4.4 implements that with a single pass. The three advantages on p. 111 are systematic coverage, no loss when all weights are equal, and linear cost. The trap is normalization: Table 4.4 assumes the weights sum to one. Feed it raw likelihoods and the loop runs past the last index or the tail particles are never drawn. A common trigger for resampling is the effective sample size falling below M over 2; that threshold is folklore, not the book. Question: what changes if the weights are normalized inside the resampler?"
+  - layout: figure
+    title: "Sampling bias at small M"
+    figure: figures/L10-sampling-bias.png
+    caption: "Expected PF mean over 40,000 runs; exact posterior mean is 1.0"
+    bullets:
+      - "M = 1: −0.003, the measurement is ignored"
+      - "M = 2: 0.464; M = 10: 0.911; M = 100: 0.992"
+    takeaway: "More runs do not remove the bias; only more particles do"
+    source: lecture.md §L10
+    notes: "With one particle, resampling takes it whatever its weight, so the measurement does nothing: the expected mean stays at the prior's mean. Equation (4.38) shows why: the weight is its own normalizer and the draw probability is one. In general the unnormalized weights have M degrees of freedom and the normalized ones only M minus one. More runs do not remove the bias; only more particles do. The value at M = 2 is the number to check by hand in the book's exercise 3. Question: where on a robot does M get forced this small?"
+  - layout: figure
+    title: "Particle deprivation and random injection"
+    figure: figures/L11-deprivation.png
+    caption: "Ring corridor, M = 300, robot moved 5 m at t = 30"
+    bullets:
+      - "No injection: 0 of 20 runs recover"
+      - "2% uniform injection: 20 of 20 recover, median 4 steps"
+    source: lecture.md §L11
+    notes: "The filter can only weight particles it has. If bad luck or a kidnap leaves none near the truth, no likelihood creates one. The book calls random particle injection a last resort: it recovers, but it makes the posterior incorrect. Chapter 8 gives the proper fix, augmented MCL. In practice, keep injection off by default, switch it on when the best likelihood stays low for several steps, and log that you did. Question: in a soccer match, what event is a literal kidnap?"
+  - layout: stats
+    title: "What a finite particle set costs"
+    stats:
+      - {value: "0.146", label: "std of the mean at M = 25 (0.046 at 250)"}
+      - {value: "2.3", label: "distinct particles of 100 after 100 blind resamples"}
+      - {value: "0.464", label: "expected mean at M = 2; the exact answer is 1.0"}
+      - {value: "0 of 20", label: "runs recover from a kidnap without injection"}
+    bullets:
+      - "Variance, lost diversity, bias and deprivation: the four ways of 4.3.4"
+    source: lecture.md §L8–§L11
+    notes: "Put the four failure modes side by side with the numbers our own runs produced. Variance: the estimate jitters, falling as one over root M. Diversity: resampling with no information collapses the set, 2.3 distinct particles left of 100. Bias: at M = 2 the expected mean is 0.464 when the true posterior mean is 1.0, because the resampling step cannot honour the weights with so few samples. Deprivation: after a kidnap no particle sits near the truth, and none of twenty runs recovers. Question: which of the four does adding particles fix, and which needs a different algorithm?"
+  - layout: compare
+    title: "Histogram or particles?"
+    columns:
+      - heading: "Histogram filter (4.1)"
+        bullets: ["Fixed bins over the whole state space", "Cost grows with the number of bins", "Error set by the bin width", "Exact sums, no sampling noise"]
+      - heading: "Particle filter (4.3)"
+        bullets: ["Samples gather where the mass is", "Cost grows with M", "Variance, bias, lost diversity", "Needs injection to recover from a kidnap"]
+    takeaway: "Both converge to the true posterior as the number of values grows"
+    source: lecture.md §L1, §L3, §L12
+    notes: "Close the technical part with the choice an engineer actually makes. A histogram fixes its bins in advance and pays for every one, even where the robot cannot be; its error is the bin width and it has no sampling noise. Particles spend their budget where the probability is, which is why they scale to larger state spaces, but they bring the four failure modes we just measured. A wheeled robot localizing in a known building map is the classic particle case; a single occupancy cell is the classic histogram case, with two bins. Question: which would you choose for a quadruped's contact state, and why?"
+  - layout: table
+    title: "Traps"
+    table:
+      header: [Symptom, Cause, Fix]
+      rows:
+        - ["Mean between two plausible poses", "Multimodal belief", "Histogram or particles"]
+        - ["Map drifts with no evidence", "Prior not subtracted", "Subtract l₀ every update"]
+        - ["All weights zero or NaN", "Likelihood underflow", "Log weights, logsumexp"]
+        - ["N_eff ≪ M after each update", "Proposal wider than likelihood", "Better proposal, more particles"]
+        - ["Stationary robot falsely certain", "Resampling without information", "Suspend resampling"]
+        - ["Sampler index out of range", "Unnormalized weights", "Normalize first"]
+        - ["Confident and wrong after kidnap", "Particle deprivation", "Injection, augmented MCL"]
+      widths: [3, 3, 3]
+    source: lecture.md §L12
+    notes: "This is the symptom table students will use when their filter misbehaves. Go through it in pairs. The first row is why we are here. Rows two to four are numerical or modelling bugs with one-line fixes. Row five is the diversity problem from the resampling slide. Row six is the Table 4.4 normalization trap. Row seven is deprivation. Ask students to pick the row that matches a failure they have seen in their own projects and say what evidence confirmed the cause. The question that decides between grid and particles: how many values does the belief need, given the dimension and its spread (p. 113)?"
+  - layout: bullets
+    title: "Summary"
+    bullets:
+      - "Table 4.1 is Table 2.1 with a sum; (4.5) needs a per-column η"
+      - "Table 4.2 adds evidence and subtracts the prior in log odds"
+      - "Table 4.3 weights by p(zₜ ∣ xₜ) because the motion term cancels (4.34)"
+      - "Importance sampling needs f > 0 ⇒ g > 0 and errors fall as 1/√M"
+      - "Resample on weight variance with the low-variance sampler"
+      - "A finite set can lose diversity, carry bias at small M, or lose the truth"
+    notes: "Each bullet is a claim a student should be able to defend on paper. Pick one at random and ask a student to give the one-line reason. For the first, the reason is that the histogram filter replaces the integral by a sum over bins. For the third, the motion term appears in both target and proposal. For the fifth, resampling adds variance, so doing it only when weights are degenerate preserves diversity. Remind students that exercises T1 to T5 cover these claims, and that the T2 derivations are the ones to do by hand before coding anything."
+    source: lecture.md §L12
+  - layout: agenda
+    title: "What comes next"
+    items:
+      - "Ch. 5 and 6: motion and measurement models to sample from and weight with"
+      - "Ch. 8: grid and Monte Carlo localization, augmented MCL"
+      - "Ch. 9: occupancy grids, Table 4.2 run once per cell"
+      - "Ch. 13: FastSLAM, particles that carry a map"
+    notes: "Close by showing how this chapter feeds the rest of the course. The sampling step in line 4 of Table 4.3 is the sample motion model of chapter 5, and the weighting step is the sensor model of chapter 6. Chapter 8 turns Table 4.1 into grid localization and Table 4.3 into Monte Carlo localization and gives deprivation its real fixes. Chapter 9 runs Table 4.2 once per map cell. Chapter 13 uses the path-space view so that each particle carries a map. Question: which of these would you attempt first on a robot you have built, and why?"
+    source: map.md feeds

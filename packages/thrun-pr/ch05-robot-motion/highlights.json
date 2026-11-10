@@ -1,0 +1,721 @@
+{
+ "book": "thrun-pr",
+ "chapter": 5,
+ "printed_pages": [
+  117,
+  148
+ ],
+ "page_offset": 21,
+ "colors": {
+  "define": "#9FE1CB",
+  "key": "#FAC775",
+  "derive": "#F09595",
+  "pitfall": "#F5C4B3",
+  "link": "#B5D4F4",
+  "section": "#D3D1C7"
+ },
+ "items": [
+  {
+   "page": 117,
+   "kind": "section",
+   "anchor": "Introduction",
+   "note": "Must read, 10 min. The chapter in one line: take the deterministic kinematics, add noise to the motion parameters, and you have p(xₜ ∣ uₜ, xₜ₋₁) in two forms, a density to evaluate and a sampler to run forward."
+  },
+  {
+   "page": 117,
+   "kind": "key",
+   "anchor": "Motion models comprise the state transition probability",
+   "note": "WHY: this is the predict half of every filter in ch. 3 and 4. The EKF needs it linearized (ch. 7), the particle filter needs it sampled (Table 4.3 line 4), the grid filter needs it evaluated (Table 4.1 line 3). CODE: C2–C4."
+  },
+  {
+   "page": 117,
+   "kind": "pitfall",
+   "anchor": "No model of manipulator kinematics will be provided",
+   "note": "PITFALL: planar kinematics only, no dynamics. ROBOT: the drone is a dynamics problem (book exercises 1–3 are the first step); the quadruped is excluded explicitly on p. 121."
+  },
+  {
+   "page": 118,
+   "kind": "key",
+   "anchor": "successful in practical applications vastly overestimate the amount",
+   "note": "WHY: inflated motion noise is the cheap insurance against unmodelled state (track slip, a carpet edge) and against filter approximations. ROBOT: the ch. 4 T5 showed the same thing from the other side: at the true noise the particle filter was overconfident."
+  },
+  {
+   "page": 118,
+   "kind": "section",
+   "anchor": "5.2",
+   "note": "Skim 5.2.1 (5 min), must read 5.2.2 (10 min). Pose conventions, then the one distinction that matters: velocity commands for planning, odometry for estimation."
+  },
+  {
+   "page": 118,
+   "kind": "define",
+   "anchor": "The conﬁguration of a rigid mobile robot is commonly",
+   "note": "DEFINE: 6-DoF configuration (x, y, z, roll, pitch, yaw); the book drops to 3-DoF pose. ROBOT: the drone and the quadruped's body need all six; that is SE(3), lesson t2.6."
+  },
+  {
+   "page": 119,
+   "kind": "define",
+   "equation": "5.1",
+   "note": "SHAPES: pose (x, y, θ) ∈ ℝ² × S¹. θ is an angle: every difference of two θ's goes through wrap() before it is used (models.py)."
+  },
+  {
+   "page": 119,
+   "kind": "define",
+   "anchor": "we postulate that a robot with orientation θ = 0 points",
+   "note": "DEFINE: θ = 0 along +x, counterclockwise positive, the same convention as ROS REP 103 for the base frame (from outside the book)."
+  },
+  {
+   "page": 119,
+   "kind": "section",
+   "anchor": "5.2.2",
+   "note": "Must read, 10 min. One density, (5.3), and two ways to feed it."
+  },
+  {
+   "page": 119,
+   "kind": "derive",
+   "equation": "5.3",
+   "note": "WHY: the object of the whole chapter. SHAPES: xₜ, xₜ₋₁ ∈ ℝ³ poses; uₜ is (v, ω) in 5.3 and a pair of odometry poses in 5.4. CODE: C3 and C4 evaluate it, C2 and C4 sample it."
+  },
+  {
+   "page": 120,
+   "kind": "key",
+   "anchor": "The darker a location,",
+   "note": "FIGURE: the density is 3-D; the plot drops θ. A crescent in x-y is the shadow of a curved 3-D cloud in (x, y, θ), a sheet exactly when α₅ = α₆ = 0. Lecture Fig L3a colours the samples by θ′ to show the sheet."
+  },
+  {
+   "page": 120,
+   "kind": "key",
+   "anchor": "for conceptual reasons we will refer to ut as control",
+   "note": "WHY: odometry is a measurement used as if it were a control (p. 133). The price: its noise enters the motion model, not the measurement update, and successive odometry errors are assumed independent."
+  },
+  {
+   "page": 120,
+   "kind": "key",
+   "anchor": "The ﬁrst assumes that the motion data ut speciﬁes the",
+   "note": "DEFINE: velocity model = what the robot was told to do; odometry model = what the wheels report it did."
+  },
+  {
+   "page": 121,
+   "kind": "key",
+   "anchor": "odometry models are usually applied for estimation, whereas",
+   "note": "WHY: odometry exists only after the motion, so a planner cannot use it. ROBOT: on the tracked robot skid-steer slip degrades track odometry in turns; whether the book's claim (pp. 121, 132) that odometry beats the commands survives that is untested on your hull. T5's simulation says it does once spins are modelled; check it on your logs."
+  },
+  {
+   "page": 121,
+   "kind": "section",
+   "anchor": "The velocity motion model assumes that we can control",
+   "note": "Must read for 5.3.1–5.3.2 and the first half of 5.3.3 (75 min); skim the inverse derivation (pp. 129–132) but derive (5.17)–(5.25) once by hand."
+  },
+  {
+   "page": 121,
+   "kind": "pitfall",
+   "anchor": "such as robots equipped with Mecanum wheels or legged robots",
+   "note": "PITFALL: 'without non-holonomic constraints' means holonomic: they can move sideways. ROBOT: the quadruped's body twist (vₓ, v_y, ω) does not fit (v, ω); book exercise 7 generalizes the model."
+  },
+  {
+   "page": 121,
+   "kind": "derive",
+   "equation": "5.4",
+   "note": "SHAPES: u = (v, ω) in m/s and rad/s; positive ω turns left. CODE: C2, C3."
+  },
+  {
+   "page": 121,
+   "kind": "define",
+   "anchor": "We arbitrarily postulate that positive rotational velocities ωt induce a",
+   "note": "DEFINE: right-handed, z up. A sign flip here mirrors every trajectory; test with a left turn first."
+  },
+  {
+   "page": 121,
+   "kind": "section",
+   "anchor": "5.3.1",
+   "note": "Must read, 25 min. Table 5.1 is an inverse model: from two poses it recovers the (v̂, ω̂, γ̂) that would explain them, then scores the gap to the commanded (v, ω, 0)."
+  },
+  {
+   "page": 121,
+   "kind": "key",
+   "anchor": "assuming that the control is carried out for the ﬁxed duration",
+   "note": "WHY: Δt is part of the model. The same (v, ω) over 0.1 s and over 1 s give different shapes; α's tuned at one rate do not transfer."
+  },
+  {
+   "page": 122,
+   "kind": "define",
+   "anchor": "under a zero-centered random variable with variance",
+   "note": "DEFINE: prob(a, b²) takes the variance, not the standard deviation. Every b² in this chapter is a variance. CODE: C1."
+  },
+  {
+   "page": 122,
+   "kind": "key",
+   "anchor": "The velocity motion model, for different noise parameter settings.",
+   "note": "FIGURE: same (v, ω), three α settings. (a) moderate; (b) small angular, large translational error: spread along the arc; (c) large angular error: spread across it. SESSION: the session redraws this with sliders on α₁–α₆."
+  },
+  {
+   "page": 122,
+   "kind": "section",
+   "anchor": "5.3.2",
+   "note": "Must read, 20 min. Table 5.3 is (5.16) with noise drawn on (v, ω) and a final rotation γ̂."
+  },
+  {
+   "page": 122,
+   "kind": "key",
+   "anchor": "Sampling from a conditional density is different than calculating",
+   "note": "WHY: the particle filter needs only the sampler; grid filters and scan matchers need the density. Most bugs live in the density, because it inverts the kinematics."
+  },
+  {
+   "page": 123,
+   "kind": "derive",
+   "anchor": "Table 5.1",
+   "note": "Implement. CODE: C3 motion_model_velocity. PITFALL: line 7 v̂ = Δθ r*/Δt carries the sign of Δθ, not of the motion: run in this repo, (v, ω) = (1, −0.5) from (0, 0, 0), Δt = 1, gives v̂ = −1; reversing (−1, 0.5) gives v̂ = +1. The card fixes the sign and a test covers right turns and reversing. Line 2 divides by zero for straight motion; line 6 and line 9 need wrap()."
+  },
+  {
+   "page": 123,
+   "kind": "derive",
+   "anchor": "Algorithms for computing densities of a zero-centered normal",
+   "note": "Implement. CODE: C1 prob_normal, prob_triangular. Both take the variance b². PITFALL: b² = 0 when v = ω = 0 (robot at rest) gives 0/0; floor b²."
+  },
+  {
+   "page": 124,
+   "kind": "derive",
+   "anchor": "Table 5.3",
+   "note": "Implement. CODE: C2 sample_motion_model_velocity. PITFALL: lines 5–6 divide by ω̂; at ω̂ = 0 use the straight-line limit x′ = x + v̂Δt cos θ. Line 7: wrap θ′."
+  },
+  {
+   "page": 124,
+   "kind": "key",
+   "anchor": "Note that we are perturbing the ﬁnal orientation",
+   "note": "WHY: without γ̂ every sample lies on a 2-D sheet in 3-D pose space (p. 129); γ̂ thickens it. α₅, α₆ set its size."
+  },
+  {
+   "page": 124,
+   "kind": "derive",
+   "anchor": "Algorithm for sampling from (approximate) normal and triangular",
+   "note": "Implement. CODE: C1 sample_normal (the sum of 12 uniforms), sample_triangular. In practice use rng.normal; the 12-uniform version is what you write on a microcontroller without a Gaussian generator. EXERCISE: book exercise 8 proves the variances; planned for T2."
+  },
+  {
+   "page": 125,
+   "kind": "key",
+   "anchor": "Sampling from the velocity motion model, using the same parameters as",
+   "note": "FIGURE: 500 samples from Table 5.3 with the α's of Fig 5.3. Compare panel by panel: the samples are the density's shape, plus sampling variance (ch. 4, Fig 4.6)."
+  },
+  {
+   "page": 125,
+   "kind": "key",
+   "anchor": "We note that in many cases, it is easier to sample xt than calculate the",
+   "note": "WHY: the forward model needs only kinematics; the density needs the inverse, which for the velocity model is the circle construction of pp. 130–131. ROBOT: a learned or simulator-based motion model can only be sampled."
+  },
+  {
+   "page": 125,
+   "kind": "section",
+   "anchor": "5.3.3",
+   "note": "Must read pp. 125–129 (exact motion, real motion, final orientation, 30 min); skim pp. 129–132 but derive (5.17)–(5.25) by hand."
+  },
+  {
+   "page": 126,
+   "kind": "key",
+   "anchor": "Figure 5.5",
+   "note": "FIGURE: constant (v, ω) for Δt moves the robot on a circle of radius |v/ω| about (x_c, y_c), at 90° to the heading. Note the |·| in (5.5): the radius is unsigned, the centre side comes from the sign of v/ω in (5.7)–(5.8)."
+  },
+  {
+   "page": 126,
+   "kind": "define",
+   "equation": "5.5",
+   "note": "DEFINE: r = |v/ω|. ω = 0 is a straight line (r = ∞), which every formula with v/ω has to special-case."
+  },
+  {
+   "page": 126,
+   "kind": "pitfall",
+   "anchor": "Equation (5.5) encompasses the case where the robot does not turn at all",
+   "note": "PITFALL: the book treats ω = 0 as a limit; code divides by it. CODE: C2 uses a threshold |ω| < 1e-9 and the straight-line formula, as the ch. 3 package's models.py already does."
+  },
+  {
+   "page": 126,
+   "kind": "derive",
+   "equation": "5.7",
+   "note": "Derive. Centre x_c = x − (v/ω) sin θ. With (5.8), the centre sits at distance v/ω to the left of the heading (right for negative v/ω)."
+  },
+  {
+   "page": 126,
+   "kind": "derive",
+   "equation": "5.8",
+   "note": "Derive. y_c = y + (v/ω) cos θ. TEST: check the centre is equidistant from start and end pose."
+  },
+  {
+   "page": 127,
+   "kind": "derive",
+   "equation": "5.9",
+   "note": "Implement and derive. CODE: C2 velocity_kinematics, the noise-free g(u, x) of the ch. 3 EKF. TEST: as ω → 0 it converges to the straight line; compare at ω = 1e-6."
+  },
+  {
+   "page": 127,
+   "kind": "key",
+   "anchor": "it is therefore common practice to use small values for",
+   "note": "WHY: the circle assumes (v, ω) constant over Δt. ROBOT: at a high control rate the arc is nearly a line and the velocity and odometry models agree (p. 136)."
+  },
+  {
+   "page": 127,
+   "kind": "derive",
+   "equation": "5.10",
+   "note": "Implement. Noise on the controls, not on the pose: the posterior is curved (a banana), which is why the EKF needs the control-noise Jacobian in ch. 7. SHAPES: two scalars, variances α₁v² + α₂ω² and α₃v² + α₄ω²."
+  },
+  {
+   "page": 127,
+   "kind": "key",
+   "anchor": "the standard deviation of the error is proportional to the",
+   "note": "WHY: σ = √(α₁v² + α₂ω²) scales with the speed: double (v, ω), double σ. A robot at rest has zero motion noise, so add a floor if your filter must survive being pushed."
+  },
+  {
+   "page": 128,
+   "kind": "key",
+   "anchor": "Probability density functions with variance b2",
+   "note": "FIGURE: two zero-mean densities with the same variance b²; the triangle has bounded support (−√6 b, √6 b)."
+  },
+  {
+   "page": 128,
+   "kind": "derive",
+   "equation": "5.11",
+   "note": "Implement. CODE: C1 prob_normal = Table 5.2 line 2. In practice use the log density and sum, as in ch. 4."
+  },
+  {
+   "page": 128,
+   "kind": "derive",
+   "equation": "5.12",
+   "note": "Implement. CODE: C1 prob_triangular. PITFALL: bounded support means zero probability for any error beyond √6 b; one outlier odometry step kills every particle or grid cell. Use it only with a floor."
+  },
+  {
+   "page": 128,
+   "kind": "derive",
+   "equation": "5.13",
+   "note": "Derive. (5.9) with (v̂, ω̂). Still degenerate: the end pose lies on a 2-D sheet. The next page fixes it."
+  },
+  {
+   "page": 128,
+   "kind": "key",
+   "anchor": "However, this model is still not very realistic",
+   "note": "WHY: two noise variables cannot fill a 3-D pose space. Read on to (5.14)."
+  },
+  {
+   "page": 129,
+   "kind": "key",
+   "anchor": "The assumption of circular motion leads to an important degeneracy",
+   "note": "WHY: given (x′, y′) the circle fixes θ′ exactly, so p(xₜ ∣ uₜ, xₜ₋₁) is zero almost everywhere in (x, y, θ). A grid or a scan matcher evaluating it would see zero for nearly every cell."
+  },
+  {
+   "page": 129,
+   "kind": "derive",
+   "equation": "5.14",
+   "note": "Implement. θ′ = θ + ω̂Δt + γ̂Δt. CODE: C2 line 7 of Table 5.3."
+  },
+  {
+   "page": 129,
+   "kind": "derive",
+   "equation": "5.15",
+   "note": "Implement. γ̂ has variance α₅v² + α₆ω². DEFINE: a final rotation rate, multiplied by Δt in (5.14)."
+  },
+  {
+   "page": 129,
+   "kind": "derive",
+   "equation": "5.16",
+   "note": "Implement. The full generative velocity model: Table 5.3 lines 5–7. CODE: C2."
+  },
+  {
+   "page": 130,
+   "kind": "key",
+   "anchor": "the motion probability would simply be zero without",
+   "note": "WHY: the density needs γ̂ for the same reason the sampler does: almost no (xₜ₋₁, xₜ) pair lies on a circle that also matches θ′."
+  },
+  {
+   "page": 130,
+   "kind": "derive",
+   "equation": "5.17",
+   "note": "Derive by hand: the centre lies on the line through (x, y) perpendicular to the heading, and on the perpendicular bisector of the chord. Two lines, one intersection."
+  },
+  {
+   "page": 130,
+   "kind": "pitfall",
+   "anchor": "case of ω = 0, in which the center of the circle lies at",
+   "note": "PITFALL: (5.18)'s denominator is zero when (x′, y′) lies on the heading line (straight motion). Code needs a straight-line branch: v̂ = signed distance/Δt, ω̂ = 0."
+  },
+  {
+   "page": 130,
+   "kind": "derive",
+   "equation": "5.18",
+   "note": "Derive by hand. CODE: C3, Table 5.1 line 2. TEST: plug the solution back into both equalities of (5.17)."
+  },
+  {
+   "page": 130,
+   "kind": "derive",
+   "equation": "5.21",
+   "note": "Implement. Δθ is the turned angle along the circle. PITFALL: the difference of two atan2's needs wrap(); without it a small turn across ±π reads as ±2π."
+  },
+  {
+   "page": 131,
+   "kind": "define",
+   "equation": "5.22",
+   "note": "DEFINE: atan2 as in every numerical library (np.arctan2, std::atan2); do not implement it."
+  },
+  {
+   "page": 131,
+   "kind": "derive",
+   "equation": "5.23",
+   "note": "Derive. Δdist = r*·Δθ. PITFALL: r* ≥ 0, so Δdist takes the sign of Δθ: a forward right turn gets a negative distance. This is where Table 5.1 line 7's sign error comes from."
+  },
+  {
+   "page": 131,
+   "kind": "derive",
+   "equation": "5.24",
+   "note": "Implement, with the sign fixed: v̂ must be positive when the robot moved forward along its initial heading. CODE: C3. TEST: right turn and reverse."
+  },
+  {
+   "page": 131,
+   "kind": "derive",
+   "equation": "5.25",
+   "note": "Implement. γ̂ = (θ′ − θ)/Δt − ω̂, with θ′ − θ wrapped. CODE: C3, Table 5.1 line 9."
+  },
+  {
+   "page": 131,
+   "kind": "derive",
+   "equation": "5.32",
+   "note": "Implement. The product of three independent error densities = Table 5.1 line 10. In practice return the log, a sum of three terms."
+  },
+  {
+   "page": 132,
+   "kind": "key",
+   "anchor": "lines 2 to 9 are equivalent to Equations",
+   "note": "CODE: the map from Table 5.1 to the equations. Use it to cite lines in C3."
+  },
+  {
+   "page": 132,
+   "kind": "pitfall",
+   "anchor": "technically the resulting values lie always in",
+   "note": "PRINT ERROR: Table 5.4 line 2 returns half the sum of 12 draws from rand(−b, b), which lies in [−6b, 6b], not [−2b, 2b]. Its variance is b² (12 · (2b)²/12 · 1/4), checked in this repo."
+  },
+  {
+   "page": 132,
+   "kind": "section",
+   "anchor": "Alternatively, one might want to use the odometry measurements",
+   "note": "Must read 5.4.1–5.4.2 (40 min), skim 5.4.3 (10 min). Odometry as rotate–translate–rotate, three noise terms, no degeneracy."
+  },
+  {
+   "page": 132,
+   "kind": "key",
+   "anchor": "Practical experience suggests that odometry, while still erroneous",
+   "note": "WHY: the book says odometry is usually more accurate than the commands, for most commercial robots (pp. 121, 132). ROBOT: untested on the tracked robot; T5's simulated slip leaves odometry ahead once spins are modelled. Test it by logging both against a motion-capture run."
+  },
+  {
+   "page": 133,
+   "kind": "key",
+   "anchor": "Figure 5.7",
+   "note": "FIGURE: any planar pose change = turn to face the target, drive straight, turn to the final heading. Three numbers for three DoF: sufficient, and no degeneracy (p. 135)."
+  },
+  {
+   "page": 133,
+   "kind": "section",
+   "anchor": "5.4.1",
+   "note": "Must read, 25 min. Table 5.5: decompose the odometry change and the hypothesized change the same way, score the three differences."
+  },
+  {
+   "page": 133,
+   "kind": "key",
+   "anchor": "it is therefore common to consider odometry data as if it were control signals",
+   "note": "WHY: the alternative is putting velocity in the state and odometry in the measurement update. ROBOT: FORGE does the latter in spirit: wheel odometry becomes a between-factor with its own covariance."
+  },
+  {
+   "page": 133,
+   "kind": "key",
+   "anchor": "knowing this transformation would solve the robot localization problem",
+   "note": "WHY: only differences of odometry are used; the odometry frame drifts. ROBOT: the same reason a factor graph uses relative-pose factors, never absolute odometry poses."
+  },
+  {
+   "page": 134,
+   "kind": "derive",
+   "anchor": "Table 5.5",
+   "note": "Implement. CODE: C4 motion_model_odometry. PITFALL: line 2 is atan2(0, 0) when the robot only rotated (δtrans = 0); set δrot1 = 0 below a translation threshold. Lines 8 and 10 need the angular differences wrapped (p. 135). Note the variances use the hatted δ̂ here and the measured δ in Table 5.6; that is the book's choice, keep it."
+  },
+  {
+   "page": 134,
+   "kind": "derive",
+   "equation": "5.33",
+   "note": "DEFINE: the control is a pair of odometry poses (x̄ₜ₋₁, x̄ₜ) in the odometry frame. SHAPES: 2 × 3."
+  },
+  {
+   "page": 134,
+   "kind": "define",
+   "anchor": "a rotation, followed by a straight line motion (translation)",
+   "note": "DEFINE: (δrot1, δtrans, δrot2). CODE: C4 odometry_params, shared by the density and the sampler."
+  },
+  {
+   "page": 135,
+   "kind": "key",
+   "anchor": "Figure 5.8",
+   "note": "FIGURE: (a) typical α's, (b) large translational error, (c) large rotational error. Compare with Fig 5.3: at small Δt they converge (p. 136)."
+  },
+  {
+   "page": 135,
+   "kind": "key",
+   "anchor": "we will not face the same degeneracy that led to",
+   "note": "WHY: three noise terms for three DoF, so no final-rotation fix is needed."
+  },
+  {
+   "page": 135,
+   "kind": "pitfall",
+   "anchor": "Here the implementer must observe that all angular differences must lie in",
+   "note": "PITFALL: the book's warning. Wrap δrot1 − δ̂rot1 and δrot2 − δ̂rot2 with wrap(). The text writes δrot2 − δ̄rot2 (bar) for δrot2 − δ̂rot2 (hat), a print slip. TEST: a pose pair whose rotations straddle ±π."
+  },
+  {
+   "page": 135,
+   "kind": "key",
+   "anchor": "This last step assumes independence between",
+   "note": "PITFALL: independent rot and trans errors is an assumption; skid-steer couples them (turning causes slip). α₄ is the only cross term."
+  },
+  {
+   "page": 136,
+   "kind": "derive",
+   "anchor": "Table 5.6",
+   "note": "Implement. CODE: C4 sample_motion_model_odometry. Lines 5–7 subtract the noise (5.37)–(5.39); the variances use the measured δ, unlike Table 5.5. PITFALL: same atan2(0, 0) case in line 2."
+  },
+  {
+   "page": 136,
+   "kind": "key",
+   "anchor": "The smaller the time between two consecutive measurements",
+   "note": "WHY: both models become the same small displacement. ROBOT: at the book's 'every tenth of a second' (p. 136) the choice matters little; between sparse keyframes it matters."
+  },
+  {
+   "page": 137,
+   "kind": "key",
+   "anchor": "Sampling from the odometry motion model, using the same parameters",
+   "note": "FIGURE: 500 samples from Table 5.6 with the α's of Fig 5.8."
+  },
+  {
+   "page": 137,
+   "kind": "section",
+   "anchor": "5.4.2",
+   "note": "Must read, 15 min. The sampler side-steps the inverse model."
+  },
+  {
+   "page": 137,
+   "kind": "key",
+   "anchor": "The ﬁgure illustrates how the uncertainty grows as the robot moves",
+   "note": "WHY: dead reckoning with no sensor: the cloud grows without bound and bends with the heading error. This is the predict step of MCL with no update."
+  },
+  {
+   "page": 137,
+   "kind": "section",
+   "anchor": "5.4.3",
+   "note": "Skim, 10 min. The same three equations read forward (sampling) and backward (density)."
+  },
+  {
+   "page": 138,
+   "kind": "key",
+   "anchor": "Figure 5.10",
+   "note": "FIGURE: heading error early in the path becomes lateral spread later; the cloud widens fastest after the turns. SESSION: the session reproduces it with your own α's."
+  },
+  {
+   "page": 138,
+   "kind": "derive",
+   "equation": "5.34",
+   "note": "Implement. CODE: C4 odometry_params line 1. Wrap the result."
+  },
+  {
+   "page": 138,
+   "kind": "derive",
+   "equation": "5.35",
+   "note": "Implement. δtrans ≥ 0: a robot reversing is described as 'turn 180°, drive, turn 180°'. PITFALL: for a reversing robot δrot1 and δrot2 are near ±π and their noise terms α₁δ²rot1 blow up; some implementations allow negative δtrans instead (from outside the book)."
+  },
+  {
+   "page": 138,
+   "kind": "derive",
+   "equation": "5.36",
+   "note": "Implement. Wrap δrot2."
+  },
+  {
+   "page": 139,
+   "kind": "derive",
+   "equation": "5.37",
+   "note": "Implement. Noise subtracted from the measured rotation; variance α₁δ²rot1 + α₂δ²trans."
+  },
+  {
+   "page": 139,
+   "kind": "derive",
+   "equation": "5.38",
+   "note": "Implement. Variance α₃δ²trans + α₄(δ²rot1 + δ²rot2)."
+  },
+  {
+   "page": 139,
+   "kind": "derive",
+   "equation": "5.39",
+   "note": "Implement. Same α₁, α₂ as (5.37)."
+  },
+  {
+   "page": 139,
+   "kind": "derive",
+   "equation": "5.40",
+   "note": "Implement. CODE: C4 Table 5.6 lines 8–10. TEST: with all α = 0 the sampler reproduces the odometry displacement exactly, rotated into the world frame."
+  },
+  {
+   "page": 139,
+   "kind": "key",
+   "anchor": "is the error in odometry, assuming of course that xt is the true ﬁnal pose",
+   "note": "WHY: the density scores the hypothesized pose by how far its decomposition is from the measured one. (5.44)–(5.46) are the three factors of Table 5.5 line 11."
+  },
+  {
+   "page": 140,
+   "kind": "section",
+   "anchor": "5.5",
+   "note": "Must read, 25 min. Condition either motion model on a map by multiplying with p(xₜ ∣ m); fine for small steps, wrong for large ones."
+  },
+  {
+   "page": 140,
+   "kind": "derive",
+   "equation": "5.47",
+   "note": "DEFINE: the map-based motion model. The map tells you where the robot cannot be."
+  },
+  {
+   "page": 140,
+   "kind": "key",
+   "anchor": "which works well if the distance between xt−1 and xt is small",
+   "note": "WHY: the approximation checks only the end pose. The book's own bound: less than half a robot diameter per step."
+  },
+  {
+   "page": 140,
+   "kind": "derive",
+   "equation": "5.48",
+   "note": "Implement. CODE: C5 motion_model_with_map. p(xₜ) uniform is absorbed in η."
+  },
+  {
+   "page": 140,
+   "kind": "key",
+   "anchor": "p(xt | m) = 0 if and only if the robot would be placed in an occupied grid cell",
+   "note": "DEFINE: p(xₜ ∣ m) is a free-space indicator on the configuration space (obstacles grown by the robot radius, p. 141). ROBOT: the tracked robot's footprint is not a circle; grow by the footprint at θ, or by the circumscribed radius."
+  },
+  {
+   "page": 141,
+   "kind": "derive",
+   "anchor": "This algorithms bootstraps previous motion models",
+   "note": "Implement. CODE: C5. PRINT ERROR: the sampler has two lines numbered 3. PITFALL: 'do … until π > 0' never ends if every sample is in an obstacle (the robot's belief is already inside a wall); cap the retries and return the last sample with weight 0."
+  },
+  {
+   "page": 141,
+   "kind": "key",
+   "anchor": "the sampling algorithm returns a weighted sample",
+   "note": "WHY: the weight π = p(xₜ ∣ m) multiplies into the particle's importance weight (ch. 4, line 5). For an occupancy indicator π is 0 or a constant, so the loop is rejection sampling."
+  },
+  {
+   "page": 141,
+   "kind": "define",
+   "anchor": "CONFIGURATION SPACE",
+   "note": "DEFINE: pose space with obstacles grown by the robot's shape. For a circular robot, grow by the radius; θ does not matter."
+  },
+  {
+   "page": 142,
+   "kind": "key",
+   "anchor": "Velocity motion model (a) without a map and (b) conditioned on a map",
+   "note": "FIGURE: (a) the velocity density; (b) the same times p(xₜ ∣ m). The mass behind the wall, marked (∗), is the approximation's failure: the robot would have passed through the obstacle."
+  },
+  {
+   "page": 142,
+   "kind": "pitfall",
+   "anchor": "This error is the result of checking model consistency at the",
+   "note": "PITFALL: the end-pose check lets particles tunnel through thin walls on large steps. ROBOT: between sparse keyframes a robot can move more than half its body length; check the swept arc instead."
+  },
+  {
+   "page": 142,
+   "kind": "derive",
+   "equation": "5.49",
+   "note": "Derive. Bayes rule with m as the 'measurement'."
+  },
+  {
+   "page": 142,
+   "kind": "derive",
+   "equation": "5.50",
+   "note": "Derive. The approximation is the first line: p(m ∣ xₜ, uₜ, xₜ₋₁) replaced by p(m ∣ xₜ)."
+  },
+  {
+   "page": 143,
+   "kind": "key",
+   "equation": "5.51",
+   "note": "WHY: the one assumption of 5.5: the map is informative only about the end pose, not the path. It fails exactly when the path crosses an obstacle."
+  },
+  {
+   "page": 143,
+   "kind": "key",
+   "anchor": "A Bayes ﬁlter that is updated frequently might yield fundamentally",
+   "note": "WHY: update rate is part of the model, not an implementation detail. Same lesson as Δt in the velocity model."
+  },
+  {
+   "page": 143,
+   "kind": "section",
+   "anchor": "This section derived the two principal probabilistic motion models",
+   "note": "Must read, 5 min. Compare with your own summary. PRINT ERROR: '(non-generate)' means non-degenerate."
+  },
+  {
+   "page": 144,
+   "kind": "pitfall",
+   "anchor": "Our description also does not consider robot dynamics",
+   "note": "PITFALL: no dynamics. ROBOT: the drone's state needs velocity (book exercises 1–3); the book's own suggestion is to extend the state by a velocity vector."
+  },
+  {
+   "page": 144,
+   "kind": "link",
+   "anchor": "many robots rely on inertial sensors to measure motion",
+   "note": "LINK: IMU-driven process models (preintegration) replace odometry on the drone and complement leg odometry on the quadruped; outside this book, lesson t2.6."
+  },
+  {
+   "page": 145,
+   "kind": "section",
+   "anchor": "The present material extends the basic kinematic equations",
+   "note": "Skip. Siegwart and Nourbakhsh (2004) if you need kinematics of other drives."
+  },
+  {
+   "page": 145,
+   "kind": "section",
+   "anchor": "Exercises",
+   "note": "Do 1–3, 5 (with 4), 7, 8; 6 optional. Where each lives in the package is decided in the exercises stage; the notes below say what is planned."
+  },
+  {
+   "page": 145,
+   "kind": "link",
+   "anchor": "Consider a robot that lives in a 1-D",
+   "note": "EXERCISE: book exercise 1, a robot with dynamics. With Gaussian acceleration noise this is the ch. 3 KF prediction with A = [[1, Δt], [0, 1]]; x′ and ẋ′ are correlated. Planned for T2."
+  },
+  {
+   "page": 145,
+   "kind": "link",
+   "anchor": "Consider again the dynamic robot from Exercise 1",
+   "note": "EXERCISE: book exercise 2. Planned for T2: condition the Gaussian of exercise 1 on x′."
+  },
+  {
+   "page": 145,
+   "kind": "link",
+   "anchor": "Suppose we control this robot with random accelerations",
+   "note": "EXERCISE: book exercise 3. Planned for T2, with a numerical check of the correlation coefficient as T grows."
+  },
+  {
+   "page": 146,
+   "kind": "link",
+   "anchor": "Now consider a simple kinematic model of an idealized bicycle",
+   "note": "EXERCISE: book exercise 4, the kinematic bicycle (Ackermann). Note the pose is the front-tyre centre, not the rear axle. Planned as part of T3 together with exercise 5."
+  },
+  {
+   "page": 146,
+   "kind": "link",
+   "anchor": "Consider the kinematic bicycle model from Exercise 4. Implement a",
+   "note": "EXERCISE: book exercise 5. Planned for T3: a bicycle sampler with the book's l, Δt and variances, and plots of the five control settings. PRINT ERROR: the table's last row is numbered 1; it is problem 5."
+  },
+  {
+   "page": 146,
+   "kind": "link",
+   "anchor": "Consider once again the kinematic bicycle model from Exercise 4",
+   "note": "EXERCISE: book exercise 6, optional: the bicycle's inverse model, the analogue of Table 5.1."
+  },
+  {
+   "page": 147,
+   "kind": "link",
+   "anchor": "A common drive for indoor robots is holonomic",
+   "note": "EXERCISE: book exercise 7, the holonomic velocity model. ROBOT: the quadruped's body-velocity command (vₓ, v_y, ω). Planned for T3."
+  },
+  {
+   "page": 147,
+   "kind": "link",
+   "anchor": "Prove that the triangular distribution in Equation (5.12) has mean 0",
+   "note": "EXERCISE: book exercise 8. Planned for T2, with the [−6b, 6b] range of Table 5.4 included."
+  }
+ ]
+}
