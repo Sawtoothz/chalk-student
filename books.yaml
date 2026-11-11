@@ -237,17 +237,6 @@ grisetti-gslam:
   sections: [Introduction, Related Work, Graph-Based SLAM, Least Squares on a Manifold, Experiments, Conclusions]
   lesson: t2.8
 
-xu-fastlio2:
-  title: "FAST-LIO2: Fast Direct LiDAR-Inertial Odometry"
-  authors: Xu, Cai, He, Lin, Zhang
-  year: 2022
-  pdf: library/xu-fastlio2.pdf
-  kind: paper
-  pages: 19  # arXiv 2107.06829v1 (journal version is 13)
-  offset: 0
-  sections: [Introduction, Related Work, System Overview, State Estimation, Mapping, Experiments, Conclusion]
-  lesson: t2.8
-  code: [https://github.com/hku-mars/FAST_LIO, https://github.com/hku-mars/ikd-Tree, https://github.com/hku-mars/IKFoM]
 
 labbe-kbf:
   title: Kalman and Bayesian Filters in Python

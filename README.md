@@ -39,7 +39,6 @@ Then open **http://localhost:8765**. Details: [Install](https://github.com/Sawto
 | Nonparametric filters | Thrun, Burgard, Fox, *Probabilistic Robotics*, ch. 4 | `just view thrun-pr 4` |
 | Robot motion | *Probabilistic Robotics*, ch. 5 | `just view thrun-pr 5` |
 | A tour of multiple view geometry | Hartley, Zisserman, *Multiple View Geometry*, ch. 1 | `just view hz-mvg2 1` |
-| FAST-LIO2 (paper) | Xu et al., 2021 | `just view xu-fastlio2 1` |
 | Gaussian filters (worked example) | *Probabilistic Robotics*, ch. 3 | `examples/thrun-pr/ch03-gaussian-filters/` |
 
 The two **open examples** ship with their source PDFs (`library/open/`), so the Reader's annotated-page tab works

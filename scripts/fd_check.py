@@ -27,7 +27,7 @@ Function mode (any callable; chosen whenever --in or --point is given):
             se3-left: log(T1 T0^-1); se3-right: log(T0^-1 T1). A custom module:func is minus(a, b) = a [-] b,
             the boxminus order (e.g. exercises.models:boxminus).
 
-  Example, FAST-LIO2's H of Eq. 12 through the state's boxplus (from packages/xu-fastlio2/paper):
+  Example, FAST-LIO2's H of Eq. 12 through the state's boxplus (run in an ESKF package whose models.py defines boxplus):
     fd_check.py exercises.solutions.T3_solution:point_to_plane --point exercises.models:random_state \\
         --in exercises.models:boxplus --dim 24 --extra "(rng.normal(size=3), unit(rng.normal(size=3)), rng.normal(size=3))"
 

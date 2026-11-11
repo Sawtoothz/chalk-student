@@ -73,7 +73,7 @@ test book ch:
 # Finite-difference Jacobian check, run from the package dir (the recipe does not cd; arguments are passed as given). Model mode (Thrun-style exercises.models.<Model>.g/.h):
 #   just fd exercises.exercise:G_jac --arg u --wrap 2
 # Function mode, any callable on vectors or manifolds (--in/--out: euclid|so3-left|so3-right|se3-left|se3-right|module:func,
-# SE(3) tangent xi = [rho; phi]); see scripts/fd_check.py's docstring, e.g. in packages/xu-fastlio2/paper:
+# SE(3) tangent xi = [rho; phi]); see scripts/fd_check.py's docstring, e.g. in an ESKF package whose models.py defines boxplus:
 #   just fd exercises.solutions.T3_solution:point_to_plane --point exercises.models:random_state --in exercises.models:boxplus --dim 24 --extra "(rng.normal(size=3), unit(rng.normal(size=3)), rng.normal(size=3))"
 [no-cd]
 [positional-arguments]
